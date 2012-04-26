@@ -14,5 +14,12 @@ CONFIG   -= app_bundle
 
 TEMPLATE = app
 
+LIBS += -L/usr/local/lib -lprotobuf
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    message.pb.cc \
+    client.pb.cc
+
+HEADERS += \
+    message.pb.h \
+    client.pb.h
