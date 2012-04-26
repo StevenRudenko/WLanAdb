@@ -1,0 +1,10 @@
+package com.wlancat.data;
+
+option java_package = "com.wlancat.data";
+option java_outer_classname = "ClientProto";
+
+message Client {
+  required string ip = 1;
+  required int32 port = 2;
+  optional string name = 3;
+}

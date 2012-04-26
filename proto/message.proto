@@ -1,0 +1,16 @@
+package com.wlancat.data;
+
+option java_package = "com.wlancat.data";
+option java_outer_classname = "MessageProto";
+
+import "client.proto";
+
+message Message {
+  enum Type {
+    REQEST = 0;
+    RESPONSE = 0;
+  }
+
+  required Type type = 1;
+  optional Client client = 2;
+}

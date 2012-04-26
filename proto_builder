@@ -1,0 +1,4 @@
+#!/bin/bash
+
+protoc -I=./proto --java_out=./android/src ./proto/client.proto ./proto/message.proto
+protoc -I=./proto --cpp_out=./qt ./proto/client.proto ./proto/message.proto
