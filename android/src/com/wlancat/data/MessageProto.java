@@ -51,11 +51,11 @@ public final class MessageProto {
     public enum Type
         implements com.google.protobuf.ProtocolMessageEnum {
       REQEST(0, 0),
+      RESPONSE(1, 1),
       ;
       
-      public static final Type RESPONSE = REQEST;
       public static final int REQEST_VALUE = 0;
-      public static final int RESPONSE_VALUE = 0;
+      public static final int RESPONSE_VALUE = 1;
       
       
       public final int getNumber() { return value; }
@@ -63,6 +63,7 @@ public final class MessageProto {
       public static Type valueOf(int value) {
         switch (value) {
           case 0: return REQEST;
+          case 1: return RESPONSE;
           default: return null;
         }
       }
@@ -602,7 +603,7 @@ public final class MessageProto {
       "t.proto\"\203\001\n\007Message\022,\n\004type\030\001 \002(\0162\036.com." +
       "wlancat.data.Message.Type\022(\n\006client\030\002 \001(" +
       "\0132\030.com.wlancat.data.Client\" \n\004Type\022\n\n\006R" +
-      "EQEST\020\000\022\014\n\010RESPONSE\020\000B \n\020com.wlancat.dat" +
+      "EQEST\020\000\022\014\n\010RESPONSE\020\001B \n\020com.wlancat.dat" +
       "aB\014MessageProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =

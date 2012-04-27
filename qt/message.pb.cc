@@ -85,7 +85,7 @@ void protobuf_AddDesc_message_2eproto() {
     "t.proto\"\203\001\n\007Message\022,\n\004type\030\001 \002(\0162\036.com."
     "wlancat.data.Message.Type\022(\n\006client\030\002 \001("
     "\0132\030.com.wlancat.data.Client\" \n\004Type\022\n\n\006R"
-    "EQEST\020\000\022\014\n\010RESPONSE\020\000B \n\020com.wlancat.dat"
+    "EQEST\020\000\022\014\n\010RESPONSE\020\001B \n\020com.wlancat.dat"
     "aB\014MessageProto", 215);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "message.proto", &protobuf_RegisterTypes);
@@ -111,6 +111,7 @@ const ::google::protobuf::EnumDescriptor* Message_Type_descriptor() {
 bool Message_Type_IsValid(int value) {
   switch(value) {
     case 0:
+    case 1:
       return true;
     default:
       return false;

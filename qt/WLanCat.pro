@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core
+QT       += core, network
 
 QT       -= gui
 
@@ -18,8 +18,14 @@ LIBS += -L/usr/local/lib -lprotobuf
 
 SOURCES += main.cpp \
     message.pb.cc \
-    client.pb.cc
+    client.pb.cc \
+    broadcastserver.cpp \
+    wlancat.cpp \
+    p2pclient.cpp
 
 HEADERS += \
     message.pb.h \
-    client.pb.h
+    client.pb.h \
+    broadcastserver.h \
+    wlancat.h \
+    p2pclient.h

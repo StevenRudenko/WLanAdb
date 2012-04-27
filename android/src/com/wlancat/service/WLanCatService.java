@@ -63,6 +63,8 @@ public class WLanCatService extends Service {
     final InetAddress localAddress = WiFiUtils.getLocalAddress(this);
 
     mP2pServer = new P2PServer();
+    mP2pServer.start();
+
     mUdpMessager = new UdpMessagerSignalSlot(localAddress, mP2pServer.getPort());
     mBroadcastServer = new BroadcastServerSignalSlot();
 
@@ -70,7 +72,6 @@ public class WLanCatService extends Service {
     SignalSlot.connect(mUdpMessager, UdpMessagerSignalSlot.Signals.SENDRESPONSE_BYTESTRING, mBroadcastServer, BroadcastServerSignalSlot.Slots.SEND_BYTESTRING);
 
     mBroadcastServer.start(broadcastAddress, localAddress);
-    mP2pServer.start();
   }
 
   private void stop() {

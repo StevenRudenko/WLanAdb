@@ -70,6 +70,7 @@ public abstract class LogReader {
 
         onLogMessage(line);
       }
+      Log.d(TAG, "LogCat reading finished!");
     } catch (IOException e) {
       Log.e(TAG, "Fail to read LogCat output", e);
     } finally {

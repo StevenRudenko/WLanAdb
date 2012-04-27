@@ -23,42 +23,28 @@ public abstract class UdpMessager {
     mLocalClient = Client.newBuilder()
         .setIp(localAddress.getHostAddress())
         .setPort(port)
-        .setName(Build.DEVICE)
+        .setName(Build.MODEL)
         .build();
-
-    Log.v(TAG, "Request message: [" + this + "]");
   }
 
   @slot
   public void onMessageRecieved(ByteString data) {
-    //    try {
-    //      final Message message = Message.newBuilder().mergeFrom(data).buildPartial();
-    //
-    //      if (message.getType() != Message.Type.REQEST)
-    //        return;
-    //
-    //      final Message response = Message.newBuilder()
-    //          .setType(Message.Type.RESPONSE)
-    //          .setClient(mLocalClient)
-    //          .build();
-    //      sendResponse(response.toByteString());
-    //    } catch (InvalidProtocolBufferException e) {
-    //      Log.e(TAG, "Can't parse client!", e);
-    //    }
-    Log.v(TAG, "Recieved: " + data.toStringUtf8());
-    final Message response = Message.newBuilder()
-        .setType(Message.Type.RESPONSE)
-        .setClient(mLocalClient)
-        .build();
-    sendResponse(response.toByteString());
+    try {
+      final Message message = Message.newBuilder().mergeFrom(data).buildPartial();
+
+      if (!message.getType().equals(Message.Type.REQEST))
+        return;
+
+      final Message response = Message.newBuilder()
+          .setType(Message.Type.RESPONSE)
+          .setClient(mLocalClient)
+          .build();
+      sendResponse(response.toByteString());
+    } catch (InvalidProtocolBufferException e) {
+      Log.e(TAG, "Can't parse client!", e);
+    }
   }
 
   @signal
   public abstract void sendResponse(ByteString data);
-
-  @Override
-  public String toString() {
-    final Message request = Message.newBuilder().setType(Message.Type.REQEST).build();
-    return request.toString();
-  }
 }

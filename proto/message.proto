@@ -8,7 +8,7 @@ import "client.proto";
 message Message {
   enum Type {
     REQEST = 0;
-    RESPONSE = 0;
+    RESPONSE = 1;
   }
 
   required Type type = 1;

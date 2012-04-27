@@ -39,11 +39,11 @@ class Message;
 
 enum Message_Type {
   Message_Type_REQEST = 0,
-  Message_Type_RESPONSE = 0
+  Message_Type_RESPONSE = 1
 };
 bool Message_Type_IsValid(int value);
 const Message_Type Message_Type_Type_MIN = Message_Type_REQEST;
-const Message_Type Message_Type_Type_MAX = Message_Type_REQEST;
+const Message_Type Message_Type_Type_MAX = Message_Type_RESPONSE;
 const int Message_Type_Type_ARRAYSIZE = Message_Type_Type_MAX + 1;
 
 const ::google::protobuf::EnumDescriptor* Message_Type_descriptor();

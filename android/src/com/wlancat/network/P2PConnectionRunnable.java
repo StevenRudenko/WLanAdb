@@ -30,6 +30,7 @@ public class P2PConnectionRunnable implements Runnable {
     mSocket = socket;
     try {
       mSocket.setKeepAlive(true);
+      mSocket.setTcpNoDelay(true);
     } catch (SocketException e) {
       Log.e(TAG, "Fail to set Keep-Alive to socket", e);
     }
@@ -42,7 +43,8 @@ public class P2PConnectionRunnable implements Runnable {
         return;
 
       try {
-        mOutputStream.write(line+"\r\n");
+        mOutputStream.write(line);
+        mOutputStream.write("\r\n");
         mOutputStream.flush();
       } catch (IOException e) {
         Log.e(TAG, "Fail to write line to stream: " + e.getMessage());
