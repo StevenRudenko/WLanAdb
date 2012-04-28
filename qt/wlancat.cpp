@@ -16,9 +16,6 @@ WLanCat::WLanCat(QObject *parent) :
     // compatible with the version of the headers we compiled against.
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-    qout << "WLanCat started..." << endl;
-    qout << "Searching for devices..." << endl;
-
     broadcast = new BroadcastServer(44533);
 
     connect(broadcast, SIGNAL(onDatagramSent()), this, SLOT(onMessageRequested()));
@@ -54,6 +51,13 @@ void WLanCat::onMessageRequested()
         broadcast->stop();
         delete broadcast;
 
+        if (clients.isEmpty()) {
+            qout << "\rThere is no any client available to connect with.";
+            qout << "You can download it from Google Play Store by link: http://...";
+            exit(0);
+            return;
+        }
+
         if (clients.size() == 1) {
             Client client = clients.begin().value();
             readLogsFromClient(client);
@@ -62,7 +66,13 @@ void WLanCat::onMessageRequested()
         }
         return;
     }
+
     ++requestsSent;
+
+    qout << "\rSearching for devices";
+    for (int i=0; i<requestsSent; ++i)
+        qout << ".";
+    qout.flush();
 }
 
 void WLanCat::onMessageRecieved(const QByteArray& data)
@@ -86,7 +96,10 @@ void WLanCat::onMessageRecieved(const QByteArray& data)
 void WLanCat::selectClient()
 {
     QHashIterator<QString, Client> i(clients);
+    int size = clients.size();
     uint index = 0;
+
+    qout << "\rThere are " << size << " devices found:" << endl;
     while (i.hasNext()) {
         i.next();
 
@@ -94,14 +107,27 @@ void WLanCat::selectClient()
 
         Client client = i.value();
         const QString& clientName = QString::fromStdString(client.name());
-        qout << "[" << index << "]: " << clientName << " - " << i.key() << " (" << client.port() << ")" << endl;
+        qout << index << ") " << clientName << " - " << i.key() << " (" << client.port() << ")" << endl;
+    }
+    qout << "Please select device by typing it number (Default: 1):" << endl;
+
+    int selection;
+    QTextStream qin(stdin);
+
+    qin >> selection;
+
+    if (selection > 0 && selection <= size) {
+        Client client = clients.values().at(--selection);
+        readLogsFromClient(client);
+    } else {
+        selectClient();
     }
 }
 
 void WLanCat::readLogsFromClient(Client &client) {
     const QString clientName = QString::fromStdString(client.name());
     const QString clientIp = QString::fromStdString(client.ip());
-    qout << "Reading logs from " << clientName << " - " << clientIp << " (" << client.port() << ")" << endl;
+    qout << "Starting reading logs from " << clientName << " - " << clientIp << " (" << client.port() << ")" << endl;
 
     p2pClient = new P2PClient();
 

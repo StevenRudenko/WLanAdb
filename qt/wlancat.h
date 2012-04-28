@@ -16,7 +16,6 @@ class WLanCat : public QObject
     Q_OBJECT
 public:
     explicit WLanCat(QObject *parent = 0);
-
     virtual ~WLanCat();
 
 signals:

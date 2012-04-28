@@ -22,7 +22,7 @@ public slots:
     void disconnectFromServer();
 
 private slots:
-    void sendRequest();
+    void connectedToServer();
     void read();
     void connectionClosedByServer();
     void error();

@@ -6,7 +6,7 @@ P2PClient::P2PClient(QObject *parent) :
 
     tcpSocket = new QTcpSocket();
 
-    connect(tcpSocket, SIGNAL(connected()), this, SLOT(sendRequest()));
+    connect(tcpSocket, SIGNAL(connected()), this, SLOT(connectedToServer()));
     connect(tcpSocket, SIGNAL(disconnected()), this, SLOT(connectionClosedByServer()));
     connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(read()));
     connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error()));
@@ -21,7 +21,6 @@ P2PClient::~P2PClient()
 void P2PClient::connectToServer(const QString& server, int port)
 {
     disconnectFromServer();
-    //tcpSocket->setReadBufferSize(1024);
     tcpSocket->connectToHost(server, port);
     qDebug() << "Connecting to " << server << " on " << port;
 }
@@ -32,11 +31,10 @@ void P2PClient::disconnectFromServer()
         delete in;
     }
 
-    qDebug() << "Connection closed...";
     tcpSocket->close();
 }
 
-void P2PClient::sendRequest()
+void P2PClient::connectedToServer()
 {
     tcpSocket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
     tcpSocket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
