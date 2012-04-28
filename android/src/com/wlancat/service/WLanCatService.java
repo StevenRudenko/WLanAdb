@@ -3,10 +3,13 @@ package com.wlancat.service;
 import java.net.InetAddress;
 
 import net.sf.signalslot_apt.SignalSlot;
+import net.sf.signalslot_apt.annotations.signalslot;
+import net.sf.signalslot_apt.annotations.slot;
 
 import com.wlancat.network.BroadcastServer;
 import com.wlancat.network.BroadcastServerSignalSlot;
 import com.wlancat.network.P2PServer;
+import com.wlancat.network.P2PServerSignalSlot;
 import com.wlancat.utils.WiFiUtils;
 
 import android.app.Service;
@@ -15,6 +18,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
+@signalslot(force_concrete=true)
 public class WLanCatService extends Service {
   private static final String TAG = WLanCatService.class.getSimpleName();
 
@@ -50,7 +54,7 @@ public class WLanCatService extends Service {
 
   @Override
   public IBinder onBind(Intent intent) {
-    if (WLanCatService.class.getName().equals(intent.getAction())) {
+    if (this.getClass().getName().equals(intent.getAction())) {
       Log.d(TAG, "Bound by intent " + intent);
       return apiEndpoint;
     } else {
@@ -62,7 +66,10 @@ public class WLanCatService extends Service {
     final InetAddress broadcastAddress = WiFiUtils.getBroadcastAddress(this);
     final InetAddress localAddress = WiFiUtils.getLocalAddress(this);
 
-    mP2pServer = new P2PServer();
+    mP2pServer = new P2PServerSignalSlot();
+
+    SignalSlot.connect(mP2pServer, P2PServerSignalSlot.Signals.ONACTIVECONNECTIONSCOUNTCHANGED_INT, this, WLanCatServiceSignalSlot.Slots.ONCONNECTIONSCOUNTCHANGED_INT);
+
     mP2pServer.start();
 
     mUdpMessager = new UdpMessagerSignalSlot(localAddress, mP2pServer.getPort());
@@ -88,6 +95,13 @@ public class WLanCatService extends Service {
     stopSelf();
   }
 
+  @slot
+  public void onConnectionsCountChanged(int connectionsCount) {
+    final Intent i = new Intent(ConnectionsCountReciever.ACTION_CONNECTIONS_COUNT);
+    i.putExtra(ConnectionsCountReciever.EXTRA_CONNECTIONS_COUNT, connectionsCount);
+    sendBroadcast(i);
+  }
+
   private WLanServiceApi.Stub apiEndpoint = new WLanServiceApi.Stub() {
 
     @Override
@@ -99,6 +113,11 @@ public class WLanCatService extends Service {
     public String getAddress() throws RemoteException {
       final InetAddress localAddress = WiFiUtils.getLocalAddress(WLanCatService.this);
       return localAddress.getHostAddress();
+    }
+
+    @Override
+    public int getConnectionsCount() throws RemoteException {
+      return mP2pServer == null ? 0 : mP2pServer.getActiveConnectionsCount();
     }
   };
 }

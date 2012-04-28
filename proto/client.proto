@@ -7,4 +7,5 @@ message Client {
   required string ip = 1;
   required int32 port = 2;
   optional string name = 3;
+  optional bool use_pin = 4;
 }

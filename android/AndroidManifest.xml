@@ -30,11 +30,11 @@
         </activity>
 
         <service
-            android:name=".service.WLanCatService"
+            android:name=".service.WLanCatServiceSignalSlot"
             android:process=":remote"
             android:exported="false" >
             <intent-filter>
-                <action android:name="com.wlancat.service.WLanCatService" />
+                <action android:name="com.wlancat.service.WLanCatServiceSignalSlot" />
             </intent-filter>
         </service>
 

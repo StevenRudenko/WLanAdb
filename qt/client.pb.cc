@@ -33,10 +33,11 @@ void protobuf_AssignDesc_client_2eproto() {
       "client.proto");
   GOOGLE_CHECK(file != NULL);
   Client_descriptor_ = file->message_type(0);
-  static const int Client_offsets_[3] = {
+  static const int Client_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Client, ip_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Client, port_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Client, name_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Client, use_pin_),
   };
   Client_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -79,9 +80,10 @@ void protobuf_AddDesc_client_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\014client.proto\022\020com.wlancat.data\"0\n\006Clie"
+    "\n\014client.proto\022\020com.wlancat.data\"A\n\006Clie"
     "nt\022\n\n\002ip\030\001 \002(\t\022\014\n\004port\030\002 \002(\005\022\014\n\004name\030\003 \001"
-    "(\tB\037\n\020com.wlancat.dataB\013ClientProto", 115);
+    "(\t\022\017\n\007use_pin\030\004 \001(\010B\037\n\020com.wlancat.dataB"
+    "\013ClientProto", 132);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "client.proto", &protobuf_RegisterTypes);
   Client::default_instance_ = new Client();
@@ -103,6 +105,7 @@ struct StaticDescriptorInitializer_client_2eproto {
 const int Client::kIpFieldNumber;
 const int Client::kPortFieldNumber;
 const int Client::kNameFieldNumber;
+const int Client::kUsePinFieldNumber;
 #endif  // !_MSC_VER
 
 Client::Client()
@@ -124,6 +127,7 @@ void Client::SharedCtor() {
   ip_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   port_ = 0;
   name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  use_pin_ = false;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -175,6 +179,7 @@ void Client::Clear() {
         name_->clear();
       }
     }
+    use_pin_ = false;
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -231,6 +236,22 @@ bool Client::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(32)) goto parse_use_pin;
+        break;
+      }
+      
+      // optional bool use_pin = 4;
+      case 4: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_use_pin:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &use_pin_)));
+          set_has_use_pin();
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -276,6 +297,11 @@ void Client::SerializeWithCachedSizes(
       3, this->name(), output);
   }
   
+  // optional bool use_pin = 4;
+  if (has_use_pin()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(4, this->use_pin(), output);
+  }
+  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -309,6 +335,11 @@ void Client::SerializeWithCachedSizes(
         3, this->name(), target);
   }
   
+  // optional bool use_pin = 4;
+  if (has_use_pin()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(4, this->use_pin(), target);
+  }
+  
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -339,6 +370,11 @@ int Client::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
           this->name());
+    }
+    
+    // optional bool use_pin = 4;
+    if (has_use_pin()) {
+      total_size += 1 + 1;
     }
     
   }
@@ -377,6 +413,9 @@ void Client::MergeFrom(const Client& from) {
     if (from.has_name()) {
       set_name(from.name());
     }
+    if (from.has_use_pin()) {
+      set_use_pin(from.use_pin());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -404,6 +443,7 @@ void Client::Swap(Client* other) {
     std::swap(ip_, other->ip_);
     std::swap(port_, other->port_);
     std::swap(name_, other->name_);
+    std::swap(use_pin_, other->use_pin_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

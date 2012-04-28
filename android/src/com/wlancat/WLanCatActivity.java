@@ -1,6 +1,7 @@
 package com.wlancat;
 
-import com.wlancat.service.WLanCatService;
+import com.wlancat.service.ConnectionsCountReciever;
+import com.wlancat.service.WLanCatServiceSignalSlot;
 import com.wlancat.service.WLanServiceApi;
 
 import android.app.Activity;
@@ -33,8 +34,10 @@ public class WLanCatActivity extends Activity {
   protected void onResume() {
     super.onResume();
 
+    connectionsCountReciever.register(this);
+
     Log.v(TAG, "Starting service (if it was not started before)...");
-    final Intent intent = new Intent(WLanCatService.class.getName());
+    final Intent intent = new Intent(WLanCatServiceSignalSlot.class.getName());
     // start the service explicitly.
     // otherwise it will only run while the IPC connection is up.
     startService(intent);
@@ -44,6 +47,8 @@ public class WLanCatActivity extends Activity {
   @Override
   protected void onPause() {
     super.onPause();
+
+    connectionsCountReciever.unregister(this);
 
     unbindService(serviceConnection);
     Log.v(TAG, "Activity paused");
@@ -59,6 +64,8 @@ public class WLanCatActivity extends Activity {
           log.append(mServiceApi.getAddress());
           log.append("\nCreated server on port: ");
           log.append(mServiceApi.getPort());
+          log.append("\nConnections count: ");
+          log.append(mServiceApi.getConnectionsCount());
           viewMessage.setText(log.toString());
         } catch (RemoteException e) {
           Log.e(TAG, "Fail to call service API", e);
@@ -68,6 +75,7 @@ public class WLanCatActivity extends Activity {
   }
 
   private ServiceConnection serviceConnection = new ServiceConnection() {
+    @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
       Log.i(TAG, "Service connection established");
       // that's how we get the client side of the IPC connection
@@ -76,8 +84,17 @@ public class WLanCatActivity extends Activity {
       updateInfo();
     }
 
+    @Override
     public void onServiceDisconnected(ComponentName name) {
       Log.i(TAG, "Service connection closed");
+    }
+  };
+
+  private ConnectionsCountReciever connectionsCountReciever = new ConnectionsCountReciever() {
+
+    @Override
+    public void onConnectionCountChanged(int connectionsCount) {
+      updateInfo();
     }
   };
 }

@@ -24,6 +24,7 @@ public abstract class UdpMessager {
         .setIp(localAddress.getHostAddress())
         .setPort(port)
         .setName(Build.MODEL)
+        .setUsePin(true)
         .build();
   }
 

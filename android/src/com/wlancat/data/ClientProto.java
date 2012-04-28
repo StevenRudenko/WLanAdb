@@ -22,6 +22,10 @@ public final class ClientProto {
     // optional string name = 3;
     boolean hasName();
     String getName();
+    
+    // optional bool use_pin = 4;
+    boolean hasUsePin();
+    boolean getUsePin();
   }
   public static final class Client extends
       com.google.protobuf.GeneratedMessage
@@ -54,12 +58,12 @@ public final class ClientProto {
     private int bitField0_;
     // required string ip = 1;
     public static final int IP_FIELD_NUMBER = 1;
-    private Object ip_;
+    private java.lang.Object ip_;
     public boolean hasIp() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     public String getIp() {
-      Object ref = ip_;
+      java.lang.Object ref = ip_;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -73,7 +77,7 @@ public final class ClientProto {
       }
     }
     private com.google.protobuf.ByteString getIpBytes() {
-      Object ref = ip_;
+      java.lang.Object ref = ip_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -96,12 +100,12 @@ public final class ClientProto {
     
     // optional string name = 3;
     public static final int NAME_FIELD_NUMBER = 3;
-    private Object name_;
+    private java.lang.Object name_;
     public boolean hasName() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     public String getName() {
-      Object ref = name_;
+      java.lang.Object ref = name_;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -115,7 +119,7 @@ public final class ClientProto {
       }
     }
     private com.google.protobuf.ByteString getNameBytes() {
-      Object ref = name_;
+      java.lang.Object ref = name_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -126,10 +130,21 @@ public final class ClientProto {
       }
     }
     
+    // optional bool use_pin = 4;
+    public static final int USE_PIN_FIELD_NUMBER = 4;
+    private boolean usePin_;
+    public boolean hasUsePin() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    public boolean getUsePin() {
+      return usePin_;
+    }
+    
     private void initFields() {
       ip_ = "";
       port_ = 0;
       name_ = "";
+      usePin_ = false;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -160,6 +175,9 @@ public final class ClientProto {
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         output.writeBytes(3, getNameBytes());
       }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeBool(4, usePin_);
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -181,13 +199,19 @@ public final class ClientProto {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(3, getNameBytes());
       }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(4, usePin_);
+      }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
     }
     
+    private static final long serialVersionUID = 0L;
     @java.lang.Override
-    protected Object writeReplace() throws java.io.ObjectStreamException {
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
     
@@ -309,6 +333,8 @@ public final class ClientProto {
         bitField0_ = (bitField0_ & ~0x00000002);
         name_ = "";
         bitField0_ = (bitField0_ & ~0x00000004);
+        usePin_ = false;
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
       
@@ -359,6 +385,10 @@ public final class ClientProto {
           to_bitField0_ |= 0x00000004;
         }
         result.name_ = name_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.usePin_ = usePin_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -383,6 +413,9 @@ public final class ClientProto {
         }
         if (other.hasName()) {
           setName(other.getName());
+        }
+        if (other.hasUsePin()) {
+          setUsePin(other.getUsePin());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -438,6 +471,11 @@ public final class ClientProto {
               name_ = input.readBytes();
               break;
             }
+            case 32: {
+              bitField0_ |= 0x00000008;
+              usePin_ = input.readBool();
+              break;
+            }
           }
         }
       }
@@ -445,12 +483,12 @@ public final class ClientProto {
       private int bitField0_;
       
       // required string ip = 1;
-      private Object ip_ = "";
+      private java.lang.Object ip_ = "";
       public boolean hasIp() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       public String getIp() {
-        Object ref = ip_;
+        java.lang.Object ref = ip_;
         if (!(ref instanceof String)) {
           String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
           ip_ = s;
@@ -502,12 +540,12 @@ public final class ClientProto {
       }
       
       // optional string name = 3;
-      private Object name_ = "";
+      private java.lang.Object name_ = "";
       public boolean hasName() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       public String getName() {
-        Object ref = name_;
+        java.lang.Object ref = name_;
         if (!(ref instanceof String)) {
           String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
           name_ = s;
@@ -537,6 +575,27 @@ public final class ClientProto {
         onChanged();
       }
       
+      // optional bool use_pin = 4;
+      private boolean usePin_ ;
+      public boolean hasUsePin() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public boolean getUsePin() {
+        return usePin_;
+      }
+      public Builder setUsePin(boolean value) {
+        bitField0_ |= 0x00000008;
+        usePin_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearUsePin() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        usePin_ = false;
+        onChanged();
+        return this;
+      }
+      
       // @@protoc_insertion_point(builder_scope:com.wlancat.data.Client)
     }
     
@@ -562,9 +621,10 @@ public final class ClientProto {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\014client.proto\022\020com.wlancat.data\"0\n\006Clie" +
+      "\n\014client.proto\022\020com.wlancat.data\"A\n\006Clie" +
       "nt\022\n\n\002ip\030\001 \002(\t\022\014\n\004port\030\002 \002(\005\022\014\n\004name\030\003 \001" +
-      "(\tB\037\n\020com.wlancat.dataB\013ClientProto"
+      "(\t\022\017\n\007use_pin\030\004 \001(\010B\037\n\020com.wlancat.dataB" +
+      "\013ClientProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -576,7 +636,7 @@ public final class ClientProto {
           internal_static_com_wlancat_data_Client_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_com_wlancat_data_Client_descriptor,
-              new java.lang.String[] { "Ip", "Port", "Name", },
+              new java.lang.String[] { "Ip", "Port", "Name", "UsePin", },
               com.wlancat.data.ClientProto.Client.class,
               com.wlancat.data.ClientProto.Client.Builder.class);
           return null;

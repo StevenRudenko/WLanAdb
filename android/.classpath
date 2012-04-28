@@ -12,5 +12,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="libs/protobuf-java-2.4.1.jar"/>
 	<classpathentry kind="src" path="aidl"/>
+	<classpathentry kind="lib" path="libs/android-support-v4.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

@@ -127,7 +127,7 @@ void WLanCat::selectClient()
 void WLanCat::readLogsFromClient(Client &client) {
     const QString clientName = QString::fromStdString(client.name());
     const QString clientIp = QString::fromStdString(client.ip());
-    qout << "Starting reading logs from " << clientName << " - " << clientIp << " (" << client.port() << ")" << endl;
+    qout << endl << "Starting reading logs from " << clientName << " - " << clientIp << " (" << client.port() << ")" << endl;
 
     p2pClient = new P2PClient();
 

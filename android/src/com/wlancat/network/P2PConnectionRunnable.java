@@ -20,11 +20,18 @@ import net.sf.signalslot_apt.annotations.slot;
 public class P2PConnectionRunnable implements Runnable {
   private static final String TAG = P2PConnectionRunnable.class.getSimpleName();
 
+  public static interface ConnectionStateListener {
+    void onConnectionEstablished();
+    void onConnectionClosed();
+  }
+
   private final Socket mSocket;
 
   private DataInputStream mInputStream;
   private OutputStreamWriter mOutputStream;
   private LogReader mLogReader;
+
+  private ConnectionStateListener mConnectionStateListener;
 
   protected P2PConnectionRunnable(Socket socket) {
     mSocket = socket;
@@ -34,6 +41,14 @@ public class P2PConnectionRunnable implements Runnable {
     } catch (SocketException e) {
       Log.e(TAG, "Fail to set Keep-Alive to socket", e);
     }
+  }
+
+  public ConnectionStateListener getConnectionStateListener() {
+    return mConnectionStateListener;
+  }
+
+  public void setConnectionStateListener(ConnectionStateListener listener) {
+    mConnectionStateListener = listener;
   }
 
   @slot
@@ -73,10 +88,16 @@ public class P2PConnectionRunnable implements Runnable {
       Log.e(TAG, "Fail to close Socket", ignore);
     }
 
+    if (mConnectionStateListener != null)
+      mConnectionStateListener.onConnectionClosed();
+
     Log.d(TAG, "Connection was closed");
   }
 
   public void run() {
+    if (mConnectionStateListener != null)
+      mConnectionStateListener.onConnectionEstablished();
+
     try {
       synchronized (this) {
         mOutputStream = new OutputStreamWriter(mSocket.getOutputStream());
