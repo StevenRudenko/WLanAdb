@@ -52,8 +52,8 @@ void WLanCat::onMessageRequested()
         delete broadcast;
 
         if (clients.isEmpty()) {
-            qout << "\rThere is no any client available to connect with.";
-            qout << "You can download it from Google Play Store by link: http://...";
+            qout << tr("\rThere is no any client available to connect with.") << endl;
+            qout << tr("You can download it from Google Play Store by link: http://...") << endl;
             exit(0);
             return;
         }
@@ -69,7 +69,7 @@ void WLanCat::onMessageRequested()
 
     ++requestsSent;
 
-    qout << "\rSearching for devices";
+    qout << tr("\rSearching for devices");
     for (int i=0; i<requestsSent; ++i)
         qout << ".";
     qout.flush();
@@ -99,7 +99,7 @@ void WLanCat::selectClient()
     int size = clients.size();
     uint index = 0;
 
-    qout << "\rThere are " << size << " devices found:" << endl;
+    qout << tr("\rThere are %1 devices found:").arg(size) << endl;
     while (i.hasNext()) {
         i.next();
 
@@ -107,9 +107,9 @@ void WLanCat::selectClient()
 
         Client client = i.value();
         const QString& clientName = QString::fromStdString(client.name());
-        qout << index << ") " << clientName << " - " << i.key() << " (" << client.port() << ")" << endl;
+        qout << tr("%1) %2 - %3 (%4)").arg(QString(index), clientName, i.key(), QString(client.port())) << endl;
     }
-    qout << "Please select device by typing it number (Default: 1):" << endl;
+    qout << tr("Please select device by typing it number (Default: 1):") << endl;
 
     int selection;
     QTextStream qin(stdin);
@@ -127,7 +127,7 @@ void WLanCat::selectClient()
 void WLanCat::readLogsFromClient(Client &client) {
     const QString clientName = QString::fromStdString(client.name());
     const QString clientIp = QString::fromStdString(client.ip());
-    qout << endl << "Starting reading logs from " << clientName << " - " << clientIp << " (" << client.port() << ")" << endl;
+    qout << endl << tr("Starting reading logs from %1 - %2 (%3)").arg(clientName, clientIp, QString(client.port())) << endl;
 
     p2pClient = new P2PClient();
 

@@ -29,3 +29,7 @@ HEADERS += \
     broadcastserver.h \
     wlancat.h \
     p2pclient.h
+
+TRANSLATIONS = main_en.ts \
+               main_ru.ts \
+               main_ua.ts
