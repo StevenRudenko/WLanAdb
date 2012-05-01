@@ -20,9 +20,8 @@ P2PClient::~P2PClient()
 
 void P2PClient::connectToServer(const QString& server, int port)
 {
-    disconnectFromServer();
     tcpSocket->connectToHost(server, port);
-    qDebug() << "Connecting to " << server << " on " << port;
+    //qDebug() << "Connecting to " << server << " on " << port;
 }
 
 void P2PClient::disconnectFromServer()
@@ -32,14 +31,17 @@ void P2PClient::disconnectFromServer()
     }
 
     tcpSocket->close();
+
+    disconnected();
 }
 
 void P2PClient::connectedToServer()
 {
     tcpSocket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
     tcpSocket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
-    tcpSocket->waitForReadyRead(500);
-    tcpSocket->setReadBufferSize(4096);
+    tcpSocket->setReadBufferSize(1024);
+
+    connected();
 
     /*
     QByteArray block;
@@ -74,7 +76,12 @@ void P2PClient::read()
         if (line.isEmpty())
             break;
 
-        if (!firstRead || !in->atEnd())
+        if (in->atEnd()) {
+            onDataRecieved(line);
+            break;
+        }
+
+        if (!firstRead)
             line.append("\r\n");
         onDataRecieved(line);
     }
@@ -82,13 +89,13 @@ void P2PClient::read()
 
 void P2PClient::connectionClosedByServer()
 {
-    qDebug() << "Error: Connection closed by server";
+    //qDebug() << "Error: Connection closed by server";
     disconnectFromServer();
 }
 
 void P2PClient::error()
 {
-    qDebug() << "Error: Connection closed by error";
+    //qDebug() << "Error: Connection closed by error";
     disconnectFromServer();
 }
 

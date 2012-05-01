@@ -14,7 +14,7 @@ public abstract class LogReader {
   private static final String TAG = LogReader.class.getSimpleName();
 
   private final String LOGCAT_CMD = "logcat";
-  private final int BUFFER_SIZE = 4096;
+  private final int BUFFER_SIZE = 1024;
 
   /**
    * Thread used to read log messages.

@@ -26,7 +26,9 @@ private slots:
     void onMessageRequested();
     void onMessageRecieved(const QByteArray& data);
 
+    void onDisconnectedFromClient();
     void onLogLine(const QString& str);
+
 
 private:
     void selectClient();

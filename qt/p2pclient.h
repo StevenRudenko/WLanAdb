@@ -14,6 +14,8 @@ public:
 
 signals:
 
+    void connected();
+    void disconnected();
     void onDataRecieved(const QString& data);
 
 public slots:

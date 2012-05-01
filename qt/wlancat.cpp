@@ -107,7 +107,7 @@ void WLanCat::selectClient()
 
         Client client = i.value();
         const QString& clientName = QString::fromStdString(client.name());
-        qout << tr("%1) %2 - %3 (%4)").arg(QString(index), clientName, i.key(), QString(client.port())) << endl;
+        qout << tr("%1) %2 - %3 (%4)").arg(QString(index), clientName, i.key(), QString::number(client.port())) << endl;
     }
     qout << tr("Please select device by typing it number (Default: 1):") << endl;
 
@@ -127,11 +127,12 @@ void WLanCat::selectClient()
 void WLanCat::readLogsFromClient(Client &client) {
     const QString clientName = QString::fromStdString(client.name());
     const QString clientIp = QString::fromStdString(client.ip());
-    qout << endl << tr("Starting reading logs from %1 - %2 (%3)").arg(clientName, clientIp, QString(client.port())) << endl;
+    qout << endl << tr("Starting reading logs from %1 - %2 (%3)").arg(clientName, clientIp, QString::number(client.port())) << endl;
 
     p2pClient = new P2PClient();
 
     connect(p2pClient, SIGNAL(onDataRecieved(const QString&)), this, SLOT(onLogLine(const QString&)));
+    connect(p2pClient, SIGNAL(disconnected()), this, SLOT(onDisconnectedFromClient()));
 
     int port = client.port();
     p2pClient->connectToServer(clientIp, port);
@@ -141,4 +142,10 @@ void WLanCat::onLogLine(const QString& str)
 {
     qout << str;
     qout.flush();
+}
+
+void WLanCat::onDisconnectedFromClient()
+{
+    qout << endl << tr("Connection with client was closed") << endl;
+    exit(0);
 }
