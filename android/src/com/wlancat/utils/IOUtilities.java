@@ -23,10 +23,6 @@ public class IOUtilities {
 
   private static final int IO_BUFFER_SIZE = 4 * 1024;
 
-  public static interface StreamCopyListener {
-    void onCopyProgress(long bytesCopied);
-  }
-
   /**
    * Copy the content of the input stream into the output stream, using a
    * temporary byte array buffer whose size is defined by

@@ -1,8 +1,7 @@
 package com.wlancat.logcat;
 
-import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 import android.util.Log;
 
@@ -14,7 +13,6 @@ public abstract class LogReader {
   private static final String TAG = LogReader.class.getSimpleName();
 
   private final String LOGCAT_CMD = "logcat";
-  private final int BUFFER_SIZE = 1024;
 
   /**
    * Thread used to read log messages.
@@ -53,15 +51,14 @@ public abstract class LogReader {
   public void start() {
     isRunning = true;
 
-    BufferedReader reader = null;
+    DataInputStream stream = null;
     Process logcatProc = null;
     try {
       logcatProc = Runtime.getRuntime().exec(LOGCAT_CMD);
-      reader = new BufferedReader(
-          new InputStreamReader(logcatProc.getInputStream()), BUFFER_SIZE);
+      stream = new DataInputStream(logcatProc.getInputStream());
 
       String line;
-      while (isRunning && (line = reader.readLine()) != null) {
+      while (isRunning && (line = stream.readLine()) != null) {
         if (!isRunning)
           break;
 
@@ -79,10 +76,10 @@ public abstract class LogReader {
         logcatProc = null;
       }
 
-      if (reader != null) {
+      if (stream != null) {
         try {
-          reader.close();
-          reader = null;
+          stream.close();
+          stream = null;
         } catch (IOException e) {
           Log.e(TAG, "Fail to close LogCat reader stream", e);
         }

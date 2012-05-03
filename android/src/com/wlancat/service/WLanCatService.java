@@ -30,6 +30,8 @@ public class WLanCatService extends Service {
   public void onCreate() {
     super.onCreate();
 
+    Log.d(TAG, "Starting service...");
+
     if (!WiFiUtils.isWifiAvailable(this)) {
       Log.w(TAG, "WARNING! No WiFi available on device.");
       stopSelf();
@@ -48,6 +50,8 @@ public class WLanCatService extends Service {
   @Override
   public void onDestroy() {
     super.onDestroy();
+
+    Log.d(TAG, "Service stops...");
 
     stop();
   }
