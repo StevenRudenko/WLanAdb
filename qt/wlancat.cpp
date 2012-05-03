@@ -6,17 +6,18 @@ using namespace std;
 using namespace com::wlancat::data;
 
 namespace {
+    const int BROADCAST_PORT = 44533;
     const int MAX_REQUESTS_SENT = 5;
 }
 
 WLanCat::WLanCat(QObject *parent) :
-    QObject(parent), qout(stdout), requestsSent(0)
+    QObject(parent), qout(stdout), p2pClient(0), requestsSent(0)
 {
     // Verify that the version of the library that we linked against is
     // compatible with the version of the headers we compiled against.
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-    broadcast = new BroadcastServer(44533);
+    broadcast = new BroadcastServer(BROADCAST_PORT);
 
     connect(broadcast, SIGNAL(onDatagramSent()), this, SLOT(onMessageRequested()));
     connect(broadcast, SIGNAL(onDatagramRecieved(const QByteArray&)), this, SLOT(onMessageRecieved(const QByteArray&)));
@@ -33,11 +34,13 @@ WLanCat::~WLanCat()
     if (broadcast != 0) {
         broadcast->stop();
         delete broadcast;
+        broadcast = 0;
     }
 
     if (p2pClient != 0) {
         p2pClient->disconnectFromServer();
         delete p2pClient;
+        p2pClient = 0;
     }
 
     // Optional:  Delete all global objects allocated by libprotobuf.
@@ -50,20 +53,16 @@ void WLanCat::onMessageRequested()
     if (MAX_REQUESTS_SENT == requestsSent) {
         broadcast->stop();
         delete broadcast;
+        broadcast = 0;
 
         if (clients.isEmpty()) {
             qout << tr("\rThere is no any client available to connect with.") << endl;
-            qout << tr("You can download it from Google Play Store by link: http://...") << endl;
+            qout << tr("Please check Google Play Store site for client details: http://...") << endl;
             exit(0);
             return;
         }
 
-        if (clients.size() == 1) {
-            Client client = clients.begin().value();
-            readLogsFromClient(client);
-        } else {
-            selectClient();
-        }
+        selectClient();
         return;
     }
 
@@ -95,8 +94,14 @@ void WLanCat::onMessageRecieved(const QByteArray& data)
 
 void WLanCat::selectClient()
 {
-    QHashIterator<QString, Client> i(clients);
     int size = clients.size();
+    if (size == 1) {
+        Client client = clients.begin().value();
+        readLogsFromClient(client);
+        return;
+    }
+
+    QHashIterator<QString, Client> i(clients);
     uint index = 0;
 
     qout << tr("\rThere are %1 devices found:").arg(size) << endl;
@@ -129,6 +134,9 @@ void WLanCat::readLogsFromClient(Client &client) {
     const QString clientIp = QString::fromStdString(client.ip());
     qout << endl << tr("Starting reading logs from %1 - %2 (%3)").arg(clientName, clientIp, QString::number(client.port())) << endl;
 
+    if (p2pClient != 0)
+        delete p2pClient;
+
     p2pClient = new P2PClient();
 
     connect(p2pClient, SIGNAL(onDataRecieved(const QString&)), this, SLOT(onLogLine(const QString&)));
@@ -146,6 +154,6 @@ void WLanCat::onLogLine(const QString& str)
 
 void WLanCat::onDisconnectedFromClient()
 {
-    qout << endl << tr("Connection with client was closed") << endl;
+    qout << tr("Connection with client was closed") << endl;
     exit(0);
 }
