@@ -21,14 +21,16 @@ SOURCES += main.cpp \
     client.pb.cc \
     broadcastserver.cpp \
     wlancat.cpp \
-    p2pclient.cpp
+    p2pclient.cpp \
+    command.pb.cc
 
 HEADERS += \
     message.pb.h \
     client.pb.h \
     broadcastserver.h \
     wlancat.h \
-    p2pclient.h
+    p2pclient.h \
+    command.pb.h
 
 TRANSLATIONS = main_en.ts \
                main_ru.ts \

@@ -20,7 +20,7 @@ signals:
 
 public slots:
 
-    void connectToServer(const QString& server, int port);
+    void connectToServer(const QString& server, int port, const QByteArray& request = 0);
     void disconnectFromServer();
 
 private slots:
@@ -32,7 +32,7 @@ private slots:
 private:
     QTextStream* in;
     QTcpSocket* tcpSocket;
-    quint16 nextBlockSize;
+    QByteArray request;
 };
 
 #endif // P2PCLIENT_H

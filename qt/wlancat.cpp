@@ -1,5 +1,6 @@
 #include "wlancat.h"
 
+#include "command.pb.h"
 #include "message.pb.h"
 
 using namespace std;
@@ -96,6 +97,7 @@ void WLanCat::selectClient()
 {
     int size = clients.size();
     if (size == 1) {
+        qout << "\r" << endl;
         Client client = clients.begin().value();
         readLogsFromClient(client);
         return;
@@ -132,7 +134,20 @@ void WLanCat::selectClient()
 void WLanCat::readLogsFromClient(Client &client) {
     const QString clientName = QString::fromStdString(client.name());
     const QString clientIp = QString::fromStdString(client.ip());
-    qout << endl << tr("Starting reading logs from %1 - %2 (%3)").arg(clientName, clientIp, QString::number(client.port())) << endl;
+
+    Command cmd;
+    if (client.use_pin()) {
+        qout << tr("Client requests PIN to access its log. Please enter PIN:") << endl;
+
+        QString pin;
+        QTextStream qin(stdin);
+
+        pin = qin.readLine();
+        cmd.set_pin(pin.toStdString());
+    }
+    //cmd.set_params("");
+
+    qout << endl << tr("Trying connect to %1 - %2 (%3)").arg(clientName, clientIp, QString::number(client.port())) << endl;
 
     if (p2pClient != 0)
         delete p2pClient;
@@ -142,8 +157,9 @@ void WLanCat::readLogsFromClient(Client &client) {
     connect(p2pClient, SIGNAL(onDataRecieved(const QString&)), this, SLOT(onLogLine(const QString&)));
     connect(p2pClient, SIGNAL(disconnected()), this, SLOT(onDisconnectedFromClient()));
 
+    QByteArray request(cmd.SerializeAsString().c_str(), cmd.ByteSize());
     int port = client.port();
-    p2pClient->connectToServer(clientIp, port);
+    p2pClient->connectToServer(clientIp, port, request);
 }
 
 void WLanCat::onLogLine(const QString& str)

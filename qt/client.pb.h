@@ -92,10 +92,21 @@ class Client : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
-  // required string ip = 1;
+  // required string id = 1;
+  inline bool has_id() const;
+  inline void clear_id();
+  static const int kIdFieldNumber = 1;
+  inline const ::std::string& id() const;
+  inline void set_id(const ::std::string& value);
+  inline void set_id(const char* value);
+  inline void set_id(const char* value, size_t size);
+  inline ::std::string* mutable_id();
+  inline ::std::string* release_id();
+  
+  // optional string ip = 2;
   inline bool has_ip() const;
   inline void clear_ip();
-  static const int kIpFieldNumber = 1;
+  static const int kIpFieldNumber = 2;
   inline const ::std::string& ip() const;
   inline void set_ip(const ::std::string& value);
   inline void set_ip(const char* value);
@@ -103,17 +114,17 @@ class Client : public ::google::protobuf::Message {
   inline ::std::string* mutable_ip();
   inline ::std::string* release_ip();
   
-  // required int32 port = 2;
+  // optional int32 port = 3;
   inline bool has_port() const;
   inline void clear_port();
-  static const int kPortFieldNumber = 2;
+  static const int kPortFieldNumber = 3;
   inline ::google::protobuf::int32 port() const;
   inline void set_port(::google::protobuf::int32 value);
   
-  // optional string name = 3;
+  // optional string name = 4;
   inline bool has_name() const;
   inline void clear_name();
-  static const int kNameFieldNumber = 3;
+  static const int kNameFieldNumber = 4;
   inline const ::std::string& name() const;
   inline void set_name(const ::std::string& value);
   inline void set_name(const char* value);
@@ -121,15 +132,17 @@ class Client : public ::google::protobuf::Message {
   inline ::std::string* mutable_name();
   inline ::std::string* release_name();
   
-  // optional bool use_pin = 4;
+  // optional bool use_pin = 5;
   inline bool has_use_pin() const;
   inline void clear_use_pin();
-  static const int kUsePinFieldNumber = 4;
+  static const int kUsePinFieldNumber = 5;
   inline bool use_pin() const;
   inline void set_use_pin(bool value);
   
   // @@protoc_insertion_point(class_scope:com.wlancat.data.Client)
  private:
+  inline void set_has_id();
+  inline void clear_has_id();
   inline void set_has_ip();
   inline void clear_has_ip();
   inline void set_has_port();
@@ -141,13 +154,14 @@ class Client : public ::google::protobuf::Message {
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
+  ::std::string* id_;
   ::std::string* ip_;
   ::std::string* name_;
   ::google::protobuf::int32 port_;
   bool use_pin_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
   
   friend void  protobuf_AddDesc_client_2eproto();
   friend void protobuf_AssignDesc_client_2eproto();
@@ -163,15 +177,73 @@ class Client : public ::google::protobuf::Message {
 
 // Client
 
-// required string ip = 1;
-inline bool Client::has_ip() const {
+// required string id = 1;
+inline bool Client::has_id() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void Client::set_has_ip() {
+inline void Client::set_has_id() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void Client::clear_has_ip() {
+inline void Client::clear_has_id() {
   _has_bits_[0] &= ~0x00000001u;
+}
+inline void Client::clear_id() {
+  if (id_ != &::google::protobuf::internal::kEmptyString) {
+    id_->clear();
+  }
+  clear_has_id();
+}
+inline const ::std::string& Client::id() const {
+  return *id_;
+}
+inline void Client::set_id(const ::std::string& value) {
+  set_has_id();
+  if (id_ == &::google::protobuf::internal::kEmptyString) {
+    id_ = new ::std::string;
+  }
+  id_->assign(value);
+}
+inline void Client::set_id(const char* value) {
+  set_has_id();
+  if (id_ == &::google::protobuf::internal::kEmptyString) {
+    id_ = new ::std::string;
+  }
+  id_->assign(value);
+}
+inline void Client::set_id(const char* value, size_t size) {
+  set_has_id();
+  if (id_ == &::google::protobuf::internal::kEmptyString) {
+    id_ = new ::std::string;
+  }
+  id_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Client::mutable_id() {
+  set_has_id();
+  if (id_ == &::google::protobuf::internal::kEmptyString) {
+    id_ = new ::std::string;
+  }
+  return id_;
+}
+inline ::std::string* Client::release_id() {
+  clear_has_id();
+  if (id_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = id_;
+    id_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// optional string ip = 2;
+inline bool Client::has_ip() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void Client::set_has_ip() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void Client::clear_has_ip() {
+  _has_bits_[0] &= ~0x00000002u;
 }
 inline void Client::clear_ip() {
   if (ip_ != &::google::protobuf::internal::kEmptyString) {
@@ -221,15 +293,15 @@ inline ::std::string* Client::release_ip() {
   }
 }
 
-// required int32 port = 2;
+// optional int32 port = 3;
 inline bool Client::has_port() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
+  return (_has_bits_[0] & 0x00000004u) != 0;
 }
 inline void Client::set_has_port() {
-  _has_bits_[0] |= 0x00000002u;
+  _has_bits_[0] |= 0x00000004u;
 }
 inline void Client::clear_has_port() {
-  _has_bits_[0] &= ~0x00000002u;
+  _has_bits_[0] &= ~0x00000004u;
 }
 inline void Client::clear_port() {
   port_ = 0;
@@ -243,15 +315,15 @@ inline void Client::set_port(::google::protobuf::int32 value) {
   port_ = value;
 }
 
-// optional string name = 3;
+// optional string name = 4;
 inline bool Client::has_name() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
+  return (_has_bits_[0] & 0x00000008u) != 0;
 }
 inline void Client::set_has_name() {
-  _has_bits_[0] |= 0x00000004u;
+  _has_bits_[0] |= 0x00000008u;
 }
 inline void Client::clear_has_name() {
-  _has_bits_[0] &= ~0x00000004u;
+  _has_bits_[0] &= ~0x00000008u;
 }
 inline void Client::clear_name() {
   if (name_ != &::google::protobuf::internal::kEmptyString) {
@@ -301,15 +373,15 @@ inline ::std::string* Client::release_name() {
   }
 }
 
-// optional bool use_pin = 4;
+// optional bool use_pin = 5;
 inline bool Client::has_use_pin() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
+  return (_has_bits_[0] & 0x00000010u) != 0;
 }
 inline void Client::set_has_use_pin() {
-  _has_bits_[0] |= 0x00000008u;
+  _has_bits_[0] |= 0x00000010u;
 }
 inline void Client::clear_has_use_pin() {
-  _has_bits_[0] &= ~0x00000008u;
+  _has_bits_[0] &= ~0x00000010u;
 }
 inline void Client::clear_use_pin() {
   use_pin_ = false;

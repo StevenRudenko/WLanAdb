@@ -21,8 +21,9 @@ P2PClient::~P2PClient()
     }
 }
 
-void P2PClient::connectToServer(const QString& server, int port)
+void P2PClient::connectToServer(const QString& server, int port, const QByteArray& request)
 {
+    this->request = request;
     tcpSocket->connectToHost(server, port);
 }
 
@@ -46,24 +47,8 @@ void P2PClient::connectedToServer()
 
     connected();
 
-    /*
-    QByteArray block;
-    QDataStream out(&block, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_4_3);
-
-    out << quint16(0) << quint8('S') << fromComboBox->currentText()
-        << toComboBox->currentText() << dateEdit->date()
-        << timeEdit->time();
-
-    if (departureRadioButton->isChecked()) {
-        out << quint8('D');
-    } else {
-        out << quint8('A');
-    }
-    out.device()->seek(0);
-    out << quint16(block.size() - sizeof(quint16));
-    tcpSocket.write(block);
-    */
+    tcpSocket->write(request);
+    tcpSocket->flush();
 }
 
 void P2PClient::read()
