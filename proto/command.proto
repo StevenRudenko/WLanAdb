@@ -1,0 +1,9 @@
+package com.wlancat.data;
+
+option java_package = "com.wlancat.data";
+option java_outer_classname = "CommandProto";
+
+message Command {
+  optional string pin = 1;
+  optional string params = 2;
+}
