@@ -1,11 +1,8 @@
 package com.wlancat.service;
 
-import java.net.InetAddress;
-
 import net.sf.signalslot_apt.annotations.signal;
 import net.sf.signalslot_apt.annotations.signalslot;
 import net.sf.signalslot_apt.annotations.slot;
-import android.os.Build;
 import android.util.Log;
 
 import com.google.protobuf.ByteString;
@@ -17,15 +14,17 @@ import com.wlancat.data.MessageProto.Message;
 public abstract class UdpMessager {
   private static final String TAG = UdpMessager.class.getSimpleName();
 
-  private final Client mLocalClient;
+  private Client mLocalClient;
 
-  public UdpMessager(InetAddress localAddress, int port) {
-    mLocalClient = Client.newBuilder()
-        .setIp(localAddress.getHostAddress())
-        .setPort(port)
-        .setName(Build.MODEL)
-        .setUsePin(true)
-        .build();
+  public UdpMessager(Client client) {
+    mLocalClient = client;
+  }
+
+  @slot
+  public void onClientChanged(Client client) {
+    synchronized (this) {
+      mLocalClient = client;
+    }
   }
 
   @slot
@@ -36,10 +35,13 @@ public abstract class UdpMessager {
       if (!message.getType().equals(Message.Type.REQEST))
         return;
 
-      final Message response = Message.newBuilder()
-          .setType(Message.Type.RESPONSE)
-          .setClient(mLocalClient)
-          .build();
+      final Message response;
+      synchronized (this) {
+        response = Message.newBuilder()
+            .setType(Message.Type.RESPONSE)
+            .setClient(mLocalClient)
+            .build();
+      }
       sendResponse(response.toByteString());
     } catch (InvalidProtocolBufferException e) {
       Log.e(TAG, "Can't parse client!", e);

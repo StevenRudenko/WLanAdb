@@ -6,6 +6,8 @@ import net.sf.signalslot_apt.SignalSlot;
 import net.sf.signalslot_apt.annotations.signalslot;
 import net.sf.signalslot_apt.annotations.slot;
 
+import com.wlancat.data.ClientSettings;
+import com.wlancat.data.ClientSettingsSignalSlot;
 import com.wlancat.network.BroadcastServer;
 import com.wlancat.network.BroadcastServerSignalSlot;
 import com.wlancat.network.P2PServer;
@@ -25,6 +27,7 @@ public class WLanCatService extends Service {
   private BroadcastServer mBroadcastServer;
   private UdpMessager mUdpMessager;
   private P2PServer mP2pServer;
+  private ClientSettings mClientSettings;
 
   @Override
   public void onCreate() {
@@ -70,13 +73,22 @@ public class WLanCatService extends Service {
     final InetAddress broadcastAddress = WiFiUtils.getBroadcastAddress(this);
     final InetAddress localAddress = WiFiUtils.getLocalAddress(this);
 
-    mP2pServer = new P2PServerSignalSlot();
+    mClientSettings = new ClientSettingsSignalSlot(this);
+    mClientSettings.start();
+
+    mP2pServer = new P2PServerSignalSlot(mClientSettings);
 
     SignalSlot.connect(mP2pServer, P2PServerSignalSlot.Signals.ONACTIVECONNECTIONSCOUNTCHANGED_INT, this, WLanCatServiceSignalSlot.Slots.ONCONNECTIONSCOUNTCHANGED_INT);
 
     mP2pServer.start();
 
-    mUdpMessager = new UdpMessagerSignalSlot(localAddress, mP2pServer.getPort());
+    mClientSettings.setIp(localAddress);
+    mClientSettings.setPort(mP2pServer.getPort());
+
+    mUdpMessager = new UdpMessagerSignalSlot(mClientSettings.getClient());
+
+    SignalSlot.connect(mClientSettings, ClientSettingsSignalSlot.Signals.ONCLIENTCHANGED_CLIENT, mUdpMessager, UdpMessagerSignalSlot.Slots.ONCLIENTCHANGED_CLIENT);
+
     mBroadcastServer = new BroadcastServerSignalSlot();
 
     SignalSlot.connect(mBroadcastServer, BroadcastServerSignalSlot.Signals.ONDATAPACKAGE_BYTESTRING, mUdpMessager, UdpMessagerSignalSlot.Slots.ONMESSAGERECIEVED_BYTESTRING);
@@ -94,6 +106,11 @@ public class WLanCatService extends Service {
     if (mBroadcastServer != null) {
       mBroadcastServer.stop();
       mBroadcastServer = null;
+    }
+
+    if (mClientSettings != null) {
+      mClientSettings.stop();
+      mClientSettings = null;
     }
 
     stopSelf();

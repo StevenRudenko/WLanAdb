@@ -4,17 +4,17 @@ import com.wlancat.service.ConnectionsCountReciever;
 import com.wlancat.service.WLanCatServiceSignalSlot;
 import com.wlancat.service.WLanServiceApi;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.TextView;
 
-public class WLanCatActivity extends Activity {
+public class WLanCatActivity extends FragmentActivity {
   private static final String TAG = WLanCatActivity.class.getSimpleName();
 
   private WLanServiceApi mServiceApi;

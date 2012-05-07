@@ -8,6 +8,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 
+import com.wlancat.data.ClientSettings;
+
 import net.sf.signalslot_apt.annotations.signal;
 import net.sf.signalslot_apt.annotations.signalslot;
 
@@ -24,9 +26,14 @@ public abstract class P2PServer implements Runnable {
   private ServerSocket mServerSocket;
   private Thread mListenThread;
 
+  private ClientSettings mClientSettings;
   private int mActiveConnections = 0;
 
   private volatile boolean isRunning = false;
+
+  public P2PServer(ClientSettings clientSettings) {
+    mClientSettings = clientSettings;
+  }
 
   @signal
   public abstract void onActiveConnectionsCountChanged(int connectionsCount);
@@ -37,6 +44,7 @@ public abstract class P2PServer implements Runnable {
     try {
       // free port will be assigned to a socket
       mServerSocket = new ServerSocket(0);
+      mServerSocket.setReuseAddress(true);
     } catch (IOException e) {
       Log.d(TAG, "Can't open server socket connection", e);
       return -1;
@@ -71,7 +79,7 @@ public abstract class P2PServer implements Runnable {
   }
 
   public int getActiveConnectionsCount() {
-    synchronized (mConnectionStateListener) {
+    synchronized (mConnectionHanler) {
       return mActiveConnections;
     }
   }
@@ -101,8 +109,7 @@ public abstract class P2PServer implements Runnable {
 
       try {
         Log.d(TAG, "New client asked for a connection");
-        final P2PConnectionRunnable connection = new P2PConnectionRunnableSignalSlot(socket);
-        connection.setConnectionStateListener(mConnectionStateListener);
+        final P2PConnectionRunnable connection = new P2PConnectionRunnableSignalSlot(socket, mConnectionHanler);
         mClientsHandler.execute(connection);
       } catch (RejectedExecutionException e) {
         Log.d(TAG, "There is no available slots to handle connection!");
@@ -115,7 +122,7 @@ public abstract class P2PServer implements Runnable {
   }
 
   private void setActiveConnectionsCount(int count) {
-    synchronized (mConnectionStateListener) {
+    synchronized (mConnectionHanler) {
       if (mActiveConnections == count)
         return;
 
@@ -125,7 +132,7 @@ public abstract class P2PServer implements Runnable {
     }
   }
 
-  private final P2PConnectionRunnable.ConnectionStateListener mConnectionStateListener = new P2PConnectionRunnable.ConnectionStateListener() {
+  private final P2PConnectionRunnable.ConnectionHandler mConnectionHanler = new P2PConnectionRunnable.ConnectionHandler() {
     @Override
     public void onConnectionEstablished() {
       setActiveConnectionsCount(mActiveConnections+1);
@@ -134,6 +141,16 @@ public abstract class P2PServer implements Runnable {
     @Override
     public void onConnectionClosed() {
       setActiveConnectionsCount(mActiveConnections-1);
+    }
+
+    @Override
+    public boolean checkPin(String pin) {
+      return mClientSettings.checkPin(pin);
+    }
+
+    @Override
+    public boolean isPinRequired() {
+      return mClientSettings.hasPin();
     }
   };
 }
