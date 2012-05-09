@@ -1,3 +1,10 @@
+#ifdef Q_WS_WIN
+#include <windows.h>
+#else
+#include <termios.h>
+#include <unistd.h>
+#endif
+
 #include "wlancat.h"
 
 #include "command.pb.h"
@@ -7,9 +14,33 @@ using namespace std;
 using namespace com::wlancat::data;
 
 namespace {
-    const int BROADCAST_PORT = 44533;
-    const int MAX_REQUESTS_SENT = 5;
+
+const int BROADCAST_PORT = 44533;
+const int MAX_REQUESTS_SENT = 5;
+
+void echo( bool on = true )
+{
+#ifdef Q_WS_WIN
+    DWORD  mode;
+    HANDLE hConIn = GetStdHandle( STD_INPUT_HANDLE );
+    GetConsoleMode( hConIn, &mode );
+    mode = on
+            ? (mode |   ENABLE_ECHO_INPUT )
+            : (mode & ~(ENABLE_ECHO_INPUT));
+    SetConsoleMode( hConIn, mode );
+#else
+    struct termios settings;
+    tcgetattr( STDIN_FILENO, &settings );
+    settings.c_lflag = on
+            ? (settings.c_lflag |   ECHO )
+            : (settings.c_lflag & ~(ECHO));
+    tcsetattr( STDIN_FILENO, TCSANOW, &settings );
+#endif
 }
+
+}
+
+
 
 WLanCat::WLanCat(QObject *parent) :
     QObject(parent), qout(stdout), p2pClient(0), requestsSent(0)
@@ -143,7 +174,10 @@ void WLanCat::readLogsFromClient(Client &client) {
         QString pin;
         QTextStream qin(stdin);
 
+        echo(false);
         pin = qin.readLine();
+        echo(true);
+
         cmd.set_pin(pin.toStdString());
     }
     //cmd.set_params("");
