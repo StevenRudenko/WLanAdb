@@ -2,6 +2,7 @@
 #define WLANCAT_H
 
 #include <QObject>
+#include <QRegExp>
 #include <QString>
 #include <QTextStream>
 
@@ -41,6 +42,8 @@ private:
     QHash<QString, Client> clients;
 
     int requestsSent;
+
+    QRegExp logRegEx;
 };
 
 #endif // WLANCAT_H

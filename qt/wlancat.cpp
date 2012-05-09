@@ -41,13 +41,14 @@ void echo( bool on = true )
 }
 
 
-
 WLanCat::WLanCat(QObject *parent) :
     QObject(parent), qout(stdout), p2pClient(0), requestsSent(0)
 {
     // Verify that the version of the library that we linked against is
     // compatible with the version of the headers we compiled against.
     GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+    logRegEx.setPattern("^([A-Z])\\/(.*)\\(\\s*(\\d+)\\s*\\): (.*)$");
 
     broadcast = new BroadcastServer(BROADCAST_PORT);
 
@@ -197,8 +198,12 @@ void WLanCat::readLogsFromClient(Client &client) {
 
 void WLanCat::onLogLine(const QString& str)
 {
-    qout << str;
-    qout.flush();
+    if (logRegEx.indexIn(str) != -1) {
+        qout << logRegEx.cap(1) << endl;
+        qout << logRegEx.cap(2) << endl;
+        qout << logRegEx.cap(3) << endl;
+        qout << logRegEx.cap(4) << endl;
+    }
 }
 
 void WLanCat::onDisconnectedFromClient()

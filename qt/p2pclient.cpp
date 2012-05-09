@@ -55,15 +55,13 @@ void P2PClient::read()
 {
     if (in == 0) {
         in = new QTextStream(tcpSocket);
-        in->setCodec("UTF-8");
+        //in->setCodec("UTF-8");
     }
 
     while (!in->atEnd()) {
         QString line = in->readLine();
         if (line.isEmpty())
             break;
-
-        line.append("\r\n");
         onDataRecieved(line);
     }
 }
