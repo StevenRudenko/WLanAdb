@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
-public abstract class ConnectionsCountReciever extends BroadcastReceiver {
-  private static final String TAG = ConnectionsCountReciever.class.getSimpleName();
+public abstract class ConnectionsStatusReciever extends BroadcastReceiver {
+  private static final String TAG = ConnectionsStatusReciever.class.getSimpleName();
 
   public static final String ACTION_CONNECTIONS_COUNT = TAG+".CONNECTIONS_COUNT";
 

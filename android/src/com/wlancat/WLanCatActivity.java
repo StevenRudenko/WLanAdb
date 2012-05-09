@@ -1,6 +1,6 @@
 package com.wlancat;
 
-import com.wlancat.service.ConnectionsCountReciever;
+import com.wlancat.service.ConnectionsStatusReciever;
 import com.wlancat.service.WLanCatServiceSignalSlot;
 import com.wlancat.service.WLanServiceApi;
 
@@ -12,6 +12,9 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 public class WLanCatActivity extends FragmentActivity {
@@ -54,6 +57,28 @@ public class WLanCatActivity extends FragmentActivity {
     Log.v(TAG, "Activity paused");
   }
 
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    final MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.menu.main_menu_items, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    final int menuId = item.getItemId();
+    switch (menuId) {
+    case R.id.menu_settings:
+      final Intent settingIntent = new Intent(this, SettingsActivitySignalSlot.class);
+      startActivity(settingIntent);
+      break;
+
+    default:
+      break;
+    }
+    return super.onOptionsItemSelected(item);
+  }
+
   private void updateInfo() {
     runOnUiThread(new Runnable() {
       @Override
@@ -90,7 +115,7 @@ public class WLanCatActivity extends FragmentActivity {
     }
   };
 
-  private ConnectionsCountReciever connectionsCountReciever = new ConnectionsCountReciever() {
+  private ConnectionsStatusReciever connectionsCountReciever = new ConnectionsStatusReciever() {
 
     @Override
     public void onConnectionCountChanged(int connectionsCount) {

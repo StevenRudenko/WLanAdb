@@ -118,8 +118,8 @@ public class WLanCatService extends Service {
 
   @slot
   public void onConnectionsCountChanged(int connectionsCount) {
-    final Intent i = new Intent(ConnectionsCountReciever.ACTION_CONNECTIONS_COUNT);
-    i.putExtra(ConnectionsCountReciever.EXTRA_CONNECTIONS_COUNT, connectionsCount);
+    final Intent i = new Intent(ConnectionsStatusReciever.ACTION_CONNECTIONS_COUNT);
+    i.putExtra(ConnectionsStatusReciever.EXTRA_CONNECTIONS_COUNT, connectionsCount);
     sendBroadcast(i);
   }
 

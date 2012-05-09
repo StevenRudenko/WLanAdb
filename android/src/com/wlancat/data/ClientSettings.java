@@ -1,128 +1,164 @@
 package com.wlancat.data;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 
 import net.sf.signalslot_apt.annotations.signal;
 import net.sf.signalslot_apt.annotations.signalslot;
 
-import com.wlancat.compat.SharedPreferencesApply;
 import com.wlancat.data.ClientProto.Client;
+import com.wlancat.utils.AndroidUtils;
+import com.wlancat.utils.HashHelper;
+import com.wlancat.utils.IOUtilities;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Build;
+import android.os.FileObserver;
+import android.text.TextUtils;
+import android.util.Log;
 
 @signalslot(force_concrete=true)
-public abstract class ClientSettings implements OnSharedPreferenceChangeListener {
+public abstract class ClientSettings {
+  private static final String TAG = ClientSettings.class.getSimpleName();
 
-  private static final String PREF_FILENAME = "client";
-  private static final String PREF_CLIENT_ID = "client_id";
-  private static final String PREF_CLIENT_IP = "client_ip";
-  private static final String PREF_CLIENT_PORT = "client_port";
-  private static final String PREF_CLIENT_NAME = "client_name";
-  private static final String PREF_CLIENT_PIN = "client_pin";
+  private static final String FILENAME = "ClientSettings.bin";
 
-  private final SharedPreferences mPrefs;
+  private final String mDeviceId;
+  private final File mSettingsFile;
+  private final FileObserver mSettingsFileObserver;
+
   private Client mClient;
+  private String mPin;
 
   public ClientSettings(Context context) {
-    mPrefs = context.getSharedPreferences(PREF_FILENAME, Context.MODE_PRIVATE);
-    readClient();
+    mDeviceId = AndroidUtils.getAndroidId(context);
+    mSettingsFile = context.getFileStreamPath(FILENAME);
+
+    readFromFile();
+
+    mSettingsFileObserver = new FileObserver(mSettingsFile.getAbsolutePath(), FileObserver.CLOSE_WRITE) {
+      @Override
+      public void onEvent(int event, String path) {
+        readFromFile();
+      }
+    };
   }
 
   @signal
   public abstract void onClientChanged(Client client);
 
   public void start() {
-    mPrefs.registerOnSharedPreferenceChangeListener(this);
+    mSettingsFileObserver.startWatching();
   }
 
   public void stop() {
-    mPrefs.registerOnSharedPreferenceChangeListener(this);
+    mSettingsFileObserver.stopWatching();
   }
 
   public Client getClient() {
     return mClient;
   }
 
+  public String getPin() {
+    return mPin;
+  }
+
+  public void setPin(String pin) {
+    final boolean hasPin = !TextUtils.isEmpty(pin);
+    mPin = hasPin ? pin : null;
+    mClient = mClient.toBuilder().setUsePin(hasPin).build();
+    saveToFile();
+  }
+
   public boolean hasPin() {
-    return mPrefs.getString(PREF_CLIENT_PIN, null) != null;
+    return !TextUtils.isEmpty(mPin);
   }
 
   public boolean checkPin(String pin) {
-    final String checkPin = mPrefs.getString(PREF_CLIENT_PIN, null);
-    if (pin == null)
+    if (TextUtils.isEmpty(mPin))
       return true;
-    return checkPin.equals(pin);
-  }
-
-  public void setId(String id) {
-    final SharedPreferences.Editor editor = mPrefs.edit()
-        .putString(PREF_CLIENT_ID, id);
-    SharedPreferencesApply.apply(editor);
+    final String hashPin = HashHelper.getHashString(pin);
+    Log.d(TAG, "Check PIN: " + mPin + " <> " + hashPin);
+    return mPin.equals(hashPin);
   }
 
   public void setIp(InetAddress address) {
-    final SharedPreferences.Editor editor = mPrefs.edit()
-        .putString(PREF_CLIENT_IP, address.getHostAddress());
-    SharedPreferencesApply.apply(editor);
+    mClient = mClient.toBuilder().setIp(address.getHostAddress()).build();
+    saveToFile();
   }
 
   public void setPort(int port) {
-    final SharedPreferences.Editor editor = mPrefs.edit()
-        .putInt(PREF_CLIENT_PORT, port);
-    SharedPreferencesApply.apply(editor);
+    mClient = mClient.toBuilder().setPort(port).build();
+    saveToFile();
   }
 
-  public Client readClient() {
-    final String id = mPrefs.getString(PREF_CLIENT_ID, Build.MODEL);
-    final String ip = mPrefs.getString(PREF_CLIENT_IP, "");
-    final int port = mPrefs.getInt(PREF_CLIENT_PORT, -1);
-    final String name = mPrefs.getString(PREF_CLIENT_NAME, Build.MODEL);
-
-    final Client.Builder builder = mClient == null ? Client.newBuilder() : mClient.toBuilder();
-    mClient = builder
-        .setId(id)
-        .setIp(ip)
-        .setPort(port)
-        .setName(name)
-        .setUsePin(hasPin())
-        .build();
-    return mClient;
+  public void setName(String name) {
+    mClient = mClient.toBuilder().setName(name).build();
+    saveToFile();
   }
 
-  public void saveClient() {
-    final SharedPreferences.Editor editor = mPrefs.edit()
-        .putString(PREF_CLIENT_ID, mClient.getId())
-        .putString(PREF_CLIENT_IP, mClient.getIp())
-        .putInt(PREF_CLIENT_PORT, mClient.getPort())
-        .putString(PREF_CLIENT_NAME, mClient.getName());
-    SharedPreferencesApply.apply(editor);
-  }
-
-  @Override
-  public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-      String key) {
-
-    final Client.Builder builder = mClient == null ? Client.newBuilder() : mClient.toBuilder();
-    if (PREF_CLIENT_ID.equals(key)) {
-      final String id = sharedPreferences.getString(PREF_CLIENT_ID, Build.MODEL);
-      mClient = builder.setId(id).build();
-    } else if (PREF_CLIENT_IP.equals(key)) {
-      final String ip = sharedPreferences.getString(PREF_CLIENT_IP, "");
-      mClient = builder.setIp(ip).build();
-    } else if (PREF_CLIENT_PORT.equals(key)) {
-      final int port = sharedPreferences.getInt(PREF_CLIENT_PORT, -1);
-      mClient = builder.setPort(port).build();
-    } else if (PREF_CLIENT_NAME.equals(key)) {
-      final String name = sharedPreferences.getString(PREF_CLIENT_NAME, null);
-      mClient = builder.setName(name).build();
-    } else if (PREF_CLIENT_PIN.equals(key)) {
-      mClient = builder.setUsePin(hasPin()).build();
-    } else
+  private void readFromFile() {
+    if (!mSettingsFile.exists()) {
+      mClient = Client.newBuilder()
+          .setId(mDeviceId)
+          .setName(Build.MODEL)
+          .build();
+      mPin = null;
       return;
+    }
 
-    onClientChanged(mClient);
+    ObjectInputStream in = null;
+    try {
+      in = new ObjectInputStream(new FileInputStream(mSettingsFile));
+      final int clientSize = in.readInt();
+      final byte[] clientBytes = new byte[clientSize];
+      in.read(clientBytes, 0, clientSize);
+      final String pin = (String) in.readObject();
+      final boolean hasPin = !TextUtils.isEmpty(pin);
+
+      mPin = hasPin ? pin : null;
+      mClient = Client.newBuilder()
+          .mergeFrom(clientBytes)
+          .setUsePin(hasPin)
+          .build();
+
+      onClientChanged(mClient);
+    } catch (FileNotFoundException e) {
+      Log.e(TAG, "Settings file not found", e);
+    } catch (IOException e) {
+      Log.e(TAG, "Fail to read settings file", e);
+    } catch (ClassNotFoundException e) {
+      Log.e(TAG, "Fail to read string from setting file", e);
+    } finally {
+      IOUtilities.closeStream(in);
+    }
+  }
+
+  private void saveToFile() {
+    if (!mSettingsFile.exists()) {
+      mSettingsFile.getParentFile().mkdirs();
+    }
+
+    ObjectOutputStream out = null;
+    try {
+      out = new ObjectOutputStream(new FileOutputStream(mSettingsFile, false));
+      final byte[] clientBytes = mClient.toByteArray();
+      final int clientSize = clientBytes.length;
+      out.writeInt(clientSize);
+      out.write(clientBytes);
+      out.writeObject(mPin);
+    } catch (FileNotFoundException e) {
+      Log.e(TAG, "Settings file not found", e);
+    } catch (IOException e) {
+      Log.e(TAG, "Fail to read settings file", e);
+    } finally {
+      IOUtilities.closeStream(out);
+    }
   }
 }

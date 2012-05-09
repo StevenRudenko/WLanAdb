@@ -28,11 +28,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".SettingsActivitySignalSlot"
+            android:configChanges="keyboard|keyboardHidden|orientation" />
 
         <service
             android:name=".service.WLanCatServiceSignalSlot"
-            android:process=":remote"
-            android:exported="false" >
+            android:exported="false"
+            android:process=":remote" >
             <intent-filter>
                 <action android:name="com.wlancat.service.WLanCatServiceSignalSlot" />
             </intent-filter>

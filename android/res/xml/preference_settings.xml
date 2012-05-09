@@ -1,0 +1,34 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/pref_client_settings" >
+        <EditTextPreference
+            android:enabled="false"
+            android:key="client_id"
+            android:title="@string/pref_client_id" />
+        <EditTextPreference
+            android:key="client_name"
+            android:title="@string/pref_client_name" />
+        <EditTextPreference
+            android:enabled="false"
+            android:key="client_ip"
+            android:title="@string/pref_client_ip" />
+        <EditTextPreference
+            android:enabled="false"
+            android:key="client_port"
+            android:title="@string/pref_client_port" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_security_settings" >
+        <com.wlancat.ui.PasswordPreference
+            android:key="security_pin"
+            android:password="true"
+            android:title="@string/pref_security_pin" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_about_settings" >
+        <Preference android:title="@string/pref_about_credits" android:key="about_credits"/><com.wlancat.ui.VersionPreference
+            android:defaultValue="@string/pref_about_version"
+            android:enabled="false"
+            android:key="about_version" />
+        
+    </PreferenceCategory>
+
+</PreferenceScreen>
