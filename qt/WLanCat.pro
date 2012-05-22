@@ -5,7 +5,6 @@
 #-------------------------------------------------
 
 QT       += core, network
-
 QT       -= gui
 
 TARGET = WLanCat
@@ -13,8 +12,6 @@ CONFIG   += console
 CONFIG   -= app_bundle
 
 TEMPLATE = app
-
-LIBS += -L/usr/local/lib -lprotobuf
 
 SOURCES += main.cpp \
     message.pb.cc \
@@ -35,3 +32,12 @@ HEADERS += \
 TRANSLATIONS = main_en.ts \
                main_ru.ts \
                main_ua.ts
+
+win32: LIBS += -L$$PWD/libs/ -lprotobuf
+else:unix: LIBS += -L/usr/local/lib -lprotobuf
+
+INCLUDEPATH += $$PWD/protobuf-include
+DEPENDPATH += $$PWD/protobuf-include
+
+win32: PRE_TARGETDEPS += $$PWD/libs/libprotobuf.dll.a
+else:unix: PRE_TARGETDEPS += /usr/local/lib/libprotobuf.a

@@ -1,4 +1,4 @@
-#ifdef Q_WS_WIN
+#ifdef WIN32
 #include <windows.h>
 #else
 #include <termios.h>
@@ -20,7 +20,7 @@ const int MAX_REQUESTS_SENT = 5;
 
 void echo( bool on = true )
 {
-#ifdef Q_WS_WIN
+#ifdef WIN32
     DWORD  mode;
     HANDLE hConIn = GetStdHandle( STD_INPUT_HANDLE );
     GetConsoleMode( hConIn, &mode );
