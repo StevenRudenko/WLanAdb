@@ -19,7 +19,9 @@ SOURCES += main.cpp \
     broadcastserver.cpp \
     wlancat.cpp \
     p2pclient.cpp \
-    command.pb.cc
+    command.pb.cc \
+    logwriter.cpp \
+    io_compatibility.cpp
 
 HEADERS += \
     message.pb.h \
@@ -27,7 +29,9 @@ HEADERS += \
     broadcastserver.h \
     wlancat.h \
     p2pclient.h \
-    command.pb.h
+    command.pb.h \
+    logwriter.h \
+    io_compatibility.h
 
 TRANSLATIONS = main_en.ts \
                main_ru.ts \

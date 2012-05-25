@@ -1,11 +1,6 @@
-#ifdef WIN32
-#include <windows.h>
-#else
-#include <termios.h>
-#include <unistd.h>
-#endif
-
 #include "wlancat.h"
+
+#include "io_compatibility.h"
 
 #include "command.pb.h"
 #include "message.pb.h"
@@ -18,37 +13,14 @@ namespace {
 const int BROADCAST_PORT = 44533;
 const int MAX_REQUESTS_SENT = 5;
 
-void echo( bool on = true )
-{
-#ifdef WIN32
-    DWORD  mode;
-    HANDLE hConIn = GetStdHandle( STD_INPUT_HANDLE );
-    GetConsoleMode( hConIn, &mode );
-    mode = on
-            ? (mode |   ENABLE_ECHO_INPUT )
-            : (mode & ~(ENABLE_ECHO_INPUT));
-    SetConsoleMode( hConIn, mode );
-#else
-    struct termios settings;
-    tcgetattr( STDIN_FILENO, &settings );
-    settings.c_lflag = on
-            ? (settings.c_lflag |   ECHO )
-            : (settings.c_lflag & ~(ECHO));
-    tcsetattr( STDIN_FILENO, TCSANOW, &settings );
-#endif
 }
-
-}
-
 
 WLanCat::WLanCat(QObject *parent) :
-    QObject(parent), qout(stdout), p2pClient(0), requestsSent(0)
+    QObject(parent), p2pClient(0), qout(stdout), requestsSent(0)
 {
     // Verify that the version of the library that we linked against is
     // compatible with the version of the headers we compiled against.
     GOOGLE_PROTOBUF_VERIFY_VERSION;
-
-    logRegEx.setPattern("^([A-Z])\\/(.*)\\(\\s*(\\d+)\\s*\\): (.*)$");
 
     broadcast = new BroadcastServer(BROADCAST_PORT);
 
@@ -175,9 +147,9 @@ void WLanCat::readLogsFromClient(Client &client) {
         QString pin;
         QTextStream qin(stdin);
 
-        echo(false);
+        io_compatibility::setInputEcho(false);
         pin = qin.readLine();
-        echo(true);
+        io_compatibility::setInputEcho(true);
 
         cmd.set_pin(pin.toStdString());
     }
@@ -188,22 +160,12 @@ void WLanCat::readLogsFromClient(Client &client) {
 
     p2pClient = new P2PClient();
 
-    connect(p2pClient, SIGNAL(onDataRecieved(const QString&)), this, SLOT(onLogLine(const QString&)));
+    connect(p2pClient, SIGNAL(onDataRecieved(const QString&)), &logWriter, SLOT(onLogLine(const QString&)));
     connect(p2pClient, SIGNAL(disconnected()), this, SLOT(onDisconnectedFromClient()));
 
     QByteArray request(cmd.SerializeAsString().c_str(), cmd.ByteSize());
     int port = client.port();
     p2pClient->connectToServer(clientIp, port, request);
-}
-
-void WLanCat::onLogLine(const QString& str)
-{
-    if (logRegEx.indexIn(str) != -1) {
-        qout << logRegEx.cap(1) << endl;
-        qout << logRegEx.cap(2) << endl;
-        qout << logRegEx.cap(3) << endl;
-        qout << logRegEx.cap(4) << endl;
-    }
 }
 
 void WLanCat::onDisconnectedFromClient()
