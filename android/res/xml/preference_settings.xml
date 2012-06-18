@@ -24,11 +24,14 @@
             android:title="@string/pref_security_pin" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_about_settings" >
-        <Preference android:title="@string/pref_about_credits" android:key="about_credits"/><com.wlancat.ui.VersionPreference
+        <Preference
+            android:key="about_credits"
+            android:title="@string/pref_about_credits" />
+
+        <com.wlancat.ui.VersionPreference
             android:defaultValue="@string/pref_about_version"
             android:enabled="false"
             android:key="about_version" />
-        
     </PreferenceCategory>
 
 </PreferenceScreen>

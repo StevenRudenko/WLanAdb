@@ -1,5 +1,7 @@
 package com.wlancat.ui;
 
+import com.wlancat.config.MyConfig;
+
 import android.content.Context;
 import android.preference.Preference;
 import android.util.AttributeSet;
@@ -20,7 +22,6 @@ public class VersionPreference extends Preference {
 
   public VersionPreference(Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
-    
   }
 
   @Override
@@ -32,7 +33,16 @@ public class VersionPreference extends Preference {
     textView.setGravity(Gravity.CENTER_HORIZONTAL);
     textView.setSingleLine(false);
     textView.setMaxLines(2);
-    textView.setText("Version 0.1b\n(11:41bbc57a5c2b)");
     textView.setTextAppearance(getContext(), android.R.style.TextAppearance_Small);
+
+    final StringBuilder versionBuilder = new StringBuilder();
+    versionBuilder.append("Version ")
+        .append(MyConfig.VERSION)
+        .append(" (")
+        .append(MyConfig.REVISION)
+        .append(")\nThank you for downloading. Enjoy!");
+    textView.setText(versionBuilder.toString());
+
+    view.setBackgroundResource(0);
   }
 }

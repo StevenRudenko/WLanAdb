@@ -11,18 +11,20 @@ import android.util.Log;
 
 public class WiFiStateReceiver extends BroadcastReceiver {
   private static final String TAG = WiFiStateReceiver.class.getSimpleName();
+  private static final boolean DEBUG = false;
 
   @Override
   public void onReceive(final Context context, final Intent intent) {
     final String action = intent.getAction();
 
-    Log.d(TAG, "Action: " + action);
+    if (DEBUG)
+      Log.d(TAG, "Action: " + action);
 
     if (action.equals(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION)) {
       final SupplicantState wifiState = intent.getParcelableExtra(WifiManager.EXTRA_NEW_STATE);
-      Log.d(TAG, "Supplicant WiFi state changed: " + wifiState.name());
-      if (!wifiState.equals(SupplicantState.COMPLETED))
-        setWiFiConnection(context, false);
+      if (DEBUG)
+        Log.d(TAG, "Supplicant WiFi state changed: " + wifiState.name());
+      setWiFiConnection(context, wifiState.equals(SupplicantState.COMPLETED));
     } else if (action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)
         || action.equals(WifiManager.WIFI_STATE_CHANGED_ACTION)) {
       setWiFiConnection(context, WiFiUtils.isWifiConnected(context));

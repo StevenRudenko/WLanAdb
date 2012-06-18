@@ -106,6 +106,8 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
   private void clearPreferences() {
     final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
     final SharedPreferences.Editor prefsEraser = prefs.edit();
+    //XXX: it is not really good solution as far we can store more preferences
+    //     not only client ones
     prefsEraser.clear();
     SharedPreferencesApply.apply(prefsEraser);
   }

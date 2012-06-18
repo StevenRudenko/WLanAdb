@@ -26,7 +26,7 @@ public class WiFiUtils {
         .getSystemService(Context.WIFI_SERVICE);
     DhcpInfo dhcp = wifiManager.getDhcpInfo();
     if (dhcp == null) {
-      Log.d(TAG, "Could not get DHCP info");
+      Log.w(TAG, "Could not get DHCP info");
       return null;
     }
 

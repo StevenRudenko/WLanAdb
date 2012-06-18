@@ -56,7 +56,7 @@ public class IOUtilities {
       try {
         stream.close();
       } catch (IOException e) {
-        android.util.Log.e(TAG, "Could not close stream", e);
+        Log.e(TAG, "Could not close stream", e);
       }
     }
   }
@@ -101,9 +101,9 @@ public class IOUtilities {
       os = null;
       return true;
     } catch (FileNotFoundException e) {
-      android.util.Log.e(TAG, "File not found", e);
+      Log.e(TAG, "File not found", e);
     } catch (IOException e) {
-      android.util.Log.e(TAG, "Could not close stream", e);
+      Log.e(TAG, "Could not close stream", e);
     } finally {
       closeStream(os);
     }
