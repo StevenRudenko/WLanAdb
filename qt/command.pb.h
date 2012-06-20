@@ -103,10 +103,21 @@ class Command : public ::google::protobuf::Message {
   inline ::std::string* mutable_pin();
   inline ::std::string* release_pin();
   
-  // optional string params = 2;
+  // optional string command = 2;
+  inline bool has_command() const;
+  inline void clear_command();
+  static const int kCommandFieldNumber = 2;
+  inline const ::std::string& command() const;
+  inline void set_command(const ::std::string& value);
+  inline void set_command(const char* value);
+  inline void set_command(const char* value, size_t size);
+  inline ::std::string* mutable_command();
+  inline ::std::string* release_command();
+  
+  // optional string params = 3;
   inline bool has_params() const;
   inline void clear_params();
-  static const int kParamsFieldNumber = 2;
+  static const int kParamsFieldNumber = 3;
   inline const ::std::string& params() const;
   inline void set_params(const ::std::string& value);
   inline void set_params(const char* value);
@@ -118,16 +129,19 @@ class Command : public ::google::protobuf::Message {
  private:
   inline void set_has_pin();
   inline void clear_has_pin();
+  inline void set_has_command();
+  inline void clear_has_command();
   inline void set_has_params();
   inline void clear_has_params();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::std::string* pin_;
+  ::std::string* command_;
   ::std::string* params_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
   
   friend void  protobuf_AddDesc_command_2eproto();
   friend void protobuf_AssignDesc_command_2eproto();
@@ -201,15 +215,73 @@ inline ::std::string* Command::release_pin() {
   }
 }
 
-// optional string params = 2;
-inline bool Command::has_params() const {
+// optional string command = 2;
+inline bool Command::has_command() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void Command::set_has_params() {
+inline void Command::set_has_command() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void Command::clear_has_params() {
+inline void Command::clear_has_command() {
   _has_bits_[0] &= ~0x00000002u;
+}
+inline void Command::clear_command() {
+  if (command_ != &::google::protobuf::internal::kEmptyString) {
+    command_->clear();
+  }
+  clear_has_command();
+}
+inline const ::std::string& Command::command() const {
+  return *command_;
+}
+inline void Command::set_command(const ::std::string& value) {
+  set_has_command();
+  if (command_ == &::google::protobuf::internal::kEmptyString) {
+    command_ = new ::std::string;
+  }
+  command_->assign(value);
+}
+inline void Command::set_command(const char* value) {
+  set_has_command();
+  if (command_ == &::google::protobuf::internal::kEmptyString) {
+    command_ = new ::std::string;
+  }
+  command_->assign(value);
+}
+inline void Command::set_command(const char* value, size_t size) {
+  set_has_command();
+  if (command_ == &::google::protobuf::internal::kEmptyString) {
+    command_ = new ::std::string;
+  }
+  command_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Command::mutable_command() {
+  set_has_command();
+  if (command_ == &::google::protobuf::internal::kEmptyString) {
+    command_ = new ::std::string;
+  }
+  return command_;
+}
+inline ::std::string* Command::release_command() {
+  clear_has_command();
+  if (command_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = command_;
+    command_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// optional string params = 3;
+inline bool Command::has_params() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void Command::set_has_params() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void Command::clear_has_params() {
+  _has_bits_[0] &= ~0x00000004u;
 }
 inline void Command::clear_params() {
   if (params_ != &::google::protobuf::internal::kEmptyString) {

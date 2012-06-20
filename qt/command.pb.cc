@@ -33,8 +33,9 @@ void protobuf_AssignDesc_command_2eproto() {
       "command.proto");
   GOOGLE_CHECK(file != NULL);
   Command_descriptor_ = file->message_type(0);
-  static const int Command_offsets_[2] = {
+  static const int Command_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, pin_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, command_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, params_),
   };
   Command_reflection_ =
@@ -78,9 +79,10 @@ void protobuf_AddDesc_command_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\rcommand.proto\022\020com.wlancat.data\"&\n\007Com"
-    "mand\022\013\n\003pin\030\001 \001(\t\022\016\n\006params\030\002 \001(\tB \n\020com"
-    ".wlancat.dataB\014CommandProto", 107);
+    "\n\rcommand.proto\022\020com.wlancat.data\"7\n\007Com"
+    "mand\022\013\n\003pin\030\001 \001(\t\022\017\n\007command\030\002 \001(\t\022\016\n\006pa"
+    "rams\030\003 \001(\tB \n\020com.wlancat.dataB\014CommandP"
+    "roto", 124);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "command.proto", &protobuf_RegisterTypes);
   Command::default_instance_ = new Command();
@@ -100,6 +102,7 @@ struct StaticDescriptorInitializer_command_2eproto {
 
 #ifndef _MSC_VER
 const int Command::kPinFieldNumber;
+const int Command::kCommandFieldNumber;
 const int Command::kParamsFieldNumber;
 #endif  // !_MSC_VER
 
@@ -120,6 +123,7 @@ Command::Command(const Command& from)
 void Command::SharedCtor() {
   _cached_size_ = 0;
   pin_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  command_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   params_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
@@ -131,6 +135,9 @@ Command::~Command() {
 void Command::SharedDtor() {
   if (pin_ != &::google::protobuf::internal::kEmptyString) {
     delete pin_;
+  }
+  if (command_ != &::google::protobuf::internal::kEmptyString) {
+    delete command_;
   }
   if (params_ != &::google::protobuf::internal::kEmptyString) {
     delete params_;
@@ -166,6 +173,11 @@ void Command::Clear() {
         pin_->clear();
       }
     }
+    if (has_command()) {
+      if (command_ != &::google::protobuf::internal::kEmptyString) {
+        command_->clear();
+      }
+    }
     if (has_params()) {
       if (params_ != &::google::protobuf::internal::kEmptyString) {
         params_->clear();
@@ -194,12 +206,29 @@ bool Command::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(18)) goto parse_params;
+        if (input->ExpectTag(18)) goto parse_command;
         break;
       }
       
-      // optional string params = 2;
+      // optional string command = 2;
       case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_command:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_command()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->command().data(), this->command().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(26)) goto parse_params;
+        break;
+      }
+      
+      // optional string params = 3;
+      case 3: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_params:
@@ -242,13 +271,22 @@ void Command::SerializeWithCachedSizes(
       1, this->pin(), output);
   }
   
-  // optional string params = 2;
+  // optional string command = 2;
+  if (has_command()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->command().data(), this->command().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      2, this->command(), output);
+  }
+  
+  // optional string params = 3;
   if (has_params()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->params().data(), this->params().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     ::google::protobuf::internal::WireFormatLite::WriteString(
-      2, this->params(), output);
+      3, this->params(), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -269,14 +307,24 @@ void Command::SerializeWithCachedSizes(
         1, this->pin(), target);
   }
   
-  // optional string params = 2;
+  // optional string command = 2;
+  if (has_command()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->command().data(), this->command().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        2, this->command(), target);
+  }
+  
+  // optional string params = 3;
   if (has_params()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->params().data(), this->params().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        2, this->params(), target);
+        3, this->params(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -297,7 +345,14 @@ int Command::ByteSize() const {
           this->pin());
     }
     
-    // optional string params = 2;
+    // optional string command = 2;
+    if (has_command()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->command());
+    }
+    
+    // optional string params = 3;
     if (has_params()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
@@ -334,6 +389,9 @@ void Command::MergeFrom(const Command& from) {
     if (from.has_pin()) {
       set_pin(from.pin());
     }
+    if (from.has_command()) {
+      set_command(from.command());
+    }
     if (from.has_params()) {
       set_params(from.params());
     }
@@ -361,6 +419,7 @@ bool Command::IsInitialized() const {
 void Command::Swap(Command* other) {
   if (other != this) {
     std::swap(pin_, other->pin_);
+    std::swap(command_, other->command_);
     std::swap(params_, other->params_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);

@@ -101,8 +101,8 @@ void WLanCat::selectClient()
 {
     int size = clients.size();
     if (size == 1) {
-        Client client = clients.begin().value();
-        readLogsFromClient(client);
+        client = clients.begin().value();
+        connectToClient();
         return;
     }
 
@@ -127,18 +127,37 @@ void WLanCat::selectClient()
     qin >> selection;
 
     if (selection > 0 && selection <= size) {
-        Client client = clients.values().at(--selection);
-        readLogsFromClient(client);
+        client = clients.values().at(--selection);
+        connectToClient();
     } else {
         selectClient();
     }
 }
 
-void WLanCat::readLogsFromClient(Client &client) {
+void WLanCat::connectToClient() {
+    if (p2pClient != 0)
+        delete p2pClient;
+
+    p2pClient = new P2PClient();
+
+    connect(p2pClient, SIGNAL(connected()), this, SLOT(onConnectedToClient()));
+    connect(p2pClient, SIGNAL(onDataRecieved(const QString&)), &logWriter, SLOT(onLogLine(const QString&)));
+    connect(p2pClient, SIGNAL(disconnected()), this, SLOT(onDisconnectedFromClient()));
+
     const QString clientName = QString::fromStdString(client.name());
     const QString clientIp = QString::fromStdString(client.ip());
 
     qout << tr("\rTrying connect to %1 - %2 (%3)").arg(clientName, clientIp, QString::number(client.port())) << endl;
+
+    p2pClient->connectToServer(clientIp, client.port());
+}
+
+void WLanCat::onConnectedToClient()
+{
+    const QString clientName = QString::fromStdString(client.name());
+    const QString clientIp = QString::fromStdString(client.ip());
+
+    qout << tr("\rConnected to %1 - %2 (%3)").arg(clientName, clientIp, QString::number(client.port())) << endl;
 
     Command cmd;
     if (client.use_pin()) {
@@ -153,20 +172,17 @@ void WLanCat::readLogsFromClient(Client &client) {
 
         cmd.set_pin(pin.toStdString());
     }
-    //cmd.set_params("");
+    cmd.set_params("-c");
+    cmd.set_command("logcat");
 
-    if (p2pClient != 0)
-        delete p2pClient;
-
-    p2pClient = new P2PClient();
-
-    connect(p2pClient, SIGNAL(onDataRecieved(const QString&)), &logWriter, SLOT(onLogLine(const QString&)));
-    connect(p2pClient, SIGNAL(disconnected()), this, SLOT(onDisconnectedFromClient()));
-
-    QByteArray request(cmd.SerializeAsString().c_str(), cmd.ByteSize());
-    int port = client.port();
-    p2pClient->connectToServer(clientIp, port, request);
+    QByteArray data;
+    QDataStream request(&data, QIODevice::WriteOnly);
+    request << cmd.ByteSize();
+    request.writeRawData(cmd.SerializeAsString().c_str(), cmd.ByteSize());
+    p2pClient->send(data);
+    //p2pClient->sendFile("./test-image.png");
 }
+
 
 void WLanCat::onDisconnectedFromClient()
 {

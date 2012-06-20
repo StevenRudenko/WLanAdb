@@ -1,6 +1,7 @@
 #ifndef P2PCLIENT_H
 #define P2PCLIENT_H
 
+#include <QFile>
 #include <QObject>
 #include <QString>
 #include <QTcpSocket>
@@ -20,11 +21,15 @@ signals:
 
 public slots:
 
-    void connectToServer(const QString& server, int port, const QByteArray& request = 0);
+    void connectToServer(const QString& server, int port);
     void disconnectFromServer();
+
+    void send(QByteArray& bytes);
+    bool sendFile(const QString& filename);
 
 private slots:
     void connectedToServer();
+    void sendNextPartOfFile();
     void read();
     void connectionClosedByServer();
     void error();
@@ -32,7 +37,8 @@ private slots:
 private:
     QTextStream* in;
     QTcpSocket* tcpSocket;
-    QByteArray request;
+
+    QFile* readFile;
 };
 
 #endif // P2PCLIENT_H

@@ -28,11 +28,12 @@ private slots:
     void onMessageRequested();
     void onMessageRecieved(const QByteArray& data);
 
+    void onConnectedToClient();
     void onDisconnectedFromClient();
 
 private:
     void selectClient();
-    void readLogsFromClient(Client& client);
+    void connectToClient();
 
 private:
     BroadcastServer* broadcast;
@@ -42,6 +43,7 @@ private:
     LogWriter logWriter;
 
     QHash<QString, Client> clients;
+    Client client;
     int requestsSent;
 };
 
