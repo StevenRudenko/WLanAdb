@@ -67,7 +67,7 @@ public abstract class BroadcastServer implements Runnable {
       mSocket.setBroadcast(true);
       mSocket.setSoTimeout(MESSAGE_LISTEN_TIMEOUT);
     } catch (IOException e) {
-      Log.e(TAG, "Could not send discovery request", e);
+      Log.e(TAG, "Could not open socket", e);
     }
 
     isRunning = true;
@@ -80,6 +80,8 @@ public abstract class BroadcastServer implements Runnable {
 
   public void stop() {
     isRunning = false;
+
+    mSocket.close();
   }
 
   /**

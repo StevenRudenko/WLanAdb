@@ -15,7 +15,11 @@ public final class CommandProto {
     boolean hasPin();
     String getPin();
     
-    // optional string params = 2;
+    // optional string command = 2;
+    boolean hasCommand();
+    String getCommand();
+    
+    // optional string params = 3;
     boolean hasParams();
     String getParams();
   }
@@ -80,11 +84,43 @@ public final class CommandProto {
       }
     }
     
-    // optional string params = 2;
-    public static final int PARAMS_FIELD_NUMBER = 2;
+    // optional string command = 2;
+    public static final int COMMAND_FIELD_NUMBER = 2;
+    private java.lang.Object command_;
+    public boolean hasCommand() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public String getCommand() {
+      java.lang.Object ref = command_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          command_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getCommandBytes() {
+      java.lang.Object ref = command_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        command_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    // optional string params = 3;
+    public static final int PARAMS_FIELD_NUMBER = 3;
     private java.lang.Object params_;
     public boolean hasParams() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
+      return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     public String getParams() {
       java.lang.Object ref = params_;
@@ -114,6 +150,7 @@ public final class CommandProto {
     
     private void initFields() {
       pin_ = "";
+      command_ = "";
       params_ = "";
     }
     private byte memoizedIsInitialized = -1;
@@ -132,7 +169,10 @@ public final class CommandProto {
         output.writeBytes(1, getPinBytes());
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeBytes(2, getParamsBytes());
+        output.writeBytes(2, getCommandBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBytes(3, getParamsBytes());
       }
       getUnknownFields().writeTo(output);
     }
@@ -149,7 +189,11 @@ public final class CommandProto {
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, getParamsBytes());
+          .computeBytesSize(2, getCommandBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, getParamsBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -277,8 +321,10 @@ public final class CommandProto {
         super.clear();
         pin_ = "";
         bitField0_ = (bitField0_ & ~0x00000001);
-        params_ = "";
+        command_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
+        params_ = "";
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
       
@@ -324,6 +370,10 @@ public final class CommandProto {
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
+        result.command_ = command_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
         result.params_ = params_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -343,6 +393,9 @@ public final class CommandProto {
         if (other == com.wlancat.data.CommandProto.Command.getDefaultInstance()) return this;
         if (other.hasPin()) {
           setPin(other.getPin());
+        }
+        if (other.hasCommand()) {
+          setCommand(other.getCommand());
         }
         if (other.hasParams()) {
           setParams(other.getParams());
@@ -385,6 +438,11 @@ public final class CommandProto {
             }
             case 18: {
               bitField0_ |= 0x00000002;
+              command_ = input.readBytes();
+              break;
+            }
+            case 26: {
+              bitField0_ |= 0x00000004;
               params_ = input.readBytes();
               break;
             }
@@ -430,10 +488,46 @@ public final class CommandProto {
         onChanged();
       }
       
-      // optional string params = 2;
+      // optional string command = 2;
+      private java.lang.Object command_ = "";
+      public boolean hasCommand() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public String getCommand() {
+        java.lang.Object ref = command_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          command_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setCommand(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        command_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearCommand() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        command_ = getDefaultInstance().getCommand();
+        onChanged();
+        return this;
+      }
+      void setCommand(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000002;
+        command_ = value;
+        onChanged();
+      }
+      
+      // optional string params = 3;
       private java.lang.Object params_ = "";
       public boolean hasParams() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       public String getParams() {
         java.lang.Object ref = params_;
@@ -449,19 +543,19 @@ public final class CommandProto {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000002;
+  bitField0_ |= 0x00000004;
         params_ = value;
         onChanged();
         return this;
       }
       public Builder clearParams() {
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         params_ = getDefaultInstance().getParams();
         onChanged();
         return this;
       }
       void setParams(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         params_ = value;
         onChanged();
       }
@@ -491,9 +585,10 @@ public final class CommandProto {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\rcommand.proto\022\020com.wlancat.data\"&\n\007Com" +
-      "mand\022\013\n\003pin\030\001 \001(\t\022\016\n\006params\030\002 \001(\tB \n\020com" +
-      ".wlancat.dataB\014CommandProto"
+      "\n\rcommand.proto\022\020com.wlancat.data\"7\n\007Com" +
+      "mand\022\013\n\003pin\030\001 \001(\t\022\017\n\007command\030\002 \001(\t\022\016\n\006pa" +
+      "rams\030\003 \001(\tB \n\020com.wlancat.dataB\014CommandP" +
+      "roto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -505,7 +600,7 @@ public final class CommandProto {
           internal_static_com_wlancat_data_Command_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_com_wlancat_data_Command_descriptor,
-              new java.lang.String[] { "Pin", "Params", },
+              new java.lang.String[] { "Pin", "Command", "Params", },
               com.wlancat.data.CommandProto.Command.class,
               com.wlancat.data.CommandProto.Command.Builder.class);
           return null;

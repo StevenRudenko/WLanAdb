@@ -109,7 +109,7 @@ public abstract class P2PServer implements Runnable {
 
       try {
         Log.d(TAG, "New client asked for a connection");
-        final P2PConnectionRunnable connection = new P2PConnectionRunnableSignalSlot(socket, mConnectionHanler);
+        final P2PConnectionRunnable connection = new P2PConnectionRunnable(socket, mConnectionHanler);
         mClientsHandler.execute(connection);
       } catch (RejectedExecutionException e) {
         Log.d(TAG, "There is no available slots to handle connection!");
