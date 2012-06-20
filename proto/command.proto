@@ -5,5 +5,6 @@ option java_outer_classname = "CommandProto";
 
 message Command {
   optional string pin = 1;
-  optional string params = 2;
+  optional string command = 2;
+  optional string params = 3;
 }
