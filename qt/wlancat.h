@@ -8,8 +8,11 @@
 
 #include "broadcastserver.h"
 #include "client.pb.h"
-#include "logwriter.h"
+#include "command.pb.h"
 #include "p2pclient.h"
+
+#include "logcatworker.h"
+#include "pushworker.h"
 
 using namespace com::wlancat::data;
 
@@ -17,7 +20,7 @@ class WLanCat : public QObject
 {
     Q_OBJECT
 public:
-    explicit WLanCat(QObject *parent = 0);
+    WLanCat(int argc, char *argv[]);
     virtual ~WLanCat();
 
 signals:
@@ -36,11 +39,15 @@ private:
     void connectToClient();
 
 private:
+    Command cmd;
+
     BroadcastServer* broadcast;
     P2PClient* p2pClient;
 
     QTextStream qout;
-    LogWriter logWriter;
+
+    LogcatWorker logcatWorker;
+    PushWorker pushWorker;
 
     QHash<QString, Client> clients;
     Client client;

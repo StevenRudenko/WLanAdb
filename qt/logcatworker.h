@@ -9,12 +9,12 @@
 
 #include "io_compatibility.h"
 
-class LogWriter : public QObject
+class LogcatWorker : public QObject
 {
     Q_OBJECT
 public:
-    explicit LogWriter(QObject *parent = 0);
-    virtual ~LogWriter();
+    explicit LogcatWorker(QObject *parent = 0);
+    virtual ~LogcatWorker();
     
 signals:
     

@@ -114,16 +114,21 @@ class Command : public ::google::protobuf::Message {
   inline ::std::string* mutable_command();
   inline ::std::string* release_command();
   
-  // optional string params = 3;
-  inline bool has_params() const;
+  // repeated string params = 3;
+  inline int params_size() const;
   inline void clear_params();
   static const int kParamsFieldNumber = 3;
-  inline const ::std::string& params() const;
-  inline void set_params(const ::std::string& value);
-  inline void set_params(const char* value);
-  inline void set_params(const char* value, size_t size);
-  inline ::std::string* mutable_params();
-  inline ::std::string* release_params();
+  inline const ::std::string& params(int index) const;
+  inline ::std::string* mutable_params(int index);
+  inline void set_params(int index, const ::std::string& value);
+  inline void set_params(int index, const char* value);
+  inline void set_params(int index, const char* value, size_t size);
+  inline ::std::string* add_params();
+  inline void add_params(const ::std::string& value);
+  inline void add_params(const char* value);
+  inline void add_params(const char* value, size_t size);
+  inline const ::google::protobuf::RepeatedPtrField< ::std::string>& params() const;
+  inline ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_params();
   
   // @@protoc_insertion_point(class_scope:com.wlancat.data.Command)
  private:
@@ -131,14 +136,12 @@ class Command : public ::google::protobuf::Message {
   inline void clear_has_pin();
   inline void set_has_command();
   inline void clear_has_command();
-  inline void set_has_params();
-  inline void clear_has_params();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::std::string* pin_;
   ::std::string* command_;
-  ::std::string* params_;
+  ::google::protobuf::RepeatedPtrField< ::std::string> params_;
   
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
@@ -273,62 +276,48 @@ inline ::std::string* Command::release_command() {
   }
 }
 
-// optional string params = 3;
-inline bool Command::has_params() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
-}
-inline void Command::set_has_params() {
-  _has_bits_[0] |= 0x00000004u;
-}
-inline void Command::clear_has_params() {
-  _has_bits_[0] &= ~0x00000004u;
+// repeated string params = 3;
+inline int Command::params_size() const {
+  return params_.size();
 }
 inline void Command::clear_params() {
-  if (params_ != &::google::protobuf::internal::kEmptyString) {
-    params_->clear();
-  }
-  clear_has_params();
+  params_.Clear();
 }
-inline const ::std::string& Command::params() const {
-  return *params_;
+inline const ::std::string& Command::params(int index) const {
+  return params_.Get(index);
 }
-inline void Command::set_params(const ::std::string& value) {
-  set_has_params();
-  if (params_ == &::google::protobuf::internal::kEmptyString) {
-    params_ = new ::std::string;
-  }
-  params_->assign(value);
+inline ::std::string* Command::mutable_params(int index) {
+  return params_.Mutable(index);
 }
-inline void Command::set_params(const char* value) {
-  set_has_params();
-  if (params_ == &::google::protobuf::internal::kEmptyString) {
-    params_ = new ::std::string;
-  }
-  params_->assign(value);
+inline void Command::set_params(int index, const ::std::string& value) {
+  params_.Mutable(index)->assign(value);
 }
-inline void Command::set_params(const char* value, size_t size) {
-  set_has_params();
-  if (params_ == &::google::protobuf::internal::kEmptyString) {
-    params_ = new ::std::string;
-  }
-  params_->assign(reinterpret_cast<const char*>(value), size);
+inline void Command::set_params(int index, const char* value) {
+  params_.Mutable(index)->assign(value);
 }
-inline ::std::string* Command::mutable_params() {
-  set_has_params();
-  if (params_ == &::google::protobuf::internal::kEmptyString) {
-    params_ = new ::std::string;
-  }
+inline void Command::set_params(int index, const char* value, size_t size) {
+  params_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Command::add_params() {
+  return params_.Add();
+}
+inline void Command::add_params(const ::std::string& value) {
+  params_.Add()->assign(value);
+}
+inline void Command::add_params(const char* value) {
+  params_.Add()->assign(value);
+}
+inline void Command::add_params(const char* value, size_t size) {
+  params_.Add()->assign(reinterpret_cast<const char*>(value), size);
+}
+inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
+Command::params() const {
   return params_;
 }
-inline ::std::string* Command::release_params() {
-  clear_has_params();
-  if (params_ == &::google::protobuf::internal::kEmptyString) {
-    return NULL;
-  } else {
-    ::std::string* temp = params_;
-    params_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-    return temp;
-  }
+inline ::google::protobuf::RepeatedPtrField< ::std::string>*
+Command::mutable_params() {
+  return &params_;
 }
 
 

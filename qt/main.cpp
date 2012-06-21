@@ -6,7 +6,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    WLanCat* wlancat = new WLanCat();
+    WLanCat* wlancat = new WLanCat(argc, argv);
 
     int result = a.exec();
 

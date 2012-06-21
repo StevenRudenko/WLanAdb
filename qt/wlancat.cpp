@@ -2,7 +2,6 @@
 
 #include "io_compatibility.h"
 
-#include "command.pb.h"
 #include "message.pb.h"
 
 using namespace std;
@@ -15,9 +14,23 @@ const int MAX_REQUESTS_SENT = 5;
 
 }
 
-WLanCat::WLanCat(QObject *parent) :
-    QObject(parent), p2pClient(0), qout(stdout), requestsSent(0)
+WLanCat::WLanCat(int argc, char *argv[]) :
+    QObject(NULL), p2pClient(NULL), qout(stdout), requestsSent(0)
 {
+    if (argc < 2) {
+        //TODO: add help output
+        qout << tr("There is not enough arguments were passed.") << endl;
+        exit(0);
+    }
+
+    cmd.set_command(argv[1]);
+    qout << "Command: " << argv[1];
+    qout << "Arguments count: " << argc << endl;
+    for (int i=2; i<argc; ++i) {
+        qout << "Argument " << i << ": " << argv[i] << endl;
+        *cmd.add_params() = argv[i];
+    }
+
     // Verify that the version of the library that we linked against is
     // compatible with the version of the headers we compiled against.
     GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -141,7 +154,6 @@ void WLanCat::connectToClient() {
     p2pClient = new P2PClient();
 
     connect(p2pClient, SIGNAL(connected()), this, SLOT(onConnectedToClient()));
-    connect(p2pClient, SIGNAL(onDataRecieved(const QString&)), &logWriter, SLOT(onLogLine(const QString&)));
     connect(p2pClient, SIGNAL(disconnected()), this, SLOT(onDisconnectedFromClient()));
 
     const QString clientName = QString::fromStdString(client.name());
@@ -159,7 +171,6 @@ void WLanCat::onConnectedToClient()
 
     qout << tr("\rConnected to %1 - %2 (%3)").arg(clientName, clientIp, QString::number(client.port())) << endl;
 
-    Command cmd;
     if (client.use_pin()) {
         qout << tr("Client requests PIN to access its log. Please enter PIN:") << endl;
 
@@ -172,15 +183,18 @@ void WLanCat::onConnectedToClient()
 
         cmd.set_pin(pin.toStdString());
     }
-    cmd.set_params("-c");
-    cmd.set_command("logcat");
 
     QByteArray data;
     QDataStream request(&data, QIODevice::WriteOnly);
     request << cmd.ByteSize();
     request.writeRawData(cmd.SerializeAsString().c_str(), cmd.ByteSize());
     p2pClient->send(data);
-    //p2pClient->sendFile("./test-image.png");
+
+    connect(p2pClient, SIGNAL(onFileProgress(QString,int,int)), &pushWorker, SLOT(onFileProgress(QString,int,int)));
+    connect(p2pClient, SIGNAL(onFileSent(QString)), &pushWorker, SLOT(onFileSent(QString)));
+    p2pClient->sendFile("./test.deb");
+
+    connect(p2pClient, SIGNAL(onDataRecieved(const QString&)), &logcatWorker, SLOT(onLogLine(const QString&)));
 }
 
 

@@ -20,8 +20,9 @@ SOURCES += main.cpp \
     wlancat.cpp \
     p2pclient.cpp \
     command.pb.cc \
-    logwriter.cpp \
-    io_compatibility.cpp
+    io_compatibility.cpp \
+    logcatworker.cpp \
+    pushworker.cpp
 
 HEADERS += \
     message.pb.h \
@@ -30,8 +31,9 @@ HEADERS += \
     wlancat.h \
     p2pclient.h \
     command.pb.h \
-    logwriter.h \
-    io_compatibility.h
+    io_compatibility.h \
+    logcatworker.h \
+    pushworker.h
 
 TRANSLATIONS = main_en.ts \
                main_ru.ts \

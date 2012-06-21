@@ -1,7 +1,7 @@
 #include "p2pclient.h"
 
 namespace {
-const int SIZE_BLOCK_FOR_SEND_FILE = 1024;
+const int SIZE_BLOCK_FOR_SEND_FILE = 4096;
 }
 
 P2PClient::P2PClient(QObject *parent) :
@@ -66,6 +66,7 @@ bool P2PClient::sendFile(const QString &filename) {
         return false;
 
     readFile = new QFile(filename);
+    readFile->fileName();
     if (readFile->open(QFile::ReadOnly)) {
         connect(tcpSocket, SIGNAL(bytesWritten(qint64)), this, SLOT(sendNextPartOfFile()));
         sendNextPartOfFile();
@@ -85,7 +86,9 @@ void P2PClient::sendNextPartOfFile() {
     if (!readFile->atEnd()) {
         qint64 in = readFile->read(block, sizeof(block));
         tcpSocket->write(block, in);
+        emit onFileProgress(readFile->fileName(), readFile->pos(), readFile->size());
     } else {
+        emit onFileSent(readFile->fileName());
         readFile->close();
         readFile = NULL;
         disconnect(tcpSocket, SIGNAL(bytesWritten(qint64)), this, SLOT(sendNextPartOfFile()));

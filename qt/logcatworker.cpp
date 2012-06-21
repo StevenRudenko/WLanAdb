@@ -1,4 +1,4 @@
-#include "logwriter.h"
+#include "logcatworker.h"
 
 namespace {
 
@@ -29,7 +29,7 @@ const int COLORS[] = {
 
 }
 
-LogWriter::LogWriter(QObject *parent) :
+LogcatWorker::LogcatWorker(QObject *parent) :
     QObject(parent), qout(stdout), nextColor(0), SCREEN_WIDTH(io_compatibility::getConsoleWidth())
 {
     logRegEx.setPattern("^([A-Z])\\/(.*)\\(\\s*(\\d+)\\s*\\): (.*)$");
@@ -40,11 +40,11 @@ LogWriter::LogWriter(QObject *parent) :
     tagsList.insert("ActivityThread", 5);
 }
 
-LogWriter::~LogWriter() {
+LogcatWorker::~LogcatWorker() {
     tagsList.clear();
 }
 
-void LogWriter::onLogLine(const QString& str)
+void LogcatWorker::onLogLine(const QString& str)
 {
     if (logRegEx.indexIn(str) == -1)
         return;
@@ -61,7 +61,7 @@ void LogWriter::onLogLine(const QString& str)
     printMessage(logRegEx.cap(4));
 }
 
-void LogWriter::printTagType(const QString& typeString) {
+void LogcatWorker::printTagType(const QString& typeString) {
     int type = TYPES.indexOf(typeString);
     switch (type) {
     case TYPE_V:
@@ -83,12 +83,12 @@ void LogWriter::printTagType(const QString& typeString) {
     qout << TYPES[type];
 }
 
-void LogWriter::printProcess(const QString& processString) {
+void LogcatWorker::printProcess(const QString& processString) {
     io_compatibility::setTextColor(qout, io_compatibility::FOREGROUND_WHITE, io_compatibility::BACKGROUND_BLACK);
     qout << processString.rightJustified(PROCESS_WIDTH, ' ');
 }
 
-void LogWriter::printTag(const QString& tagString) {
+void LogcatWorker::printTag(const QString& tagString) {
     QString tag = tagString.rightJustified(TAG_WIDTH, ' ', true);
     if (!tagsList.contains(tag)) {
         tagsList.insert(tag, nextColor);
@@ -101,7 +101,7 @@ void LogWriter::printTag(const QString& tagString) {
     qout << tag;
 }
 
-void LogWriter::printMessage(const QString& messageString) {
+void LogcatWorker::printMessage(const QString& messageString) {
     const int wrap_area = SCREEN_WIDTH - HEADER_WIDTH;
     int current = 0;
     const int len = messageString.length();
