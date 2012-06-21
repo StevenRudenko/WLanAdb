@@ -130,6 +130,9 @@ public abstract class BroadcastServer implements Runnable {
     // Loop and try to receive messages. We'll get back the packet we just
     // sent out, which isn't terribly helpful, but we'll discard it.
     while (isRunning) {
+      if (mSocket.isClosed())
+        return;
+
       final DatagramPacket packet = new DatagramPacket(buf, buf.length);
       try {
         mSocket.receive(packet);
@@ -154,6 +157,8 @@ public abstract class BroadcastServer implements Runnable {
       final ByteString data = ByteString.copyFrom(packetData, 0, packetLength);
       onDataPackage(data);
     }
+
+    isRunning = false;
     mSocket.close();
   }
 }

@@ -11,14 +11,14 @@ import android.util.Log;
 
 import com.wlancat.utils.IOUtilities;
 
-public class FileWorker extends BaseWorker {
-  private static final String TAG = FileWorker.class.getSimpleName();
+public class PushWorker extends BaseWorker {
+  private static final String TAG = PushWorker.class.getSimpleName();
   private static final boolean DEBUG = true;
 
   private final InputStream in;
   private final File file;
 
-  public FileWorker(InputStream in, OutputStream out, WorkerListener listener) {
+  public PushWorker(InputStream in, OutputStream out, WorkerListener listener) {
     super(in, out, listener);
 
     this.in = in;

@@ -13,7 +13,7 @@ import com.wlancat.data.CommandProto.Command;
 import com.wlancat.utils.IOUtilities;
 import com.wlancat.worker.BaseWorker;
 import com.wlancat.worker.BaseWorker.WorkerListener;
-import com.wlancat.worker.FileWorker;
+import com.wlancat.worker.PushWorker;
 import com.wlancat.worker.LogcatWorkerSignalSlot;
 
 public class P2PConnectionRunnable implements Runnable, WorkerListener {
@@ -125,7 +125,7 @@ public class P2PConnectionRunnable implements Runnable, WorkerListener {
       if (command.equals("logcat")) {
         worker = new LogcatWorkerSignalSlot(mSocket.getInputStream(), mSocket.getOutputStream(), this);
       } else if (command.equals("push")) {
-        worker = new FileWorker(mSocket.getInputStream(), mSocket.getOutputStream(), this);
+        worker = new PushWorker(mSocket.getInputStream(), mSocket.getOutputStream(), this);
       }
 
       if (worker != null)

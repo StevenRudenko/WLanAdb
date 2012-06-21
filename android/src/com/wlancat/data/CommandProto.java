@@ -19,9 +19,10 @@ public final class CommandProto {
     boolean hasCommand();
     String getCommand();
     
-    // optional string params = 3;
-    boolean hasParams();
-    String getParams();
+    // repeated string params = 3;
+    java.util.List<String> getParamsList();
+    int getParamsCount();
+    String getParams(int index);
   }
   public static final class Command extends
       com.google.protobuf.GeneratedMessage
@@ -116,42 +117,24 @@ public final class CommandProto {
       }
     }
     
-    // optional string params = 3;
+    // repeated string params = 3;
     public static final int PARAMS_FIELD_NUMBER = 3;
-    private java.lang.Object params_;
-    public boolean hasParams() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
+    private com.google.protobuf.LazyStringList params_;
+    public java.util.List<String>
+        getParamsList() {
+      return params_;
     }
-    public String getParams() {
-      java.lang.Object ref = params_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          params_ = s;
-        }
-        return s;
-      }
+    public int getParamsCount() {
+      return params_.size();
     }
-    private com.google.protobuf.ByteString getParamsBytes() {
-      java.lang.Object ref = params_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        params_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public String getParams(int index) {
+      return params_.get(index);
     }
     
     private void initFields() {
       pin_ = "";
       command_ = "";
-      params_ = "";
+      params_ = com.google.protobuf.LazyStringArrayList.EMPTY;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -171,8 +154,8 @@ public final class CommandProto {
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeBytes(2, getCommandBytes());
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeBytes(3, getParamsBytes());
+      for (int i = 0; i < params_.size(); i++) {
+        output.writeBytes(3, params_.getByteString(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -191,9 +174,14 @@ public final class CommandProto {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(2, getCommandBytes());
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(3, getParamsBytes());
+      {
+        int dataSize = 0;
+        for (int i = 0; i < params_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeBytesSizeNoTag(params_.getByteString(i));
+        }
+        size += dataSize;
+        size += 1 * getParamsList().size();
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -323,7 +311,7 @@ public final class CommandProto {
         bitField0_ = (bitField0_ & ~0x00000001);
         command_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
-        params_ = "";
+        params_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
@@ -371,8 +359,10 @@ public final class CommandProto {
           to_bitField0_ |= 0x00000002;
         }
         result.command_ = command_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          params_ = new com.google.protobuf.UnmodifiableLazyStringList(
+              params_);
+          bitField0_ = (bitField0_ & ~0x00000004);
         }
         result.params_ = params_;
         result.bitField0_ = to_bitField0_;
@@ -397,8 +387,15 @@ public final class CommandProto {
         if (other.hasCommand()) {
           setCommand(other.getCommand());
         }
-        if (other.hasParams()) {
-          setParams(other.getParams());
+        if (!other.params_.isEmpty()) {
+          if (params_.isEmpty()) {
+            params_ = other.params_;
+            bitField0_ = (bitField0_ & ~0x00000004);
+          } else {
+            ensureParamsIsMutable();
+            params_.addAll(other.params_);
+          }
+          onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -442,8 +439,8 @@ public final class CommandProto {
               break;
             }
             case 26: {
-              bitField0_ |= 0x00000004;
-              params_ = input.readBytes();
+              ensureParamsIsMutable();
+              params_.add(input.readBytes());
               break;
             }
           }
@@ -524,39 +521,59 @@ public final class CommandProto {
         onChanged();
       }
       
-      // optional string params = 3;
-      private java.lang.Object params_ = "";
-      public boolean hasParams() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
+      // repeated string params = 3;
+      private com.google.protobuf.LazyStringList params_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureParamsIsMutable() {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+          params_ = new com.google.protobuf.LazyStringArrayList(params_);
+          bitField0_ |= 0x00000004;
+         }
       }
-      public String getParams() {
-        java.lang.Object ref = params_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          params_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public java.util.List<String>
+          getParamsList() {
+        return java.util.Collections.unmodifiableList(params_);
       }
-      public Builder setParams(String value) {
+      public int getParamsCount() {
+        return params_.size();
+      }
+      public String getParams(int index) {
+        return params_.get(index);
+      }
+      public Builder setParams(
+          int index, String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000004;
-        params_ = value;
+  ensureParamsIsMutable();
+        params_.set(index, value);
+        onChanged();
+        return this;
+      }
+      public Builder addParams(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureParamsIsMutable();
+        params_.add(value);
+        onChanged();
+        return this;
+      }
+      public Builder addAllParams(
+          java.lang.Iterable<String> values) {
+        ensureParamsIsMutable();
+        super.addAll(values, params_);
         onChanged();
         return this;
       }
       public Builder clearParams() {
+        params_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000004);
-        params_ = getDefaultInstance().getParams();
         onChanged();
         return this;
       }
-      void setParams(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000004;
-        params_ = value;
+      void addParams(com.google.protobuf.ByteString value) {
+        ensureParamsIsMutable();
+        params_.add(value);
         onChanged();
       }
       
@@ -587,7 +604,7 @@ public final class CommandProto {
     java.lang.String[] descriptorData = {
       "\n\rcommand.proto\022\020com.wlancat.data\"7\n\007Com" +
       "mand\022\013\n\003pin\030\001 \001(\t\022\017\n\007command\030\002 \001(\t\022\016\n\006pa" +
-      "rams\030\003 \001(\tB \n\020com.wlancat.dataB\014CommandP" +
+      "rams\030\003 \003(\tB \n\020com.wlancat.dataB\014CommandP" +
       "roto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
