@@ -24,7 +24,7 @@ WLanCat::WLanCat(int argc, char *argv[]) :
     }
 
     cmd.set_command(argv[1]);
-    qout << "Command: " << argv[1];
+    qout << "Command: " << argv[1] << endl;
     qout << "Arguments count: " << argc << endl;
     for (int i=2; i<argc; ++i) {
         qout << "Argument " << i << ": " << argv[i] << endl;
@@ -159,7 +159,7 @@ void WLanCat::connectToClient() {
     const QString clientName = QString::fromStdString(client.name());
     const QString clientIp = QString::fromStdString(client.ip());
 
-    qout << tr("\rTrying connect to %1 - %2 (%3)").arg(clientName, clientIp, QString::number(client.port())) << endl;
+    qout << tr("\rTrying connect to %1 - %2 (%3)").arg(clientName, clientIp, QString::number(client.port()));
 
     p2pClient->connectToServer(clientIp, client.port());
 }
@@ -170,6 +170,7 @@ void WLanCat::onConnectedToClient()
     const QString clientIp = QString::fromStdString(client.ip());
 
     qout << tr("\rConnected to %1 - %2 (%3)").arg(clientName, clientIp, QString::number(client.port())) << endl;
+    qout.flush();
 
     if (client.use_pin()) {
         qout << tr("Client requests PIN to access its log. Please enter PIN:") << endl;
@@ -190,11 +191,21 @@ void WLanCat::onConnectedToClient()
     request.writeRawData(cmd.SerializeAsString().c_str(), cmd.ByteSize());
     p2pClient->send(data);
 
-    connect(p2pClient, SIGNAL(onFileProgress(QString,int,int)), &pushWorker, SLOT(onFileProgress(QString,int,int)));
-    connect(p2pClient, SIGNAL(onFileSent(QString)), &pushWorker, SLOT(onFileSent(QString)));
-    p2pClient->sendFile("./test.deb");
+    QString command = QString::fromUtf8(cmd.command().c_str());
+    if (0 == command.compare("push")) {
+        connect(p2pClient, SIGNAL(onFileSendingStarted(QString)), &pushWorker, SLOT(onFileSendingStarted(QString)));
+        connect(p2pClient, SIGNAL(onFileSendingProgress(QString,qint64,qint64)), &pushWorker, SLOT(onFileSendingProgress(QString,qint64,qint64)));
+        connect(p2pClient, SIGNAL(onFileSendingEnded(QString)), &pushWorker, SLOT(onFileSendingEnded(QString)));
 
-    connect(p2pClient, SIGNAL(onDataRecieved(const QString&)), &logcatWorker, SLOT(onLogLine(const QString&)));
+        QString file = QString::fromUtf8(cmd.params(0).c_str());
+        p2pClient->sendFile(file);
+    } else if (0 == command.compare("logcat")) {
+        connect(p2pClient, SIGNAL(onDataRecieved(const QString&)), &logcatWorker, SLOT(onLogLine(const QString&)));
+    } else {
+        //TODO: show help message here
+        qout << tr("Unknown command: ") << cmd.command().c_str() << endl;
+        exit(0);
+    }
 }
 
 

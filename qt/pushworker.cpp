@@ -3,7 +3,45 @@
 namespace {
 
 const int PERCENT_WIDTH = 4;
-const int HEADER_WIDTH = 38;
+const int SENT_WIDTH = 10;
+const int SPEED_WIDTH = 8;
+const int ETA_WIDTH = 6;
+const int HEADER_WIDTH = 39;
+
+const double b = 1;
+const double Kb = 1024 * b;
+const double Mb = 1024 * Kb;
+const double Gb = 1024 * Mb;
+const double Tb = 1024 * Gb;
+
+QString readableSize(qint64 bytes) {
+    int prec = 2;
+    QString unit;
+    float value;
+    if (bytes > Gb) {
+        value = bytes / Gb;
+        unit = "Gb";
+    } else {
+        if (bytes > Mb) {
+            value = bytes / Mb;
+            unit = "Mb";
+        } else {
+            if (bytes > Kb) {
+                value = bytes / Kb;
+                unit = "Kb";
+                prec = 0;
+            } else {
+                value = bytes;
+                unit = "b";
+                prec = 0;
+            }
+        }
+    }
+    QString result;
+    result.append(QString::number(value, 'f', prec));
+    result.append(unit);
+    return result;
+}
 
 }
 
@@ -17,29 +55,58 @@ PushWorker::~PushWorker() {
 
 }
 
-void PushWorker::onFileSent(const QString &filename)
+void PushWorker::onFileSendingStarted(const QString &filename)
 {
-    //qout << "\r" << filename << " sent" << endl;
-    exit(0);
+    qout << "\rSending " << filename << "..." << endl;
+    timer.start();
 }
 
-void PushWorker::onFileProgress(const QString &filename, int sent, int total)
+void PushWorker::onFileSendingProgress(const QString &, qint64 sent, qint64 total)
 {
-    //<4->[           ]<------ 34 ---------------------->
-    //39% [=====>     ] 1,728,245    104K/s  eta 31s
-    //2012-06-21 17:39:55 (94.9 KB/s) - `TheAnnoyingOrange.mp4' saved [4348238/4348238]
+    const quint64 elapsed = timer.elapsed();
+    if (elapsed == 0)
+        return;
+
+    const quint64 speed = 1000 * sent / elapsed;
+    const int eta_time = (total - sent) / speed;
+
     const int progress_area = SCREEN_WIDTH - HEADER_WIDTH;
-    const float percent = (float)sent / (float)total;
-    const int progress = 100.f * percent;
+
+    const double percent = (double)sent / (double)total;
+    const int progress = 100.0 * percent;
     const int done = percent * progress_area;
     const int notdone = progress_area - done;
-    QString text_done(done - 1, '=');
+
+    QString text_done(done, '=');
+    text_done.append(">");
     QString text_notdone(notdone, ' ');
+
     QString text_percent;
     text_percent.setNum(progress);
     text_percent = text_percent.rightJustified(2, '0');
     text_percent.append('%');
     text_percent = text_percent.leftJustified(PERCENT_WIDTH, ' ');
-    qout << "\r" << text_percent << "[" << text_done << '>' << text_notdone << "]";
+
+    QString text_sent = readableSize(sent);
+    text_sent = text_sent.leftJustified(SENT_WIDTH, ' ');
+
+    QString text_speed = readableSize(speed);
+    text_speed.append("/s");
+    text_speed = text_speed.leftJustified(SPEED_WIDTH, ' ');
+
+    QString text_eta;
+    text_eta.setNum(eta_time);
+    text_eta.append("s");
+    text_eta = text_eta.leftJustified(ETA_WIDTH, ' ');
+
+    qout << "\r" << text_percent << "[" << text_done << text_notdone << "] " << text_sent << " " << text_speed << " eta " << text_eta;
     qout.flush();
+}
+
+void PushWorker::onFileSendingEnded(const QString &filename)
+{
+    quint64 elapsed = timer.elapsed();
+    //2012-06-21 17:39:55 (94.9 KB/s) - `TheAnnoyingOrange.mp4' saved [4348238/4348238]
+    qout << endl << tr("%1 was sent within %2").arg(filename, QString::number(elapsed)) << endl;
+    exit(0);
 }

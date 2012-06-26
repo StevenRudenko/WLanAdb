@@ -1,6 +1,7 @@
 #ifndef PUSHWORKER_H
 #define PUSHWORKER_H
 
+#include <QElapsedTimer>
 #include <QObject>
 #include <QTextStream>
 
@@ -16,11 +17,14 @@ public:
 signals:
     
 public slots:
-    void onFileSent(const QString& filename);
-    void onFileProgress(const QString& filename, int sent, int total);
+    void onFileSendingStarted(const QString& filename);
+    void onFileSendingProgress(const QString& filename, qint64 sent, qint64 total);
+    void onFileSendingEnded(const QString& filename);
     
 private:
     QTextStream qout;
+    QElapsedTimer timer;
+
     const int SCREEN_WIDTH;
 };
 

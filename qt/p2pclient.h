@@ -18,8 +18,10 @@ signals:
     void connected();
     void disconnected();
     void onDataRecieved(const QString& data);
-    void onFileSent(const QString& filename);
-    void onFileProgress(const QString& filename, int sent, int total);
+
+    void onFileSendingStarted(const QString& filename);
+    void onFileSendingProgress(const QString& filename, qint64 sent, qint64 total);
+    void onFileSendingEnded(const QString& filename);
 
 public slots:
 
