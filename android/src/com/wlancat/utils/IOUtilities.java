@@ -21,7 +21,7 @@ import android.util.Log;
 public class IOUtilities {
   private static final String TAG = IOUtilities.class.getSimpleName();
 
-  private static final int IO_BUFFER_SIZE = 4 * 1024;
+  private static final int IO_BUFFER_SIZE = 64 * 1024;
 
   /**
    * Copy the content of the input stream into the output stream, using a

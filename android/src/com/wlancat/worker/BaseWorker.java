@@ -3,15 +3,18 @@ package com.wlancat.worker;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public abstract class BaseWorker {
+import com.wlancat.data.CommandProto.Command;
 
+public abstract class BaseWorker {
   public static interface WorkerListener {
     public void onError();
   }
 
   protected final WorkerListener listener;
+  protected final Command command;
 
-  public BaseWorker(InputStream in, OutputStream out, WorkerListener listener) {
+  public BaseWorker(Command command, InputStream in, OutputStream out, WorkerListener listener) {
+    this.command = command;
     this.listener = listener;
   }
 

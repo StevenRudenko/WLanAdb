@@ -1,5 +1,6 @@
 package com.wlancat.worker;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,22 +10,28 @@ import java.io.OutputStream;
 import android.os.Environment;
 import android.util.Log;
 
+import com.wlancat.data.CommandProto.Command;
 import com.wlancat.utils.IOUtilities;
 
 public class PushWorker extends BaseWorker {
   private static final String TAG = PushWorker.class.getSimpleName();
   private static final boolean DEBUG = true;
 
+  private static final int IO_BUFFER_SIZE = 64 * 1024;
+
   private final InputStream in;
   private final File file;
 
-  public PushWorker(InputStream in, OutputStream out, WorkerListener listener) {
-    super(in, out, listener);
+  public PushWorker(Command command, InputStream in, OutputStream out, WorkerListener listener) {
+    super(command, in, out, listener);
 
-    this.in = in;
+    this.in = new BufferedInputStream(in, IO_BUFFER_SIZE);
 
     final File downloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-    file = new File(downloads, "test-image.png");
+    final String inPath = command.getParams(0);
+
+    final File inFile = new File(inPath);
+    file = new File(downloads, inFile.getName());
   }
 
   @Override

@@ -33,6 +33,12 @@ public class P2PConnectionRunnable implements Runnable, WorkerListener {
   private Command command;
   private BaseWorker worker;
 
+  /* Write the image to disk first. Then try to open sockets 
+   * in parallel each transferring a different offset of the
+   * image (e.g. split the image to 3 jobs, transfer each in
+   * parallel to the others). This will workaround some TCP
+   * behaviors.
+   */
   protected P2PConnectionRunnable(Socket socket, ConnectionHandler connectionHandler) {
     mConnectionHandler = connectionHandler;
     mSocket = socket;
@@ -123,9 +129,9 @@ public class P2PConnectionRunnable implements Runnable, WorkerListener {
 
       final String command = this.command.getCommand();
       if (command.equals("logcat")) {
-        worker = new LogcatWorkerSignalSlot(mSocket.getInputStream(), mSocket.getOutputStream(), this);
+        worker = new LogcatWorkerSignalSlot(this.command, mSocket.getInputStream(), mSocket.getOutputStream(), this);
       } else if (command.equals("push")) {
-        worker = new PushWorker(mSocket.getInputStream(), mSocket.getOutputStream(), this);
+        worker = new PushWorker(this.command, mSocket.getInputStream(), mSocket.getOutputStream(), this);
       }
 
       if (worker != null)

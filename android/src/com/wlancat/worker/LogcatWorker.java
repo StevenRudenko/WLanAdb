@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
+import com.wlancat.data.CommandProto.Command;
 import com.wlancat.logcat.LogReader;
 import com.wlancat.logcat.LogReaderSignalSlot;
 
@@ -21,8 +22,8 @@ public class LogcatWorker extends BaseWorker {
   private final OutputStreamWriter mOutputStream;
   private final LogReader mLogReader;
 
-  public LogcatWorker(InputStream in, OutputStream out, WorkerListener listener) {
-    super(in, out, listener);
+  public LogcatWorker(Command command, InputStream in, OutputStream out, WorkerListener listener) {
+    super(command, in, out, listener);
 
     mLogReader = new LogReaderSignalSlot();
     mOutputStream = new OutputStreamWriter(out);
