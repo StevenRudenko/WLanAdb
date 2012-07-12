@@ -30,7 +30,7 @@ public abstract class UdpMessager {
   @slot
   public void onMessageRecieved(ByteString data) {
     try {
-      final Message message = Message.newBuilder().mergeFrom(data).buildPartial();
+      final Message message = Message.parseFrom(data);
 
       if (!message.getType().equals(Message.Type.REQEST))
         return;

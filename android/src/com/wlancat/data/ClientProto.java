@@ -6,10 +6,10 @@ package com.wlancat.data;
 public final class ClientProto {
   private ClientProto() {}
   public static void registerAllExtensions(
-      com.google.protobuf.ExtensionRegistry registry) {
+      com.google.protobuf.ExtensionRegistryLite registry) {
   }
   public interface ClientOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+      extends com.google.protobuf.MessageLiteOrBuilder {
     
     // required string id = 1;
     boolean hasId();
@@ -32,7 +32,7 @@ public final class ClientProto {
     boolean getUsePin();
   }
   public static final class Client extends
-      com.google.protobuf.GeneratedMessage
+      com.google.protobuf.GeneratedMessageLite
       implements ClientOrBuilder {
     // Use Client.newBuilder() to construct.
     private Client(Builder builder) {
@@ -47,16 +47,6 @@ public final class ClientProto {
     
     public Client getDefaultInstanceForType() {
       return defaultInstance;
-    }
-    
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return com.wlancat.data.ClientProto.internal_static_com_wlancat_data_Client_descriptor;
-    }
-    
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return com.wlancat.data.ClientProto.internal_static_com_wlancat_data_Client_fieldAccessorTable;
     }
     
     private int bitField0_;
@@ -214,7 +204,6 @@ public final class ClientProto {
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeBool(5, usePin_);
       }
-      getUnknownFields().writeTo(output);
     }
     
     private int memoizedSerializedSize = -1;
@@ -243,7 +232,6 @@ public final class ClientProto {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(5, usePin_);
       }
-      size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
     }
@@ -329,37 +317,16 @@ public final class ClientProto {
     }
     public Builder toBuilder() { return newBuilder(this); }
     
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements com.wlancat.data.ClientProto.ClientOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return com.wlancat.data.ClientProto.internal_static_com_wlancat_data_Client_descriptor;
-      }
-      
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return com.wlancat.data.ClientProto.internal_static_com_wlancat_data_Client_fieldAccessorTable;
-      }
-      
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.wlancat.data.ClientProto.Client, Builder>
+        implements com.wlancat.data.ClientProto.ClientOrBuilder {
       // Construct using com.wlancat.data.ClientProto.Client.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
       
-      private Builder(BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-        }
       }
       private static Builder create() {
         return new Builder();
@@ -382,11 +349,6 @@ public final class ClientProto {
       
       public Builder clone() {
         return create().mergeFrom(buildPartial());
-      }
-      
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return com.wlancat.data.ClientProto.Client.getDescriptor();
       }
       
       public com.wlancat.data.ClientProto.Client getDefaultInstanceForType() {
@@ -436,17 +398,7 @@ public final class ClientProto {
         }
         result.usePin_ = usePin_;
         result.bitField0_ = to_bitField0_;
-        onBuilt();
         return result;
-      }
-      
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof com.wlancat.data.ClientProto.Client) {
-          return mergeFrom((com.wlancat.data.ClientProto.Client)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
       }
       
       public Builder mergeFrom(com.wlancat.data.ClientProto.Client other) {
@@ -466,7 +418,6 @@ public final class ClientProto {
         if (other.hasUsePin()) {
           setUsePin(other.getUsePin());
         }
-        this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
       
@@ -482,21 +433,15 @@ public final class ClientProto {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
         while (true) {
           int tag = input.readTag();
           switch (tag) {
             case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
+              
               return this;
             default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
+              if (!parseUnknownField(input, extensionRegistry, tag)) {
+                
                 return this;
               }
               break;
@@ -553,19 +498,19 @@ public final class ClientProto {
   }
   bitField0_ |= 0x00000001;
         id_ = value;
-        onChanged();
+        
         return this;
       }
       public Builder clearId() {
         bitField0_ = (bitField0_ & ~0x00000001);
         id_ = getDefaultInstance().getId();
-        onChanged();
+        
         return this;
       }
       void setId(com.google.protobuf.ByteString value) {
         bitField0_ |= 0x00000001;
         id_ = value;
-        onChanged();
+        
       }
       
       // optional string ip = 2;
@@ -589,19 +534,19 @@ public final class ClientProto {
   }
   bitField0_ |= 0x00000002;
         ip_ = value;
-        onChanged();
+        
         return this;
       }
       public Builder clearIp() {
         bitField0_ = (bitField0_ & ~0x00000002);
         ip_ = getDefaultInstance().getIp();
-        onChanged();
+        
         return this;
       }
       void setIp(com.google.protobuf.ByteString value) {
         bitField0_ |= 0x00000002;
         ip_ = value;
-        onChanged();
+        
       }
       
       // optional int32 port = 3;
@@ -615,13 +560,13 @@ public final class ClientProto {
       public Builder setPort(int value) {
         bitField0_ |= 0x00000004;
         port_ = value;
-        onChanged();
+        
         return this;
       }
       public Builder clearPort() {
         bitField0_ = (bitField0_ & ~0x00000004);
         port_ = 0;
-        onChanged();
+        
         return this;
       }
       
@@ -646,19 +591,19 @@ public final class ClientProto {
   }
   bitField0_ |= 0x00000008;
         name_ = value;
-        onChanged();
+        
         return this;
       }
       public Builder clearName() {
         bitField0_ = (bitField0_ & ~0x00000008);
         name_ = getDefaultInstance().getName();
-        onChanged();
+        
         return this;
       }
       void setName(com.google.protobuf.ByteString value) {
         bitField0_ |= 0x00000008;
         name_ = value;
-        onChanged();
+        
       }
       
       // optional bool use_pin = 5;
@@ -672,13 +617,13 @@ public final class ClientProto {
       public Builder setUsePin(boolean value) {
         bitField0_ |= 0x00000010;
         usePin_ = value;
-        onChanged();
+        
         return this;
       }
       public Builder clearUsePin() {
         bitField0_ = (bitField0_ & ~0x00000010);
         usePin_ = false;
-        onChanged();
+        
         return this;
       }
       
@@ -693,45 +638,8 @@ public final class ClientProto {
     // @@protoc_insertion_point(class_scope:com.wlancat.data.Client)
   }
   
-  private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_com_wlancat_data_Client_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_com_wlancat_data_Client_fieldAccessorTable;
   
-  public static com.google.protobuf.Descriptors.FileDescriptor
-      getDescriptor() {
-    return descriptor;
-  }
-  private static com.google.protobuf.Descriptors.FileDescriptor
-      descriptor;
   static {
-    java.lang.String[] descriptorData = {
-      "\n\014client.proto\022\020com.wlancat.data\"M\n\006Clie" +
-      "nt\022\n\n\002id\030\001 \002(\t\022\n\n\002ip\030\002 \001(\t\022\014\n\004port\030\003 \001(\005" +
-      "\022\014\n\004name\030\004 \001(\t\022\017\n\007use_pin\030\005 \001(\010B\037\n\020com.w" +
-      "lancat.dataB\013ClientProto"
-    };
-    com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-      new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
-        public com.google.protobuf.ExtensionRegistry assignDescriptors(
-            com.google.protobuf.Descriptors.FileDescriptor root) {
-          descriptor = root;
-          internal_static_com_wlancat_data_Client_descriptor =
-            getDescriptor().getMessageTypes().get(0);
-          internal_static_com_wlancat_data_Client_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_com_wlancat_data_Client_descriptor,
-              new java.lang.String[] { "Id", "Ip", "Port", "Name", "UsePin", },
-              com.wlancat.data.ClientProto.Client.class,
-              com.wlancat.data.ClientProto.Client.Builder.class);
-          return null;
-        }
-      };
-    com.google.protobuf.Descriptors.FileDescriptor
-      .internalBuildGeneratedFileFrom(descriptorData,
-        new com.google.protobuf.Descriptors.FileDescriptor[] {
-        }, assigner);
   }
   
   // @@protoc_insertion_point(outer_class_scope)

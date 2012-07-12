@@ -16,8 +16,8 @@ import com.wlancat.worker.BaseWorker.WorkerListener;
 import com.wlancat.worker.PushWorker;
 import com.wlancat.worker.LogcatWorkerSignalSlot;
 
-public class P2PConnectionRunnable implements Runnable, WorkerListener {
-  private static final String TAG = P2PConnectionRunnable.class.getSimpleName();
+public class P2PConnection implements Runnable, WorkerListener {
+  private static final String TAG = P2PConnection.class.getSimpleName();
   private static final boolean DEBUG = MyConfig.DEBUG && true;
 
   public static interface ConnectionHandler {
@@ -39,7 +39,7 @@ public class P2PConnectionRunnable implements Runnable, WorkerListener {
    * parallel to the others). This will workaround some TCP
    * behaviors.
    */
-  protected P2PConnectionRunnable(Socket socket, ConnectionHandler connectionHandler) {
+  protected P2PConnection(Socket socket, ConnectionHandler connectionHandler) {
     mConnectionHandler = connectionHandler;
     mSocket = socket;
     try {
@@ -64,6 +64,7 @@ public class P2PConnectionRunnable implements Runnable, WorkerListener {
     } catch (IOException e) {
       // do nothing
     }
+
     try{
       IOUtilities.closeStream(mSocket.getInputStream());
     } catch (IOException e) {

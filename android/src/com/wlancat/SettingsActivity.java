@@ -8,6 +8,7 @@ import com.wlancat.compat.SharedPreferencesApply;
 import com.wlancat.data.ClientProto.Client;
 import com.wlancat.data.ClientSettings;
 import com.wlancat.data.ClientSettingsSignalSlot;
+import com.wlancat.ui.PasswordPreference;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -21,19 +22,15 @@ import android.preference.PreferenceScreen;
 public class SettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 
   private static final String PREF_CLIENT_ID = "client_id";
-  private static final String PREF_CLIENT_IP = "client_ip";
-  private static final String PREF_CLIENT_PORT = "client_port";
   private static final String PREF_CLIENT_NAME = "client_name";
   private static final String PREF_SECURITY_PIN = "security_pin";
 
   private ClientSettings mClientSettings;
 
   private EditTextPreference mClientIdPref;
-  private EditTextPreference mClientIpPref;
-  private EditTextPreference mClientPortPref;
   private EditTextPreference mClientNamePref;
 
-  private EditTextPreference mSecuityPinPref;
+  private PasswordPreference mSecuityPinPref;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -47,11 +44,9 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 
     final PreferenceScreen screen = getPreferenceScreen();
     mClientIdPref = (EditTextPreference) screen.findPreference(PREF_CLIENT_ID);
-    mClientIpPref = (EditTextPreference) screen.findPreference(PREF_CLIENT_IP);
-    mClientPortPref = (EditTextPreference) screen.findPreference(PREF_CLIENT_PORT);
     mClientNamePref = (EditTextPreference) screen.findPreference(PREF_CLIENT_NAME);
 
-    mSecuityPinPref = (EditTextPreference) screen.findPreference(PREF_SECURITY_PIN);
+    mSecuityPinPref = (PasswordPreference) screen.findPreference(PREF_SECURITY_PIN);
   }
 
   @Override
@@ -66,7 +61,6 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
     updatePreferences(mClientSettings.getClient());
     // starting listen for preferences changes
     final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-    prefs.edit().putString(PREF_SECURITY_PIN, mClientSettings.getPin());
     prefs.registerOnSharedPreferenceChangeListener(this);
   }
 
@@ -84,22 +78,21 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
   }
 
   @Override
-  public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-      String key) {
-
+  public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
     if (PREF_CLIENT_NAME.equals(key)) {
-      mClientSettings.setName(sharedPreferences.getString(PREF_CLIENT_NAME, null));
+      mClientSettings.setName(sharedPreferences.getString(PREF_CLIENT_NAME, null)).commit();
     } else if (PREF_SECURITY_PIN.equals(key)) {
-      mClientSettings.setPin(sharedPreferences.getString(PREF_SECURITY_PIN, null));
+      final String pin = sharedPreferences.getString(PREF_SECURITY_PIN, null);
+      mClientSettings.setPin(pin).commit();
     }
+    updatePreferences(mClientSettings.getClient());
   }
 
   @slot
   public void updatePreferences(Client client) {
     mClientIdPref.setSummary(client.getId());
-    mClientIpPref.setSummary(client.getIp());
-    mClientPortPref.setSummary(Integer.toString(client.getPort()));
     mClientNamePref.setSummary(client.getName());
+    mClientNamePref.setText(client.getName());
     mSecuityPinPref.setSummary(client.getUsePin() ? R.string.pref_security_pin_summary_set : R.string.pref_security_pin_summary_not_set);
   }
 

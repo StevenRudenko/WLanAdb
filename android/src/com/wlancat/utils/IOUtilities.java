@@ -21,12 +21,12 @@ import android.util.Log;
 public class IOUtilities {
   private static final String TAG = IOUtilities.class.getSimpleName();
 
-  private static final int IO_BUFFER_SIZE = 64 * 1024;
+  public static final int FILE_BUFFER_SIZE = 4 * 1024;
 
   /**
    * Copy the content of the input stream into the output stream, using a
    * temporary byte array buffer whose size is defined by
-   * {@link #IO_BUFFER_SIZE}.
+   * {@link #FILE_BUFFER_SIZE}.
    * 
    * @param in
    *          The input stream to copy from.
@@ -36,13 +36,18 @@ public class IOUtilities {
    * @throws java.io.IOException
    *           If any error occurs during the copy.
    */
-  public static void copy(InputStream in, OutputStream out) throws IOException {
-    byte[] b = new byte[IO_BUFFER_SIZE];
+  public static void copyFile(InputStream in, OutputStream out, long length) throws IOException {
+    long totalRead = 0;
+    byte[] b = new byte[FILE_BUFFER_SIZE];
     int read;
-    while ((read = in.read(b)) != -1) {
+    while ((read = in.read(b)) > 0) {
       out.write(b, 0, read);
+      out.flush();
+
+      totalRead += read;
+      if (totalRead >= length)
+        break;
     }
-    out.flush();
   }
 
   /**

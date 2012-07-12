@@ -56,6 +56,9 @@ public class WiFiUtils {
       return null;
 
     final int ipAddress = wifiInfo.getIpAddress();
+    if (ipAddress == 0)
+      return null;
+
     final String ipAddressFormated = Formatter.formatIpAddress(ipAddress);
 
     try {

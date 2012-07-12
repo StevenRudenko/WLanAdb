@@ -25,7 +25,7 @@ public class HashHelper {
     return base64String.trim();
   }
 
-  private static String convertToHex(byte[] data) {
+  public static String convertToHex(byte[] data) {
     if (data == null || data.length == 0)
       return null;
 

@@ -8,19 +8,10 @@
         <EditTextPreference
             android:key="client_name"
             android:title="@string/pref_client_name" />
-        <EditTextPreference
-            android:enabled="false"
-            android:key="client_ip"
-            android:title="@string/pref_client_ip" />
-        <EditTextPreference
-            android:enabled="false"
-            android:key="client_port"
-            android:title="@string/pref_client_port" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_security_settings" >
         <com.wlancat.ui.PasswordPreference
             android:key="security_pin"
-            android:password="true"
             android:title="@string/pref_security_pin" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_about_settings" >
@@ -30,7 +21,6 @@
 
         <com.wlancat.ui.VersionPreference
             android:defaultValue="@string/pref_about_version"
-            android:enabled="false"
             android:key="about_version" />
     </PreferenceCategory>
 

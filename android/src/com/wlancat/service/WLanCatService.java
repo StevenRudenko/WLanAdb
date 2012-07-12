@@ -82,8 +82,7 @@ public class WLanCatService extends Service {
 
     mP2pServer.start();
 
-    mClientSettings.setIp(localAddress);
-    mClientSettings.setPort(mP2pServer.getPort());
+    mClientSettings.setIp(localAddress).setPort(mP2pServer.getPort()).commit();
 
     mUdpMessager = new UdpMessagerSignalSlot(mClientSettings.getClient());
 

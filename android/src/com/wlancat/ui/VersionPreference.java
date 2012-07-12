@@ -22,6 +22,8 @@ public class VersionPreference extends Preference {
 
   public VersionPreference(Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
+
+    setSelectable(false);
   }
 
   @Override
@@ -42,7 +44,5 @@ public class VersionPreference extends Preference {
         .append(MyConfig.REVISION)
         .append(")\nThank you for downloading. Enjoy!");
     textView.setText(versionBuilder.toString());
-
-    view.setBackgroundResource(0);
   }
 }

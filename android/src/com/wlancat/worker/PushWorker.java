@@ -1,23 +1,25 @@
 package com.wlancat.worker;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.DigestOutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import android.os.Environment;
 import android.util.Log;
 
+import com.wlancat.config.MyConfig;
 import com.wlancat.data.CommandProto.Command;
+import com.wlancat.utils.HashHelper;
 import com.wlancat.utils.IOUtilities;
 
 public class PushWorker extends BaseWorker {
   private static final String TAG = PushWorker.class.getSimpleName();
   private static final boolean DEBUG = true;
-
-  private static final int IO_BUFFER_SIZE = 64 * 1024;
 
   private final InputStream in;
   private final File file;
@@ -25,7 +27,7 @@ public class PushWorker extends BaseWorker {
   public PushWorker(Command command, InputStream in, OutputStream out, WorkerListener listener) {
     super(command, in, out, listener);
 
-    this.in = new BufferedInputStream(in, IO_BUFFER_SIZE);
+    this.in = in;
 
     final File downloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
     final String inPath = command.getParams(0);
@@ -36,6 +38,13 @@ public class PushWorker extends BaseWorker {
 
   @Override
   public void start() {
+    MessageDigest md = null;
+    try {
+      md = MessageDigest.getInstance("MD5");
+    } catch (NoSuchAlgorithmException e) {
+      listener.onError();
+    }
+
     OutputStream fout = null;
     try {
       if (!file.exists()) {
@@ -43,22 +52,29 @@ public class PushWorker extends BaseWorker {
         file.createNewFile();
       }
 
-      fout = new FileOutputStream(file);
-      IOUtilities.copy(in, fout);
+      fout = new DigestOutputStream(new FileOutputStream(file), md);
+      IOUtilities.copyFile(in, fout, command.getLength());
       if (DEBUG)
-        Log.d(TAG, "File was saved to " + file.getAbsolutePath());
+        Log.d(TAG, "File was saved to " + file.getAbsolutePath() + " [" + file.length() + "]");
     } catch (IOException e) {
       if (DEBUG)
         Log.e(TAG, "Fail to write file data to stream", e);
+      listener.onError();
     } finally {
       IOUtilities.closeStream(fout);
-      listener.onError();
+    }
+
+    if (md != null) {
+      final String checksum = HashHelper.convertToHex(md.digest());
+      if (MyConfig.DEBUG)
+        Log.d(TAG, "Files checksums in <> out: " + command.getChecksum() + " <> " + checksum);
+
+      if (!checksum.equals(command.getChecksum()))
+        Log.e(TAG, "File is corrupted!");
     }
   }
 
   @Override
   public void stop() {
   }
-
-  
 }

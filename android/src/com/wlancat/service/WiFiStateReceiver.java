@@ -24,7 +24,7 @@ public class WiFiStateReceiver extends BroadcastReceiver {
       final SupplicantState wifiState = intent.getParcelableExtra(WifiManager.EXTRA_NEW_STATE);
       if (DEBUG)
         Log.d(TAG, "Supplicant WiFi state changed: " + wifiState.name());
-      setWiFiConnection(context, wifiState.equals(SupplicantState.COMPLETED));
+      setWiFiConnection(context, WiFiUtils.isWifiConnected(context));
     } else if (action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)
         || action.equals(WifiManager.WIFI_STATE_CHANGED_ACTION)) {
       setWiFiConnection(context, WiFiUtils.isWifiConnected(context));

@@ -6,10 +6,10 @@ package com.wlancat.data;
 public final class CommandProto {
   private CommandProto() {}
   public static void registerAllExtensions(
-      com.google.protobuf.ExtensionRegistry registry) {
+      com.google.protobuf.ExtensionRegistryLite registry) {
   }
   public interface CommandOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+      extends com.google.protobuf.MessageLiteOrBuilder {
     
     // optional string pin = 1;
     boolean hasPin();
@@ -23,9 +23,17 @@ public final class CommandProto {
     java.util.List<String> getParamsList();
     int getParamsCount();
     String getParams(int index);
+    
+    // optional uint64 length = 4;
+    boolean hasLength();
+    long getLength();
+    
+    // optional string checksum = 5;
+    boolean hasChecksum();
+    String getChecksum();
   }
   public static final class Command extends
-      com.google.protobuf.GeneratedMessage
+      com.google.protobuf.GeneratedMessageLite
       implements CommandOrBuilder {
     // Use Command.newBuilder() to construct.
     private Command(Builder builder) {
@@ -40,16 +48,6 @@ public final class CommandProto {
     
     public Command getDefaultInstanceForType() {
       return defaultInstance;
-    }
-    
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return com.wlancat.data.CommandProto.internal_static_com_wlancat_data_Command_descriptor;
-    }
-    
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return com.wlancat.data.CommandProto.internal_static_com_wlancat_data_Command_fieldAccessorTable;
     }
     
     private int bitField0_;
@@ -131,10 +129,54 @@ public final class CommandProto {
       return params_.get(index);
     }
     
+    // optional uint64 length = 4;
+    public static final int LENGTH_FIELD_NUMBER = 4;
+    private long length_;
+    public boolean hasLength() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public long getLength() {
+      return length_;
+    }
+    
+    // optional string checksum = 5;
+    public static final int CHECKSUM_FIELD_NUMBER = 5;
+    private java.lang.Object checksum_;
+    public boolean hasChecksum() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    public String getChecksum() {
+      java.lang.Object ref = checksum_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          checksum_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getChecksumBytes() {
+      java.lang.Object ref = checksum_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        checksum_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
     private void initFields() {
       pin_ = "";
       command_ = "";
       params_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      length_ = 0L;
+      checksum_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -157,7 +199,12 @@ public final class CommandProto {
       for (int i = 0; i < params_.size(); i++) {
         output.writeBytes(3, params_.getByteString(i));
       }
-      getUnknownFields().writeTo(output);
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeUInt64(4, length_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeBytes(5, getChecksumBytes());
+      }
     }
     
     private int memoizedSerializedSize = -1;
@@ -183,7 +230,14 @@ public final class CommandProto {
         size += dataSize;
         size += 1 * getParamsList().size();
       }
-      size += getUnknownFields().getSerializedSize();
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(4, length_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(5, getChecksumBytes());
+      }
       memoizedSerializedSize = size;
       return size;
     }
@@ -269,37 +323,16 @@ public final class CommandProto {
     }
     public Builder toBuilder() { return newBuilder(this); }
     
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements com.wlancat.data.CommandProto.CommandOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return com.wlancat.data.CommandProto.internal_static_com_wlancat_data_Command_descriptor;
-      }
-      
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return com.wlancat.data.CommandProto.internal_static_com_wlancat_data_Command_fieldAccessorTable;
-      }
-      
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.wlancat.data.CommandProto.Command, Builder>
+        implements com.wlancat.data.CommandProto.CommandOrBuilder {
       // Construct using com.wlancat.data.CommandProto.Command.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
       
-      private Builder(BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-        }
       }
       private static Builder create() {
         return new Builder();
@@ -313,16 +346,15 @@ public final class CommandProto {
         bitField0_ = (bitField0_ & ~0x00000002);
         params_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000004);
+        length_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        checksum_ = "";
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
       
       public Builder clone() {
         return create().mergeFrom(buildPartial());
-      }
-      
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return com.wlancat.data.CommandProto.Command.getDescriptor();
       }
       
       public com.wlancat.data.CommandProto.Command getDefaultInstanceForType() {
@@ -365,18 +397,16 @@ public final class CommandProto {
           bitField0_ = (bitField0_ & ~0x00000004);
         }
         result.params_ = params_;
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
-      }
-      
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof com.wlancat.data.CommandProto.Command) {
-          return mergeFrom((com.wlancat.data.CommandProto.Command)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000004;
         }
+        result.length_ = length_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.checksum_ = checksum_;
+        result.bitField0_ = to_bitField0_;
+        return result;
       }
       
       public Builder mergeFrom(com.wlancat.data.CommandProto.Command other) {
@@ -395,9 +425,14 @@ public final class CommandProto {
             ensureParamsIsMutable();
             params_.addAll(other.params_);
           }
-          onChanged();
+          
         }
-        this.mergeUnknownFields(other.getUnknownFields());
+        if (other.hasLength()) {
+          setLength(other.getLength());
+        }
+        if (other.hasChecksum()) {
+          setChecksum(other.getChecksum());
+        }
         return this;
       }
       
@@ -409,21 +444,15 @@ public final class CommandProto {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
         while (true) {
           int tag = input.readTag();
           switch (tag) {
             case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
+              
               return this;
             default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
+              if (!parseUnknownField(input, extensionRegistry, tag)) {
+                
                 return this;
               }
               break;
@@ -441,6 +470,16 @@ public final class CommandProto {
             case 26: {
               ensureParamsIsMutable();
               params_.add(input.readBytes());
+              break;
+            }
+            case 32: {
+              bitField0_ |= 0x00000008;
+              length_ = input.readUInt64();
+              break;
+            }
+            case 42: {
+              bitField0_ |= 0x00000010;
+              checksum_ = input.readBytes();
               break;
             }
           }
@@ -470,19 +509,19 @@ public final class CommandProto {
   }
   bitField0_ |= 0x00000001;
         pin_ = value;
-        onChanged();
+        
         return this;
       }
       public Builder clearPin() {
         bitField0_ = (bitField0_ & ~0x00000001);
         pin_ = getDefaultInstance().getPin();
-        onChanged();
+        
         return this;
       }
       void setPin(com.google.protobuf.ByteString value) {
         bitField0_ |= 0x00000001;
         pin_ = value;
-        onChanged();
+        
       }
       
       // optional string command = 2;
@@ -506,19 +545,19 @@ public final class CommandProto {
   }
   bitField0_ |= 0x00000002;
         command_ = value;
-        onChanged();
+        
         return this;
       }
       public Builder clearCommand() {
         bitField0_ = (bitField0_ & ~0x00000002);
         command_ = getDefaultInstance().getCommand();
-        onChanged();
+        
         return this;
       }
       void setCommand(com.google.protobuf.ByteString value) {
         bitField0_ |= 0x00000002;
         command_ = value;
-        onChanged();
+        
       }
       
       // repeated string params = 3;
@@ -546,7 +585,7 @@ public final class CommandProto {
   }
   ensureParamsIsMutable();
         params_.set(index, value);
-        onChanged();
+        
         return this;
       }
       public Builder addParams(String value) {
@@ -555,26 +594,83 @@ public final class CommandProto {
   }
   ensureParamsIsMutable();
         params_.add(value);
-        onChanged();
+        
         return this;
       }
       public Builder addAllParams(
           java.lang.Iterable<String> values) {
         ensureParamsIsMutable();
         super.addAll(values, params_);
-        onChanged();
+        
         return this;
       }
       public Builder clearParams() {
         params_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000004);
-        onChanged();
+        
         return this;
       }
       void addParams(com.google.protobuf.ByteString value) {
         ensureParamsIsMutable();
         params_.add(value);
-        onChanged();
+        
+      }
+      
+      // optional uint64 length = 4;
+      private long length_ ;
+      public boolean hasLength() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public long getLength() {
+        return length_;
+      }
+      public Builder setLength(long value) {
+        bitField0_ |= 0x00000008;
+        length_ = value;
+        
+        return this;
+      }
+      public Builder clearLength() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        length_ = 0L;
+        
+        return this;
+      }
+      
+      // optional string checksum = 5;
+      private java.lang.Object checksum_ = "";
+      public boolean hasChecksum() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      public String getChecksum() {
+        java.lang.Object ref = checksum_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          checksum_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setChecksum(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
+        checksum_ = value;
+        
+        return this;
+      }
+      public Builder clearChecksum() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        checksum_ = getDefaultInstance().getChecksum();
+        
+        return this;
+      }
+      void setChecksum(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000010;
+        checksum_ = value;
+        
       }
       
       // @@protoc_insertion_point(builder_scope:com.wlancat.data.Command)
@@ -588,45 +684,8 @@ public final class CommandProto {
     // @@protoc_insertion_point(class_scope:com.wlancat.data.Command)
   }
   
-  private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_com_wlancat_data_Command_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_com_wlancat_data_Command_fieldAccessorTable;
   
-  public static com.google.protobuf.Descriptors.FileDescriptor
-      getDescriptor() {
-    return descriptor;
-  }
-  private static com.google.protobuf.Descriptors.FileDescriptor
-      descriptor;
   static {
-    java.lang.String[] descriptorData = {
-      "\n\rcommand.proto\022\020com.wlancat.data\"7\n\007Com" +
-      "mand\022\013\n\003pin\030\001 \001(\t\022\017\n\007command\030\002 \001(\t\022\016\n\006pa" +
-      "rams\030\003 \003(\tB \n\020com.wlancat.dataB\014CommandP" +
-      "roto"
-    };
-    com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-      new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
-        public com.google.protobuf.ExtensionRegistry assignDescriptors(
-            com.google.protobuf.Descriptors.FileDescriptor root) {
-          descriptor = root;
-          internal_static_com_wlancat_data_Command_descriptor =
-            getDescriptor().getMessageTypes().get(0);
-          internal_static_com_wlancat_data_Command_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_com_wlancat_data_Command_descriptor,
-              new java.lang.String[] { "Pin", "Command", "Params", },
-              com.wlancat.data.CommandProto.Command.class,
-              com.wlancat.data.CommandProto.Command.Builder.class);
-          return null;
-        }
-      };
-    com.google.protobuf.Descriptors.FileDescriptor
-      .internalBuildGeneratedFileFrom(descriptorData,
-        new com.google.protobuf.Descriptors.FileDescriptor[] {
-        }, assigner);
   }
   
   // @@protoc_insertion_point(outer_class_scope)

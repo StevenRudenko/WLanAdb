@@ -8,13 +8,15 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import net.sf.signalslot_apt.annotations.signal;
 import net.sf.signalslot_apt.annotations.signalslot;
 
+import com.wlancat.config.MyConfig;
 import com.wlancat.data.ClientProto.Client;
 import com.wlancat.utils.AndroidUtils;
-import com.wlancat.utils.HashHelper;
 import com.wlancat.utils.IOUtilities;
 
 import android.content.Context;
@@ -26,39 +28,49 @@ import android.util.Log;
 @signalslot(force_concrete=true)
 public abstract class ClientSettings {
   private static final String TAG = ClientSettings.class.getSimpleName();
+  private static final boolean DEBUG = MyConfig.DEBUG && true;
 
   private static final String FILENAME = "ClientSettings.bin";
 
   private final String mDeviceId;
   private final File mSettingsFile;
-  private final FileObserver mSettingsFileObserver;
+
+  /**
+   * The count of how many known (handled by SettingsProvider) 
+   * database mutations are currently being handled.  Used by
+   * mObserverInstance to not reload the data when it's ourselves
+   * modifying it.
+   */
+  private final AtomicInteger mKnownMutationsInFlight = new AtomicInteger(0);
+  private final SettingsFileObserver mObserverInstance;
 
   private Client mClient;
   private String mPin;
 
   public ClientSettings(Context context) {
-    mDeviceId = AndroidUtils.getAndroidId(context);
+    mDeviceId = AndroidUtils.getAndroidId(context).toUpperCase();
     mSettingsFile = context.getFileStreamPath(FILENAME);
 
-    readFromFile();
+    refresh();
 
-    mSettingsFileObserver = new FileObserver(mSettingsFile.getAbsolutePath(), FileObserver.CLOSE_WRITE) {
-      @Override
-      public void onEvent(int event, String path) {
-        readFromFile();
-      }
-    };
+    mObserverInstance = new SettingsFileObserver(mSettingsFile.getAbsolutePath());
   }
 
   @signal
   public abstract void onClientChanged(Client client);
 
   public void start() {
-    mSettingsFileObserver.startWatching();
+    if (DEBUG)
+      Log.v(TAG, "starting...");
+
+    mObserverInstance.startWatching();
   }
 
   public void stop() {
-    mSettingsFileObserver.stopWatching();
+    if (DEBUG)
+      Log.v(TAG, "stopping...");
+
+    mObserverInstance.stopWatching();
   }
 
   public Client getClient() {
@@ -69,11 +81,15 @@ public abstract class ClientSettings {
     return mPin;
   }
 
-  public void setPin(String pin) {
+  public ClientSettings setPin(String pin) {
+    if (DEBUG)
+      Log.v(TAG, "setPin: " + pin);
+
     final boolean hasPin = !TextUtils.isEmpty(pin);
     mPin = hasPin ? pin : null;
     mClient = mClient.toBuilder().setUsePin(hasPin).build();
-    saveToFile();
+
+    return this;
   }
 
   public boolean hasPin() {
@@ -81,26 +97,49 @@ public abstract class ClientSettings {
   }
 
   public boolean checkPin(String pin) {
+    if (DEBUG)
+      Log.v(TAG, "checkPin: " + pin);
+
     if (TextUtils.isEmpty(mPin))
       return true;
-    final String hashPin = HashHelper.getHashString(pin);
-    Log.d(TAG, "Check PIN: " + mPin + " <> " + hashPin);
-    return mPin.equals(hashPin);
+
+    if (DEBUG)
+      Log.d(TAG, "Check PIN: " + mPin + " <> " + pin);
+    return mPin.equals(pin);
   }
 
-  public void setIp(InetAddress address) {
+  public ClientSettings setIp(InetAddress address) {
+    if (DEBUG)
+      Log.v(TAG, "setIp: " + address.getHostAddress());
+
     mClient = mClient.toBuilder().setIp(address.getHostAddress()).build();
-    saveToFile();
+    return this;
   }
 
-  public void setPort(int port) {
+  public ClientSettings setPort(int port) {
+    if (DEBUG)
+      Log.v(TAG, "setPort: " + port);
+
     mClient = mClient.toBuilder().setPort(port).build();
-    saveToFile();
+    return this;
   }
 
-  public void setName(String name) {
+  public ClientSettings setName(String name) {
+    if (DEBUG)
+      Log.v(TAG, "setName: " + name);
+
     mClient = mClient.toBuilder().setName(name).build();
+    return this;
+  }
+
+  public ClientSettings commit() {
     saveToFile();
+    return this;
+  }
+
+  public ClientSettings refresh() {
+    readFromFile();
+    return this;
   }
 
   private void readFromFile() {
@@ -112,6 +151,9 @@ public abstract class ClientSettings {
       mPin = null;
       return;
     }
+
+    if (DEBUG)
+      Log.d(TAG, "Reading client data from file...");
 
     ObjectInputStream in = null;
     try {
@@ -130,11 +172,14 @@ public abstract class ClientSettings {
 
       onClientChanged(mClient);
     } catch (FileNotFoundException e) {
-      Log.e(TAG, "Settings file not found", e);
+      if (DEBUG)
+        Log.e(TAG, "Settings file not found", e);
     } catch (IOException e) {
-      Log.e(TAG, "Fail to read settings file", e);
+      if (DEBUG)
+        Log.e(TAG, "Fail to read settings file", e);
     } catch (ClassNotFoundException e) {
-      Log.e(TAG, "Fail to read string from setting file", e);
+      if (DEBUG)
+        Log.e(TAG, "Fail to read string from setting file", e);
     } finally {
       IOUtilities.closeStream(in);
     }
@@ -145,6 +190,10 @@ public abstract class ClientSettings {
       mSettingsFile.getParentFile().mkdirs();
     }
 
+    if (DEBUG)
+      Log.d(TAG, "Writing client data to file...");
+
+    mKnownMutationsInFlight.incrementAndGet();
     ObjectOutputStream out = null;
     try {
       out = new ObjectOutputStream(new FileOutputStream(mSettingsFile, false));
@@ -154,11 +203,47 @@ public abstract class ClientSettings {
       out.write(clientBytes);
       out.writeObject(mPin);
     } catch (FileNotFoundException e) {
-      Log.e(TAG, "Settings file not found", e);
+      if (DEBUG)
+        Log.e(TAG, "Settings file not found", e);
     } catch (IOException e) {
-      Log.e(TAG, "Fail to read settings file", e);
+      if (DEBUG)
+        Log.e(TAG, "Fail to read settings file", e);
     } finally {
       IOUtilities.closeStream(out);
+      mKnownMutationsInFlight.decrementAndGet();
+    }
+  }
+
+  private class SettingsFileObserver extends FileObserver {
+    private final AtomicBoolean mIsDirty = new AtomicBoolean(false);
+    private final String mPath;
+
+    public SettingsFileObserver(String path) {
+      super(path, FileObserver.CLOSE_WRITE);
+      mPath = path;
+    }
+
+    public void onEvent(int event, String path) {
+      int modsInFlight = mKnownMutationsInFlight.get();
+      if (modsInFlight > 0) {
+        // our own modification.
+        return;
+      }
+
+      if (DEBUG)
+        Log.d(TAG, "external modification to " + mPath + "; event=" + event);
+
+      if (!mIsDirty.compareAndSet(false, true)) {
+        // already handled. (we get a few update events
+        // during an data write)
+        return;
+      }
+
+      if (DEBUG)
+        Log.d(TAG, "updating our caches for " + mPath);
+
+      readFromFile();
+      mIsDirty.set(false);
     }
   }
 }
