@@ -41,7 +41,8 @@
             </intent-filter>
         </service>
 
-        <receiver android:name=".service.WiFiStateReceiver" >
+        <receiver android:name=".service.WiFiStateReceiver"
+            android:exported="false" >
             <intent-filter>
                 <action android:name="android.net.wifi.STATE_CHANGE" />
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />

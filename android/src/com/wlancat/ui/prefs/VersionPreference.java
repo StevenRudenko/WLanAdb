@@ -1,4 +1,4 @@
-package com.wlancat.ui;
+package com.wlancat.ui.prefs;
 
 import com.wlancat.config.MyConfig;
 

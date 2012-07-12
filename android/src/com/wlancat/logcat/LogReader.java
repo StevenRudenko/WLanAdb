@@ -3,6 +3,9 @@ package com.wlancat.logcat;
 import java.io.DataInputStream;
 import java.io.IOException;
 
+import android.annotation.SuppressLint;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import net.sf.signalslot_apt.annotations.signal;
@@ -12,7 +15,17 @@ import net.sf.signalslot_apt.annotations.signalslot;
 public abstract class LogReader {
   private static final String TAG = LogReader.class.getSimpleName();
 
-  private final String LOGCAT_CMD = "logcat";
+  private static final int MSG_LOG_MESSAGE = 1;
+
+  private static final String LOGCAT_CMD = "logcat";
+
+  @SuppressLint("HandlerLeak")
+  private final Handler mUiTread = new Handler(Looper.getMainLooper()) {
+    public void handleMessage(android.os.Message msg) {
+      final String message = (String) msg.obj;
+      onLogMessage(message);
+    };
+  };
 
   /**
    * Thread used to read log messages.
@@ -65,7 +78,12 @@ public abstract class LogReader {
         if (line == null || line.length() == 0)
           continue;
 
-        onLogMessage(line);
+        if (mReadLogThread != null) {
+          final android.os.Message msg = mUiTread.obtainMessage(MSG_LOG_MESSAGE, line);
+          mUiTread.sendMessage(msg);
+        } else {
+          onLogMessage(line);
+        }
       }
       Log.d(TAG, "LogCat reading finished!");
     } catch (IOException e) {
@@ -99,7 +117,7 @@ public abstract class LogReader {
 
     @Override
     public void run() {
-      start();
+      LogReader.this.start();
     }
   };
 }

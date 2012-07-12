@@ -15,22 +15,17 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 public class WLanCatActivity extends FragmentActivity {
   private static final String TAG = WLanCatActivity.class.getSimpleName();
 
   private WLanServiceApi mServiceApi;
 
-  private TextView viewMessage;
-
   /** Called when the activity is first created. */
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main);
-
-    viewMessage = (TextView) findViewById(android.R.id.message);
   }
 
   @Override
@@ -91,7 +86,6 @@ public class WLanCatActivity extends FragmentActivity {
           log.append(mServiceApi.getPort());
           log.append("\nConnections count: ");
           log.append(mServiceApi.getConnectionsCount());
-          viewMessage.setText(log.toString());
         } catch (RemoteException e) {
           Log.e(TAG, "Fail to call service API", e);
         }

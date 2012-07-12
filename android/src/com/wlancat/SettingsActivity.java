@@ -8,7 +8,7 @@ import com.wlancat.compat.SharedPreferencesApply;
 import com.wlancat.data.ClientProto.Client;
 import com.wlancat.data.ClientSettings;
 import com.wlancat.data.ClientSettingsSignalSlot;
-import com.wlancat.ui.PasswordPreference;
+import com.wlancat.ui.prefs.PasswordPreference;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;

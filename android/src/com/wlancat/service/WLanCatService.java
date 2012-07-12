@@ -73,6 +73,11 @@ public class WLanCatService extends Service {
     final InetAddress broadcastAddress = WiFiUtils.getBroadcastAddress(this);
     final InetAddress localAddress = WiFiUtils.getLocalAddress(this);
 
+    if (localAddress == null) {
+      stopSelf();
+      return;
+    }
+
     mClientSettings = new ClientSettingsSignalSlot(this);
     mClientSettings.start();
 
