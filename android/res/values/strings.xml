@@ -6,6 +6,7 @@
     <!-- General strings -->
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="loading">Loading...</string>
     <!-- Menu items labels -->
     <string name="menu_settings">Settings</string>
     <!-- Preferences labels -->

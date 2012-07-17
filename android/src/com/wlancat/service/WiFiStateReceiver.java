@@ -32,7 +32,7 @@ public class WiFiStateReceiver extends BroadcastReceiver {
   }
 
   private static void setWiFiConnection(Context context, boolean isConnected) {
-    final Intent serviceIntent = new Intent(WLanCatServiceSignalSlot.class.getName());
+    final Intent serviceIntent = new Intent(WLanCatService.class.getName());
     if (isConnected) {
       context.startService(serviceIntent);
     } else {

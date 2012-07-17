@@ -3,44 +3,43 @@ package com.wlancat.fragment;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.sf.signalslot_apt.SignalSlot;
-import net.sf.signalslot_apt.annotations.signalslot;
-import net.sf.signalslot_apt.annotations.slot;
-
+import com.wlancat.R;
 import com.wlancat.data.LogcatLine;
 import com.wlancat.logcat.LogReader;
-import com.wlancat.logcat.LogReaderSignalSlot;
+import com.wlancat.logcat.LogReader.OnLogMessageListener;
 import com.wlancat.ui.LogcatAdapter;
 
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 
-@signalslot
-public class LogcatFragment extends ListFragment {
+public class LogcatFragment extends Fragment implements OnLogMessageListener {
 
-  private final LogReader mLogReader = new LogReaderSignalSlot();
+  private final LogReader mLogReader = new LogReader(this);
   private final Pattern mLogLinePattern = Pattern.compile("^([A-Z])\\/(.*)\\(\\s*(\\d+)\\s*\\): (.*)$");
 
   private LogcatAdapter mAdapter;
 
   @Override
-  public void onViewCreated(View view, Bundle savedInstanceState) {
-    super.onViewCreated(view, savedInstanceState);
+  public View onCreateView(LayoutInflater inflater, ViewGroup container,
+      Bundle savedInstanceState) {
+    final View v = inflater.inflate(R.layout.fragment_logcat, container, false);
 
-    final ListView viewList = getListView();
-    viewList.setStackFromBottom(true);
-    viewList.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
-    viewList.setFastScrollEnabled(true);
+    final View viewEmpty = v.findViewById(android.R.id.empty);
+    final ListView viewList = (ListView) v.findViewById(R.id.logcatList);
+    viewList.setEmptyView(viewEmpty);
 
     mAdapter = new LogcatAdapter(getActivity());
-    setListAdapter(mAdapter);
+    viewList.setAdapter(mAdapter);
+
+    return v;
   }
 
   @Override
   public void onResume() {
-    SignalSlot.connect(mLogReader, LogReaderSignalSlot.Signals.ONLOGMESSAGE_STRING, this, LogcatFragmentSignalSlot.Slots.PARSELINE_STRING);
     mLogReader.startOnTread();
     super.onResume();
   }
@@ -51,9 +50,9 @@ public class LogcatFragment extends ListFragment {
     super.onPause();
   }
 
-  @slot
-  public void parseLine(String line) {
-    final Matcher matcher = mLogLinePattern.matcher(line);
+  @Override
+  public void onLogMessage(String message) {
+    final Matcher matcher = mLogLinePattern.matcher(message);
     if (!matcher.matches())
       return;
 

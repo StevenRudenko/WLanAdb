@@ -7,17 +7,15 @@ import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 
 import com.google.protobuf.ByteString;
-import com.wlancat.utils.InetAddressUtils;
-
-import net.sf.signalslot_apt.annotations.signal;
-import net.sf.signalslot_apt.annotations.signalslot;
-import net.sf.signalslot_apt.annotations.slot;
 
 import android.util.Log;
 
-@signalslot(force_concrete=true)
-public abstract class BroadcastServer implements Runnable {
+public class BroadcastServer implements Runnable {
   private static final String TAG = BroadcastServer.class.getSimpleName();
+
+  public interface BroadcastMessageHandler {
+    public ByteString onDataPackageRecieved(ByteString data);
+  }
 
   public static final int BROADCAST_PORT = 44533;
   public static final int MESSAGE_LISTEN_TIMEOUT = 500;
@@ -29,28 +27,12 @@ public abstract class BroadcastServer implements Runnable {
   private Thread mRecieveThread;
   private DatagramSocket mSocket;
 
+  BroadcastMessageHandler mHandler;
+
   private volatile boolean isRunning = false;
 
-  @signal
-  public abstract void onDataPackage(ByteString data);
-
-  @slot
-  public void send(final ByteString data) {
-    new Thread(TAG+":SEND") {
-      @Override
-      public void run() {
-        super.run();
-        try {
-          final byte[] message = data.toByteArray();
-          final DatagramPacket packet = new DatagramPacket(message, message.length,
-              mBroadcastAddress, BROADCAST_PORT);
-          if (isRunning)
-            mSocket.send(packet);
-        } catch (IOException e) {
-          Log.e(TAG, "Failed broadcast data", e);
-        }
-      }
-    }.start();
+  public BroadcastServer(BroadcastMessageHandler handler) {
+    mHandler = handler;
   }
 
   public void start(InetAddress broadcastAddress, InetAddress localAddress) {
@@ -84,18 +66,23 @@ public abstract class BroadcastServer implements Runnable {
     mSocket.close();
   }
 
-  /**
-   * Send a broadcast UDP packet.
-   */
-  public void sendBroadcast(byte[] data) {
-    send(data, (InetAddress)null);
-  }
-
-  /**
-   * Send a UDP packet to specific address. If address is broadcast address then message will be send broadcast.
-   */
-  public void send(byte[] data, String address) {
-    send(data, InetAddressUtils.parseAddress(address));
+  public void send(final ByteString data, final InetAddress reciever) {
+    new Thread(TAG+":SEND") {
+      @Override
+      public void run() {
+        super.run();
+        try {
+          final byte[] message = data.toByteArray();
+          final InetAddress host = reciever == null ? mBroadcastAddress : reciever;
+          final DatagramPacket packet = new DatagramPacket(message, message.length,
+              host, BROADCAST_PORT);
+          if (isRunning)
+            mSocket.send(packet);
+        } catch (IOException e) {
+          Log.e(TAG, "Failed broadcast data", e);
+        }
+      }
+    }.start();
   }
 
   /**
@@ -155,7 +142,9 @@ public abstract class BroadcastServer implements Runnable {
       final byte[] packetData = packet.getData();
 
       final ByteString data = ByteString.copyFrom(packetData, 0, packetLength);
-      onDataPackage(data);
+      final ByteString response = mHandler.onDataPackageRecieved(data);
+      if (response != null)
+        send(response, senderAddress);
     }
 
     isRunning = false;

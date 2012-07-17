@@ -1,19 +1,24 @@
 package com.wlancat.logcat;
 
-import java.io.DataInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import net.sf.signalslot_apt.annotations.signal;
-import net.sf.signalslot_apt.annotations.signalslot;
-
-@signalslot(force_concrete=true)
-public abstract class LogReader {
+public class LogReader {
   private static final String TAG = LogReader.class.getSimpleName();
+
+  public interface OnLogMessageListener {
+    /**
+     * Event to be invoked on new log message read.
+     * @param message
+     */
+    public void onLogMessage(String message);
+  }
 
   private static final int MSG_LOG_MESSAGE = 1;
 
@@ -23,7 +28,7 @@ public abstract class LogReader {
   private final Handler mUiTread = new Handler(Looper.getMainLooper()) {
     public void handleMessage(android.os.Message msg) {
       final String message = (String) msg.obj;
-      onLogMessage(message);
+      listener.onLogMessage(message);
     };
   };
 
@@ -37,12 +42,11 @@ public abstract class LogReader {
    */
   private volatile boolean isRunning = false;
 
-  /**
-   * Signal to be invoked on new log message read.
-   * @param message
-   */
-  @signal
-  public abstract void onLogMessage(String message);
+  private OnLogMessageListener listener;
+
+  public LogReader(OnLogMessageListener listener) {
+    this.listener = listener;
+  }
 
   /**
    * Starts logs reading process.
@@ -64,14 +68,15 @@ public abstract class LogReader {
   public void start() {
     isRunning = true;
 
-    DataInputStream stream = null;
+    BufferedReader reader = null;
     Process logcatProc = null;
     try {
       logcatProc = Runtime.getRuntime().exec(LOGCAT_CMD);
-      stream = new DataInputStream(logcatProc.getInputStream());
+
+      reader = new BufferedReader(new InputStreamReader(logcatProc.getInputStream()));
 
       String line;
-      while (isRunning && (line = stream.readLine()) != null) {
+      while (isRunning && (line = reader.readLine()) != null) {
         if (!isRunning)
           break;
 
@@ -82,7 +87,7 @@ public abstract class LogReader {
           final android.os.Message msg = mUiTread.obtainMessage(MSG_LOG_MESSAGE, line);
           mUiTread.sendMessage(msg);
         } else {
-          onLogMessage(line);
+          listener.onLogMessage(line);
         }
       }
       Log.d(TAG, "LogCat reading finished!");
@@ -94,10 +99,10 @@ public abstract class LogReader {
         logcatProc = null;
       }
 
-      if (stream != null) {
+      if (reader != null) {
         try {
-          stream.close();
-          stream = null;
+          reader.close();
+          reader = null;
         } catch (IOException e) {
           Log.e(TAG, "Fail to close LogCat reader stream", e);
         }
@@ -113,6 +118,7 @@ public abstract class LogReader {
   private class ReadLogsThread extends Thread {
     public ReadLogsThread() {
       setName(TAG);
+      //setPriority(Thread.MAX_PRIORITY);
     }
 
     @Override

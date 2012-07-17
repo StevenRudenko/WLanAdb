@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shared.ui.actionscontentview.ActionsContentView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:actions_layout="@layout/logcat_actions"
+    app:content_layout="@layout/logcat_list" />

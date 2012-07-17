@@ -13,8 +13,8 @@ import com.wlancat.data.CommandProto.Command;
 import com.wlancat.utils.IOUtilities;
 import com.wlancat.worker.BaseWorker;
 import com.wlancat.worker.BaseWorker.WorkerListener;
+import com.wlancat.worker.LogcatWorker;
 import com.wlancat.worker.PushWorker;
-import com.wlancat.worker.LogcatWorkerSignalSlot;
 
 public class P2PConnection implements Runnable, WorkerListener {
   private static final String TAG = P2PConnection.class.getSimpleName();
@@ -130,7 +130,7 @@ public class P2PConnection implements Runnable, WorkerListener {
 
       final String command = this.command.getCommand();
       if (command.equals("logcat")) {
-        worker = new LogcatWorkerSignalSlot(this.command, mSocket.getInputStream(), mSocket.getOutputStream(), this);
+        worker = new LogcatWorker(this.command, mSocket.getInputStream(), mSocket.getOutputStream(), this);
       } else if (command.equals("push")) {
         worker = new PushWorker(this.command, mSocket.getInputStream(), mSocket.getOutputStream(), this);
       }

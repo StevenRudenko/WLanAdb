@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="divider">#ffcccccc</color>
+    <color name="bottom_bar_text">#ff888888</color>
+    <color name="bottom_bar_bg">#fff1f1f1</color>
+    <color name="actions_bg">#ff3c3c3c</color>
+    <color name="actions_divider">#ff888888</color>
+
+</resources>

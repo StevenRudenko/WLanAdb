@@ -1,7 +1,7 @@
 package com.wlancat;
 
 import com.wlancat.service.ConnectionsStatusReciever;
-import com.wlancat.service.WLanCatServiceSignalSlot;
+import com.wlancat.service.WLanCatService;
 import com.wlancat.service.WLanServiceApi;
 
 import android.content.ComponentName;
@@ -25,7 +25,7 @@ public class WLanCatActivity extends FragmentActivity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.main);
+    setContentView(R.layout.activity_main);
   }
 
   @Override
@@ -35,7 +35,7 @@ public class WLanCatActivity extends FragmentActivity {
     connectionsCountReciever.register(this);
 
     Log.v(TAG, "Starting service (if it was not started before)...");
-    final Intent intent = new Intent(WLanCatServiceSignalSlot.class.getName());
+    final Intent intent = new Intent(WLanCatService.class.getName());
     // start the service explicitly.
     // otherwise it will only run while the IPC connection is up.
     startService(intent);
@@ -64,7 +64,7 @@ public class WLanCatActivity extends FragmentActivity {
     final int menuId = item.getItemId();
     switch (menuId) {
     case R.id.menu_settings:
-      final Intent settingIntent = new Intent(this, SettingsActivitySignalSlot.class);
+      final Intent settingIntent = new Intent(this, SettingsActivity.class);
       startActivity(settingIntent);
       break;
 

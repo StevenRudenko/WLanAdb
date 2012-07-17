@@ -2,16 +2,10 @@ package com.wlancat.service;
 
 import java.net.InetAddress;
 
-import net.sf.signalslot_apt.SignalSlot;
-import net.sf.signalslot_apt.annotations.signalslot;
-import net.sf.signalslot_apt.annotations.slot;
-
 import com.wlancat.data.ClientSettings;
-import com.wlancat.data.ClientSettingsSignalSlot;
 import com.wlancat.network.BroadcastServer;
-import com.wlancat.network.BroadcastServerSignalSlot;
 import com.wlancat.network.P2PServer;
-import com.wlancat.network.P2PServerSignalSlot;
+import com.wlancat.network.P2PServer.OnConnectionsCountChanged;
 import com.wlancat.utils.WiFiUtils;
 
 import android.app.Service;
@@ -20,8 +14,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
-@signalslot(force_concrete=true)
-public class WLanCatService extends Service {
+public class WLanCatService extends Service implements OnConnectionsCountChanged {
   private static final String TAG = WLanCatService.class.getSimpleName();
 
   private BroadcastServer mBroadcastServer;
@@ -78,26 +71,18 @@ public class WLanCatService extends Service {
       return;
     }
 
-    mClientSettings = new ClientSettingsSignalSlot(this);
+    mClientSettings = new ClientSettings(this);
     mClientSettings.start();
 
-    mP2pServer = new P2PServerSignalSlot(mClientSettings);
-
-    SignalSlot.connect(mP2pServer, P2PServerSignalSlot.Signals.ONACTIVECONNECTIONSCOUNTCHANGED_INT, this, WLanCatServiceSignalSlot.Slots.ONCONNECTIONSCOUNTCHANGED_INT);
-
-    mP2pServer.start();
+    mP2pServer = new P2PServer(mClientSettings);
+    mP2pServer.start(this);
 
     mClientSettings.setIp(localAddress).setPort(mP2pServer.getPort()).commit();
 
-    mUdpMessager = new UdpMessagerSignalSlot(mClientSettings.getClient());
+    mUdpMessager = new UdpMessager();
+    mClientSettings.addOnClientChangeListener(mUdpMessager);
 
-    SignalSlot.connect(mClientSettings, ClientSettingsSignalSlot.Signals.ONCLIENTCHANGED_CLIENT, mUdpMessager, UdpMessagerSignalSlot.Slots.ONCLIENTCHANGED_CLIENT);
-
-    mBroadcastServer = new BroadcastServerSignalSlot();
-
-    SignalSlot.connect(mBroadcastServer, BroadcastServerSignalSlot.Signals.ONDATAPACKAGE_BYTESTRING, mUdpMessager, UdpMessagerSignalSlot.Slots.ONMESSAGERECIEVED_BYTESTRING);
-    SignalSlot.connect(mUdpMessager, UdpMessagerSignalSlot.Signals.SENDRESPONSE_BYTESTRING, mBroadcastServer, BroadcastServerSignalSlot.Slots.SEND_BYTESTRING);
-
+    mBroadcastServer = new BroadcastServer(mUdpMessager);
     mBroadcastServer.start(broadcastAddress, localAddress);
   }
 
@@ -120,7 +105,7 @@ public class WLanCatService extends Service {
     stopSelf();
   }
 
-  @slot
+  @Override
   public void onConnectionsCountChanged(int connectionsCount) {
     final Intent i = new Intent(ConnectionsStatusReciever.ACTION_CONNECTIONS_COUNT);
     i.putExtra(ConnectionsStatusReciever.EXTRA_CONNECTIONS_COUNT, connectionsCount);

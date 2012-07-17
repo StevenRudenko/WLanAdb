@@ -10,14 +10,14 @@ import java.util.concurrent.RejectedExecutionException;
 
 import com.wlancat.data.ClientSettings;
 
-import net.sf.signalslot_apt.annotations.signal;
-import net.sf.signalslot_apt.annotations.signalslot;
-
 import android.util.Log;
 
-@signalslot(force_concrete=true)
-public abstract class P2PServer implements Runnable {
+public class P2PServer implements Runnable {
   private static final String TAG = P2PServer.class.getSimpleName();
+
+  public interface OnConnectionsCountChanged {
+    public void onConnectionsCountChanged(int connectionsCount);
+  }
 
   private static final int MAX_CLIENTS_AT_TIME = 2;
 
@@ -29,16 +29,17 @@ public abstract class P2PServer implements Runnable {
   private ClientSettings mClientSettings;
   private int mActiveConnections = 0;
 
+  private OnConnectionsCountChanged mListener;
+
   private volatile boolean isRunning = false;
 
   public P2PServer(ClientSettings clientSettings) {
     mClientSettings = clientSettings;
   }
 
-  @signal
-  public abstract void onActiveConnectionsCountChanged(int connectionsCount);
+  public int start(OnConnectionsCountChanged listener) {
+    mListener = listener;
 
-  public int start() {
     isRunning = true;
 
     try {
@@ -57,6 +58,8 @@ public abstract class P2PServer implements Runnable {
   }
 
   public void stop() {
+    mListener = null;
+
     isRunning = false;
 
     mClientsHandler.shutdownNow();
@@ -128,7 +131,7 @@ public abstract class P2PServer implements Runnable {
 
       Log.d(TAG, "Active connections: " + count);
       mActiveConnections = count;
-      onActiveConnectionsCountChanged(mActiveConnections);
+      mListener.onConnectionsCountChanged(mActiveConnections);
     }
   }
 

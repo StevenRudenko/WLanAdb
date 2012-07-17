@@ -1,39 +1,33 @@
 package com.wlancat.service;
 
-import net.sf.signalslot_apt.annotations.signal;
-import net.sf.signalslot_apt.annotations.signalslot;
-import net.sf.signalslot_apt.annotations.slot;
 import android.util.Log;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.wlancat.data.ClientProto.Client;
+import com.wlancat.data.ClientSettings.OnClientChangeListener;
 import com.wlancat.data.MessageProto.Message;
+import com.wlancat.network.BroadcastServer.BroadcastMessageHandler;
 
-@signalslot(force_concrete=true)
-public abstract class UdpMessager {
+public class UdpMessager implements OnClientChangeListener, BroadcastMessageHandler {
   private static final String TAG = UdpMessager.class.getSimpleName();
 
   private Client mLocalClient;
 
-  public UdpMessager(Client client) {
-    mLocalClient = client;
-  }
-
-  @slot
+  @Override
   public void onClientChanged(Client client) {
     synchronized (this) {
       mLocalClient = client;
     }
   }
 
-  @slot
-  public void onMessageRecieved(ByteString data) {
+  @Override
+  public ByteString onDataPackageRecieved(ByteString data) {
     try {
       final Message message = Message.parseFrom(data);
 
       if (!message.getType().equals(Message.Type.REQEST))
-        return;
+        return null;
 
       final Message response;
       synchronized (this) {
@@ -42,12 +36,11 @@ public abstract class UdpMessager {
             .setClient(mLocalClient)
             .build();
       }
-      sendResponse(response.toByteString());
+      return response.toByteString();
     } catch (InvalidProtocolBufferException e) {
       Log.e(TAG, "Can't parse client!", e);
     }
-  }
 
-  @signal
-  public abstract void sendResponse(ByteString data);
+    return null;
+  }
 }

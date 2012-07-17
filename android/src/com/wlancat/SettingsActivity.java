@@ -1,13 +1,9 @@
 package com.wlancat;
 
-import net.sf.signalslot_apt.SignalSlot;
-import net.sf.signalslot_apt.annotations.signalslot;
-import net.sf.signalslot_apt.annotations.slot;
-
 import com.wlancat.compat.SharedPreferencesApply;
 import com.wlancat.data.ClientProto.Client;
+import com.wlancat.data.ClientSettings.OnClientChangeListener;
 import com.wlancat.data.ClientSettings;
-import com.wlancat.data.ClientSettingsSignalSlot;
 import com.wlancat.ui.prefs.PasswordPreference;
 
 import android.content.SharedPreferences;
@@ -18,8 +14,7 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 
-@signalslot
-public class SettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
+public class SettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener, OnClientChangeListener {
 
   private static final String PREF_CLIENT_ID = "client_id";
   private static final String PREF_CLIENT_NAME = "client_name";
@@ -36,9 +31,8 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    mClientSettings = new ClientSettingsSignalSlot(this);
-
-    SignalSlot.connect(mClientSettings, ClientSettingsSignalSlot.Signals.ONCLIENTCHANGED_CLIENT, this, SettingsActivitySignalSlot.Slots.UPDATEPREFERENCES_CLIENT);
+    mClientSettings = new ClientSettings(this);
+    mClientSettings.addOnClientChangeListener(this);
 
     addPreferencesFromResource(R.xml.preference_settings);
 
@@ -58,7 +52,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
     // starting listen for global settings changes
     mClientSettings.start();
     // updating preferences by real values
-    updatePreferences(mClientSettings.getClient());
+    onClientChanged(mClientSettings.getClient());
     // starting listen for preferences changes
     final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
     prefs.registerOnSharedPreferenceChangeListener(this);
@@ -85,11 +79,11 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
       final String pin = sharedPreferences.getString(PREF_SECURITY_PIN, null);
       mClientSettings.setPin(pin).commit();
     }
-    updatePreferences(mClientSettings.getClient());
+    onClientChanged(mClientSettings.getClient());
   }
 
-  @slot
-  public void updatePreferences(Client client) {
+  @Override
+  public void onClientChanged(Client client) {
     mClientIdPref.setSummary(client.getId());
     mClientNamePref.setSummary(client.getName());
     mClientNamePref.setText(client.getName());
@@ -99,9 +93,8 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
   private void clearPreferences() {
     final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
     final SharedPreferences.Editor prefsEraser = prefs.edit();
-    //XXX: it is not really good solution as far we can store more preferences
-    //     not only client ones
-    prefsEraser.clear();
+    // removing client preferences only
+    prefsEraser.remove(PREF_CLIENT_ID).remove(PREF_CLIENT_NAME).remove(PREF_SECURITY_PIN);
     SharedPreferencesApply.apply(prefsEraser);
   }
 }

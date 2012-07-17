@@ -29,19 +29,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SettingsActivitySignalSlot"
+            android:name=".SettingsActivity"
             android:configChanges="keyboard|keyboardHidden|orientation" />
 
         <service
-            android:name=".service.WLanCatServiceSignalSlot"
+            android:name=".service.WLanCatService"
             android:exported="false"
             android:process=":remote" >
             <intent-filter>
-                <action android:name="com.wlancat.service.WLanCatServiceSignalSlot" />
+                <action android:name="com.wlancat.service.WLanCatService" />
             </intent-filter>
         </service>
 
-        <receiver android:name=".service.WiFiStateReceiver"
+        <receiver
+            android:name=".service.WiFiStateReceiver"
             android:exported="false" >
             <intent-filter>
                 <action android:name="android.net.wifi.STATE_CHANGE" />

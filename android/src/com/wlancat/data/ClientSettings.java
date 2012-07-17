@@ -8,11 +8,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
+import java.util.Collections;
+import java.util.Set;
+import java.util.UUID;
+import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import net.sf.signalslot_apt.annotations.signal;
-import net.sf.signalslot_apt.annotations.signalslot;
 
 import com.wlancat.config.MyConfig;
 import com.wlancat.data.ClientProto.Client;
@@ -25,10 +26,13 @@ import android.os.FileObserver;
 import android.text.TextUtils;
 import android.util.Log;
 
-@signalslot(force_concrete=true)
-public abstract class ClientSettings {
+public class ClientSettings {
   private static final String TAG = ClientSettings.class.getSimpleName();
   private static final boolean DEBUG = MyConfig.DEBUG && true;
+
+  public interface OnClientChangeListener {
+    public void onClientChanged(Client client);
+  }
 
   private static final String FILENAME = "ClientSettings.bin";
 
@@ -47,8 +51,17 @@ public abstract class ClientSettings {
   private Client mClient;
   private String mPin;
 
+  private Set<OnClientChangeListener> mListeners = Collections.newSetFromMap(
+      new WeakHashMap<OnClientChangeListener, Boolean>());
+
   public ClientSettings(Context context) {
-    mDeviceId = AndroidUtils.getAndroidId(context).toUpperCase();
+    final String secureId = AndroidUtils.getAndroidId(context);
+    if (secureId == null) {
+      mDeviceId = UUID.randomUUID().toString();
+    } else {
+      mDeviceId = secureId.toUpperCase();
+    }
+
     mSettingsFile = context.getFileStreamPath(FILENAME);
 
     refresh();
@@ -56,8 +69,26 @@ public abstract class ClientSettings {
     mObserverInstance = new SettingsFileObserver(mSettingsFile.getAbsolutePath());
   }
 
-  @signal
-  public abstract void onClientChanged(Client client);
+  public void addOnClientChangeListener(OnClientChangeListener listener) {
+    synchronized (mListeners) {
+      mListeners.add(listener);
+      listener.onClientChanged(mClient);
+    }
+  }
+
+  public void removeOnClientChangeListener(OnClientChangeListener listener) {
+    synchronized (mListeners) {
+      mListeners.remove(listener);
+    }
+  }
+
+  public void onClientChanged(Client client) {
+    synchronized (mListeners) {
+      for (OnClientChangeListener listener : mListeners) {
+        listener.onClientChanged(client);
+      }
+    }
+  }
 
   public void start() {
     if (DEBUG)
