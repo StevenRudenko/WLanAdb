@@ -31,9 +31,6 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    mClientSettings = new ClientSettings(this);
-    mClientSettings.addOnClientChangeListener(this);
-
     addPreferencesFromResource(R.xml.preference_settings);
 
     final PreferenceScreen screen = getPreferenceScreen();
@@ -41,6 +38,9 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
     mClientNamePref = (EditTextPreference) screen.findPreference(PREF_CLIENT_NAME);
 
     mSecuityPinPref = (PasswordPreference) screen.findPreference(PREF_SECURITY_PIN);
+
+    mClientSettings = new ClientSettings(this);
+    mClientSettings.addOnClientChangeListener(this);
   }
 
   @Override
@@ -51,8 +51,6 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
     clearPreferences();
     // starting listen for global settings changes
     mClientSettings.start();
-    // updating preferences by real values
-    onClientChanged(mClientSettings.getClient());
     // starting listen for preferences changes
     final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
     prefs.registerOnSharedPreferenceChangeListener(this);

@@ -8,10 +8,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
-import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
-import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -19,6 +17,7 @@ import com.wlancat.config.MyConfig;
 import com.wlancat.data.ClientProto.Client;
 import com.wlancat.utils.AndroidUtils;
 import com.wlancat.utils.IOUtilities;
+import com.wlancat.utils.WeakHashSet;
 
 import android.content.Context;
 import android.os.Build;
@@ -51,8 +50,7 @@ public class ClientSettings {
   private Client mClient;
   private String mPin;
 
-  private Set<OnClientChangeListener> mListeners = Collections.newSetFromMap(
-      new WeakHashMap<OnClientChangeListener, Boolean>());
+  private Set<OnClientChangeListener> mListeners = new WeakHashSet<OnClientChangeListener>();
 
   public ClientSettings(Context context) {
     final String secureId = AndroidUtils.getAndroidId(context);
@@ -72,7 +70,8 @@ public class ClientSettings {
   public void addOnClientChangeListener(OnClientChangeListener listener) {
     synchronized (mListeners) {
       mListeners.add(listener);
-      listener.onClientChanged(mClient);
+      if (mClient != null)
+        listener.onClientChanged(mClient);
     }
   }
 
