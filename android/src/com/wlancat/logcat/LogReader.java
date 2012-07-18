@@ -51,7 +51,7 @@ public class LogReader {
   /**
    * Starts logs reading process.
    */
-  public void startOnTread() {
+  public void startOnNewTread() {
     mReadLogThread = new ReadLogsThread();
     mReadLogThread.start();
   }

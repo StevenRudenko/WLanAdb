@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="logcat_filter_hide_system_pids">true</bool>
+</resources>

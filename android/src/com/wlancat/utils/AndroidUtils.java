@@ -30,10 +30,14 @@ public class AndroidUtils {
   }
 
   public static List<RunningProcess> getRunningProcesses(Context context) {
-    final ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+    final ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
     final PackageManager pm = context.getPackageManager();
 
-    final List<ActivityManager.RunningAppProcessInfo> list = activityManager.getRunningAppProcesses();
+    return getRunningProcesses(am, pm);
+  }
+
+  public static List<RunningProcess> getRunningProcesses(ActivityManager am, PackageManager pm) {
+    final List<ActivityManager.RunningAppProcessInfo> list = am.getRunningAppProcesses();
     if (list == null)
       return null;
 
@@ -61,6 +65,20 @@ public class AndroidUtils {
       this.name = name;
       this.pid = pid;
       this.uid = uid;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (!(o instanceof RunningProcess))
+        return false;
+
+      final RunningProcess casted = (RunningProcess) o;
+      return casted.pid == pid && casted.uid == uid;
+    }
+
+    @Override
+    public int hashCode() {
+      return pid;
     }
   }
 }

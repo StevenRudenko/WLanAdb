@@ -4,6 +4,6 @@ public class LogcatLine {
 
   public String type;
   public String tag;
-  public String process;
+  public int pid;
   public String text;
 }

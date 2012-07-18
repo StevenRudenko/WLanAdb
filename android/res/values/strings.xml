@@ -10,6 +10,7 @@
     <!-- Menu items labels -->
     <string name="menu_settings">Settings</string>
     <!-- Logcat filter labels -->
+    <string name="logcat_filter_hide_system_pids">Hide system applications</string>
     <!-- Preferences labels -->
     <string name="pref_client_settings">Client settings</string>
     <string name="pref_client_id">Client ID</string>

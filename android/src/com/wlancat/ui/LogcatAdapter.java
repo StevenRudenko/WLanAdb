@@ -3,13 +3,13 @@ package com.wlancat.ui;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import com.wlancat.R;
 import com.wlancat.data.LogcatLine;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +19,9 @@ import android.widget.Filterable;
 import android.widget.TextView;
 
 public class LogcatAdapter extends BaseAdapter implements Filterable {
+  @SuppressWarnings("unused")
+  private final static String TAG = LogcatAdapter.class.getSimpleName();
 
-  private final Context mContext;
   private final LayoutInflater mInflater;
 
   private final ArrayList<LogcatLine> mOriginalValues = new ArrayList<LogcatLine>();
@@ -32,7 +33,6 @@ public class LogcatAdapter extends BaseAdapter implements Filterable {
   private final FirstTimeLoadUpdater mFirstTimeLoadUpdater = new FirstTimeLoadUpdater();
 
   public LogcatAdapter(Context context) {
-    this.mContext = context;
     mInflater = LayoutInflater.from(context);
   }
 
@@ -64,16 +64,22 @@ public class LogcatAdapter extends BaseAdapter implements Filterable {
 
   @Override
   public View getView(int position, View convertView, ViewGroup parent) {
-    final TextView logText;
+    final ViewHolder holder;
     if (convertView == null) {
-      logText = new TextView(mContext);
-      convertView = logText;
+      holder = new ViewHolder();
+      convertView = mInflater.inflate(R.layout.logcat_list_item, parent, false);
+      holder.viewType = (TextView) convertView.findViewById(R.id.logcatType);
+      holder.viewTag = (TextView) convertView.findViewById(R.id.logcatTag);
+      holder.viewText = (TextView) convertView.findViewById(R.id.logcatText);
+      convertView.setTag(holder);
     } else {
-      logText = (TextView) convertView;
+      holder = (ViewHolder) convertView.getTag();
     }
 
     final LogcatLine item = getItem(position);
-    logText.setText(item.type + ": " + item.text);
+    holder.viewType.setText(item.type);
+    holder.viewTag.setText(item.tag);
+    holder.viewText.setText(item.text);
 
     return convertView;
   }
@@ -84,7 +90,16 @@ public class LogcatAdapter extends BaseAdapter implements Filterable {
   }
 
   public class LogcatFilter extends Filter {
-    private String types = "";
+    public static final String TYPE_V = "V";
+    public static final String TYPE_D = "D";
+    public static final String TYPE_I = "I";
+    public static final String TYPE_W = "W";
+    public static final String TYPE_E = "E";
+    public static final String TYPE_A = "A";
+
+    private static final String TYPE_ALL = TYPE_V + TYPE_D + TYPE_I + TYPE_W + TYPE_E + TYPE_A;
+
+    private String types = TYPE_ALL;
     private HashSet<Integer> pids = new HashSet<Integer>();
     private String searchTerm;
 
@@ -128,13 +143,19 @@ public class LogcatAdapter extends BaseAdapter implements Filterable {
       final int count = values.size();
       final ArrayList<LogcatLine> newValues = new ArrayList<LogcatLine>();
 
+      if (TextUtils.isEmpty(types)) {
+        results.values = newValues;
+        results.count = 0;
+        return results;
+      }
+
       for (int i = 0; i < count; ++i) {
         final LogcatLine value = values.get(i);
 
-        if (!TextUtils.isEmpty(types) && !types.contains(value.type))
+        if (TextUtils.isEmpty(types) || !types.contains(value.type))
           continue;
 
-        if (!pids.isEmpty() && !pids.contains(value.process))
+        if (!pids.isEmpty() && !pids.contains(value.pid))
           continue;
 
         if (!TextUtils.isEmpty(searchTerm) && !value.text.contains(searchTerm))
@@ -162,6 +183,12 @@ public class LogcatAdapter extends BaseAdapter implements Filterable {
     }
   }
 
+  private static class ViewHolder {
+    TextView viewType;
+    TextView viewTag;
+    TextView viewText;
+  }
+
   private class FirstTimeLoadUpdater extends Handler {
     private static final int MSG_UPDATE_LIST = 1;
     private static final int MSG_UPDATE_LIST_DELAY = 350;
@@ -181,7 +208,6 @@ public class LogcatAdapter extends BaseAdapter implements Filterable {
 
     public void handleMessage(android.os.Message msg) {
       final int count = mFirstTimeLoadCache.size();
-      Log.d("", "" + count  + " -  " + lastCount);
       if (count - lastCount < COUNT_THRESHOLD) {
         removeMessages(MSG_UPDATE_LIST);
 
