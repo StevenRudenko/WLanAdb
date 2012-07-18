@@ -8,68 +8,14 @@
 #include <google/protobuf/stubs/once.h>
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/wire_format_lite_inl.h>
-#include <google/protobuf/descriptor.h>
-#include <google/protobuf/reflection_ops.h>
-#include <google/protobuf/wire_format.h>
 // @@protoc_insertion_point(includes)
 
 namespace com {
 namespace wlancat {
 namespace data {
 
-namespace {
-
-const ::google::protobuf::Descriptor* Command_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  Command_reflection_ = NULL;
-
-}  // namespace
-
-
-void protobuf_AssignDesc_command_2eproto() {
-  protobuf_AddDesc_command_2eproto();
-  const ::google::protobuf::FileDescriptor* file =
-    ::google::protobuf::DescriptorPool::generated_pool()->FindFileByName(
-      "command.proto");
-  GOOGLE_CHECK(file != NULL);
-  Command_descriptor_ = file->message_type(0);
-  static const int Command_offsets_[3] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, pin_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, command_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, params_),
-  };
-  Command_reflection_ =
-    new ::google::protobuf::internal::GeneratedMessageReflection(
-      Command_descriptor_,
-      Command::default_instance_,
-      Command_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, _unknown_fields_),
-      -1,
-      ::google::protobuf::DescriptorPool::generated_pool(),
-      ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(Command));
-}
-
-namespace {
-
-GOOGLE_PROTOBUF_DECLARE_ONCE(protobuf_AssignDescriptors_once_);
-inline void protobuf_AssignDescriptorsOnce() {
-  ::google::protobuf::GoogleOnceInit(&protobuf_AssignDescriptors_once_,
-                 &protobuf_AssignDesc_command_2eproto);
-}
-
-void protobuf_RegisterTypes(const ::std::string&) {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    Command_descriptor_, &Command::default_instance());
-}
-
-}  // namespace
-
 void protobuf_ShutdownFile_command_2eproto() {
   delete Command::default_instance_;
-  delete Command_reflection_;
 }
 
 void protobuf_AddDesc_command_2eproto() {
@@ -78,13 +24,6 @@ void protobuf_AddDesc_command_2eproto() {
   already_here = true;
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-  ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\rcommand.proto\022\020com.wlancat.data\"7\n\007Com"
-    "mand\022\013\n\003pin\030\001 \001(\t\022\017\n\007command\030\002 \001(\t\022\016\n\006pa"
-    "rams\030\003 \003(\tB \n\020com.wlancat.dataB\014CommandP"
-    "roto", 124);
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
-    "command.proto", &protobuf_RegisterTypes);
   Command::default_instance_ = new Command();
   Command::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_command_2eproto);
@@ -104,10 +43,12 @@ struct StaticDescriptorInitializer_command_2eproto {
 const int Command::kPinFieldNumber;
 const int Command::kCommandFieldNumber;
 const int Command::kParamsFieldNumber;
+const int Command::kLengthFieldNumber;
+const int Command::kChecksumFieldNumber;
 #endif  // !_MSC_VER
 
 Command::Command()
-  : ::google::protobuf::Message() {
+  : ::google::protobuf::MessageLite() {
   SharedCtor();
 }
 
@@ -115,7 +56,7 @@ void Command::InitAsDefaultInstance() {
 }
 
 Command::Command(const Command& from)
-  : ::google::protobuf::Message() {
+  : ::google::protobuf::MessageLite() {
   SharedCtor();
   MergeFrom(from);
 }
@@ -124,6 +65,8 @@ void Command::SharedCtor() {
   _cached_size_ = 0;
   pin_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   command_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  length_ = GOOGLE_ULONGLONG(0);
+  checksum_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -138,6 +81,9 @@ void Command::SharedDtor() {
   if (command_ != &::google::protobuf::internal::kEmptyString) {
     delete command_;
   }
+  if (checksum_ != &::google::protobuf::internal::kEmptyString) {
+    delete checksum_;
+  }
   if (this != default_instance_) {
   }
 }
@@ -147,11 +93,6 @@ void Command::SetCachedSize(int size) const {
   _cached_size_ = size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
-const ::google::protobuf::Descriptor* Command::descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return Command_descriptor_;
-}
-
 const Command& Command::default_instance() {
   if (default_instance_ == NULL) protobuf_AddDesc_command_2eproto();  return *default_instance_;
 }
@@ -174,10 +115,15 @@ void Command::Clear() {
         command_->clear();
       }
     }
+    length_ = GOOGLE_ULONGLONG(0);
+    if (has_checksum()) {
+      if (checksum_ != &::google::protobuf::internal::kEmptyString) {
+        checksum_->clear();
+      }
+    }
   }
   params_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
-  mutable_unknown_fields()->Clear();
 }
 
 bool Command::MergePartialFromCodedStream(
@@ -192,9 +138,6 @@ bool Command::MergePartialFromCodedStream(
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
                 input, this->mutable_pin()));
-          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-            this->pin().data(), this->pin().length(),
-            ::google::protobuf::internal::WireFormat::PARSE);
         } else {
           goto handle_uninterpreted;
         }
@@ -209,9 +152,6 @@ bool Command::MergePartialFromCodedStream(
          parse_command:
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
                 input, this->mutable_command()));
-          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-            this->command().data(), this->command().length(),
-            ::google::protobuf::internal::WireFormat::PARSE);
         } else {
           goto handle_uninterpreted;
         }
@@ -226,13 +166,40 @@ bool Command::MergePartialFromCodedStream(
          parse_params:
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
                 input, this->add_params()));
-          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-            this->params(0).data(), this->params(0).length(),
-            ::google::protobuf::internal::WireFormat::PARSE);
         } else {
           goto handle_uninterpreted;
         }
         if (input->ExpectTag(26)) goto parse_params;
+        if (input->ExpectTag(32)) goto parse_length;
+        break;
+      }
+      
+      // optional uint64 length = 4;
+      case 4: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_length:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                 input, &length_)));
+          set_has_length();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(42)) goto parse_checksum;
+        break;
+      }
+      
+      // optional string checksum = 5;
+      case 5: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_checksum:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_checksum()));
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -243,8 +210,7 @@ bool Command::MergePartialFromCodedStream(
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
           return true;
         }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, mutable_unknown_fields()));
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
         break;
       }
     }
@@ -257,73 +223,33 @@ void Command::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // optional string pin = 1;
   if (has_pin()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->pin().data(), this->pin().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
     ::google::protobuf::internal::WireFormatLite::WriteString(
       1, this->pin(), output);
   }
   
   // optional string command = 2;
   if (has_command()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->command().data(), this->command().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
     ::google::protobuf::internal::WireFormatLite::WriteString(
       2, this->command(), output);
   }
   
   // repeated string params = 3;
   for (int i = 0; i < this->params_size(); i++) {
-  ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-    this->params(i).data(), this->params(i).length(),
-    ::google::protobuf::internal::WireFormat::SERIALIZE);
     ::google::protobuf::internal::WireFormatLite::WriteString(
       3, this->params(i), output);
   }
   
-  if (!unknown_fields().empty()) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        unknown_fields(), output);
-  }
-}
-
-::google::protobuf::uint8* Command::SerializeWithCachedSizesToArray(
-    ::google::protobuf::uint8* target) const {
-  // optional string pin = 1;
-  if (has_pin()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->pin().data(), this->pin().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        1, this->pin(), target);
+  // optional uint64 length = 4;
+  if (has_length()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(4, this->length(), output);
   }
   
-  // optional string command = 2;
-  if (has_command()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->command().data(), this->command().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        2, this->command(), target);
+  // optional string checksum = 5;
+  if (has_checksum()) {
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      5, this->checksum(), output);
   }
   
-  // repeated string params = 3;
-  for (int i = 0; i < this->params_size(); i++) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->params(i).data(), this->params(i).length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteStringToArray(3, this->params(i), target);
-  }
-  
-  if (!unknown_fields().empty()) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        unknown_fields(), target);
-  }
-  return target;
 }
 
 int Command::ByteSize() const {
@@ -344,6 +270,20 @@ int Command::ByteSize() const {
           this->command());
     }
     
+    // optional uint64 length = 4;
+    if (has_length()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt64Size(
+          this->length());
+    }
+    
+    // optional string checksum = 5;
+    if (has_checksum()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->checksum());
+    }
+    
   }
   // repeated string params = 3;
   total_size += 1 * this->params_size();
@@ -352,27 +292,15 @@ int Command::ByteSize() const {
       this->params(i));
   }
   
-  if (!unknown_fields().empty()) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        unknown_fields());
-  }
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = total_size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
   return total_size;
 }
 
-void Command::MergeFrom(const ::google::protobuf::Message& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  const Command* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const Command*>(
-      &from);
-  if (source == NULL) {
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
-  } else {
-    MergeFrom(*source);
-  }
+void Command::CheckTypeAndMergeFrom(
+    const ::google::protobuf::MessageLite& from) {
+  MergeFrom(*::google::protobuf::down_cast<const Command*>(&from));
 }
 
 void Command::MergeFrom(const Command& from) {
@@ -385,14 +313,13 @@ void Command::MergeFrom(const Command& from) {
     if (from.has_command()) {
       set_command(from.command());
     }
+    if (from.has_length()) {
+      set_length(from.length());
+    }
+    if (from.has_checksum()) {
+      set_checksum(from.checksum());
+    }
   }
-  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
-}
-
-void Command::CopyFrom(const ::google::protobuf::Message& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
 }
 
 void Command::CopyFrom(const Command& from) {
@@ -411,18 +338,15 @@ void Command::Swap(Command* other) {
     std::swap(pin_, other->pin_);
     std::swap(command_, other->command_);
     params_.Swap(&other->params_);
+    std::swap(length_, other->length_);
+    std::swap(checksum_, other->checksum_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
-    _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
   }
 }
 
-::google::protobuf::Metadata Command::GetMetadata() const {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::Metadata metadata;
-  metadata.descriptor = Command_descriptor_;
-  metadata.reflection = Command_reflection_;
-  return metadata;
+::std::string Command::GetTypeName() const {
+  return "com.wlancat.data.Command";
 }
 
 

@@ -22,7 +22,9 @@ SOURCES += main.cpp \
     command.pb.cc \
     io_compatibility.cpp \
     logcatworker.cpp \
-    pushworker.cpp
+    pushworker.cpp \
+    utils.cpp \
+    worker.cpp
 
 HEADERS += \
     message.pb.h \
@@ -33,7 +35,9 @@ HEADERS += \
     command.pb.h \
     io_compatibility.h \
     logcatworker.h \
-    pushworker.h
+    pushworker.h \
+    utils.h \
+    worker.h
 
 TRANSLATIONS = main_en.ts \
                main_ru.ts \

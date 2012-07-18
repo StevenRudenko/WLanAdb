@@ -1,5 +1,6 @@
 package com.wlancat.data;
 
+option optimize_for = LITE_RUNTIME;
 option java_package = "com.wlancat.data";
 option java_outer_classname = "ClientProto";
 

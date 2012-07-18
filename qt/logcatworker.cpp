@@ -1,5 +1,7 @@
 #include "logcatworker.h"
 
+#include "io_compatibility.h"
+
 namespace {
 
 const int TIME_WIDTH = -1;
@@ -30,7 +32,7 @@ const int COLORS[] = {
 }
 
 LogcatWorker::LogcatWorker(QObject *parent) :
-    QObject(parent), qout(stdout), nextColor(0), SCREEN_WIDTH(io_compatibility::getConsoleWidth())
+    Worker(parent), nextColor(0)
 {
     logRegEx.setPattern("^([A-Z])\\/(.*)\\(\\s*(\\d+)\\s*\\): (.*)$");
 
@@ -44,10 +46,16 @@ LogcatWorker::~LogcatWorker() {
     tagsList.clear();
 }
 
+Command LogcatWorker::getCommand(Command &command) {
+    return command;
+}
+
 void LogcatWorker::onLogLine(const QString& str)
 {
-    if (logRegEx.indexIn(str) == -1)
+    if (logRegEx.indexIn(str) == -1) {
+        qout << "WARNING: there is unknown string format: " << str << endl;
         return;
+    }
 
     printProcess(logRegEx.cap(3));
     io_compatibility::setTextColor(qout, io_compatibility::RESET, io_compatibility::RESET);

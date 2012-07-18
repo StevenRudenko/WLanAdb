@@ -1,12 +1,17 @@
 #include "pushworker.h"
 
+#include <QFileInfo>
+#include <QTime>
+
+#include "utils.h"
+
 namespace {
 
 const int PERCENT_WIDTH = 4;
 const int SENT_WIDTH = 10;
-const int SPEED_WIDTH = 8;
-const int ETA_WIDTH = 6;
-const int HEADER_WIDTH = 39;
+const int SPEED_WIDTH = 10;
+const int ETA_WIDTH = 12;
+const int HEADER_WIDTH = 47;
 
 const double b = 1;
 const double Kb = 1024 * b;
@@ -46,13 +51,29 @@ QString readableSize(qint64 bytes) {
 }
 
 PushWorker::PushWorker(QObject *parent) :
-    QObject(parent), qout(stdout), SCREEN_WIDTH(io_compatibility::getConsoleWidth())
+    Worker(parent)
 {
-
 }
 
 PushWorker::~PushWorker() {
 
+}
+
+bool PushWorker::setFilename(const QString &filename) {
+    this->filename = filename;
+    QFileInfo fileInfo(filename);
+    return fileInfo.isFile() && fileInfo.exists();
+}
+
+Command PushWorker::getCommand(Command &command) {
+    QFileInfo fileInfo(filename);
+    if (!fileInfo.isFile() || !fileInfo.exists())
+        return command;
+
+    QString checksum = utils::getFileChecksum(filename);
+    command.set_checksum(checksum.toStdString());
+    command.set_length(fileInfo.size());
+    return command;
 }
 
 void PushWorker::onFileSendingStarted(const QString &filename)
@@ -94,9 +115,9 @@ void PushWorker::onFileSendingProgress(const QString &, qint64 sent, qint64 tota
     text_speed.append("/s");
     text_speed = text_speed.leftJustified(SPEED_WIDTH, ' ');
 
-    QString text_eta;
-    text_eta.setNum(eta_time);
-    text_eta.append("s");
+    QTime time;
+    time = time.addSecs(eta_time);
+    QString text_eta = time.toString(Qt::TextDate);
     text_eta = text_eta.leftJustified(ETA_WIDTH, ' ');
 
     qout << "\r" << text_percent << "[" << text_done << text_notdone << "] " << text_sent << " " << text_speed << " eta " << text_eta;
@@ -105,8 +126,8 @@ void PushWorker::onFileSendingProgress(const QString &, qint64 sent, qint64 tota
 
 void PushWorker::onFileSendingEnded(const QString &filename)
 {
-    quint64 elapsed = timer.elapsed();
-    //2012-06-21 17:39:55 (94.9 KB/s) - `TheAnnoyingOrange.mp4' saved [4348238/4348238]
-    qout << endl << tr("%1 was sent within %2").arg(filename, QString::number(elapsed)) << endl;
-    exit(0);
+    quint64 elapsed = timer.elapsed() / 1000;
+    QTime time;
+    time = time.addSecs(elapsed);
+    qout << endl << tr("%1 was sent within %2").arg(filename, time.toString(Qt::TextDate)) << endl;
 }

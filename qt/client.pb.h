@@ -22,7 +22,6 @@
 #include <google/protobuf/generated_message_util.h>
 #include <google/protobuf/repeated_field.h>
 #include <google/protobuf/extension_set.h>
-#include <google/protobuf/generated_message_reflection.h>
 // @@protoc_insertion_point(includes)
 
 namespace com {
@@ -38,7 +37,7 @@ class Client;
 
 // ===================================================================
 
-class Client : public ::google::protobuf::Message {
+class Client : public ::google::protobuf::MessageLite {
  public:
   Client();
   virtual ~Client();
@@ -50,15 +49,6 @@ class Client : public ::google::protobuf::Message {
     return *this;
   }
   
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-  
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-  
-  static const ::google::protobuf::Descriptor* descriptor();
   static const Client& default_instance();
   
   void Swap(Client* other);
@@ -66,8 +56,7 @@ class Client : public ::google::protobuf::Message {
   // implements Message ----------------------------------------------
   
   Client* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
+  void CheckTypeAndMergeFrom(const ::google::protobuf::MessageLite& from);
   void CopyFrom(const Client& from);
   void MergeFrom(const Client& from);
   void Clear();
@@ -78,7 +67,6 @@ class Client : public ::google::protobuf::Message {
       ::google::protobuf::io::CodedInputStream* input);
   void SerializeWithCachedSizes(
       ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
   int GetCachedSize() const { return _cached_size_; }
   private:
   void SharedCtor();
@@ -86,7 +74,7 @@ class Client : public ::google::protobuf::Message {
   void SetCachedSize(int size) const;
   public:
   
-  ::google::protobuf::Metadata GetMetadata() const;
+  ::std::string GetTypeName() const;
   
   // nested types ----------------------------------------------------
   
@@ -151,8 +139,6 @@ class Client : public ::google::protobuf::Message {
   inline void clear_has_name();
   inline void set_has_use_pin();
   inline void clear_has_use_pin();
-  
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::std::string* id_;
   ::std::string* ip_;
@@ -401,15 +387,6 @@ inline void Client::set_use_pin(bool value) {
 }  // namespace data
 }  // namespace wlancat
 }  // namespace com
-
-#ifndef SWIG
-namespace google {
-namespace protobuf {
-
-
-}  // namespace google
-}  // namespace protobuf
-#endif  // SWIG
 
 // @@protoc_insertion_point(global_scope)
 

@@ -22,7 +22,6 @@
 #include <google/protobuf/generated_message_util.h>
 #include <google/protobuf/repeated_field.h>
 #include <google/protobuf/extension_set.h>
-#include <google/protobuf/generated_message_reflection.h>
 // @@protoc_insertion_point(includes)
 
 namespace com {
@@ -38,7 +37,7 @@ class Command;
 
 // ===================================================================
 
-class Command : public ::google::protobuf::Message {
+class Command : public ::google::protobuf::MessageLite {
  public:
   Command();
   virtual ~Command();
@@ -50,15 +49,6 @@ class Command : public ::google::protobuf::Message {
     return *this;
   }
   
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-  
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-  
-  static const ::google::protobuf::Descriptor* descriptor();
   static const Command& default_instance();
   
   void Swap(Command* other);
@@ -66,8 +56,7 @@ class Command : public ::google::protobuf::Message {
   // implements Message ----------------------------------------------
   
   Command* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
+  void CheckTypeAndMergeFrom(const ::google::protobuf::MessageLite& from);
   void CopyFrom(const Command& from);
   void MergeFrom(const Command& from);
   void Clear();
@@ -78,7 +67,6 @@ class Command : public ::google::protobuf::Message {
       ::google::protobuf::io::CodedInputStream* input);
   void SerializeWithCachedSizes(
       ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
   int GetCachedSize() const { return _cached_size_; }
   private:
   void SharedCtor();
@@ -86,7 +74,7 @@ class Command : public ::google::protobuf::Message {
   void SetCachedSize(int size) const;
   public:
   
-  ::google::protobuf::Metadata GetMetadata() const;
+  ::std::string GetTypeName() const;
   
   // nested types ----------------------------------------------------
   
@@ -130,21 +118,43 @@ class Command : public ::google::protobuf::Message {
   inline const ::google::protobuf::RepeatedPtrField< ::std::string>& params() const;
   inline ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_params();
   
+  // optional uint64 length = 4;
+  inline bool has_length() const;
+  inline void clear_length();
+  static const int kLengthFieldNumber = 4;
+  inline ::google::protobuf::uint64 length() const;
+  inline void set_length(::google::protobuf::uint64 value);
+  
+  // optional string checksum = 5;
+  inline bool has_checksum() const;
+  inline void clear_checksum();
+  static const int kChecksumFieldNumber = 5;
+  inline const ::std::string& checksum() const;
+  inline void set_checksum(const ::std::string& value);
+  inline void set_checksum(const char* value);
+  inline void set_checksum(const char* value, size_t size);
+  inline ::std::string* mutable_checksum();
+  inline ::std::string* release_checksum();
+  
   // @@protoc_insertion_point(class_scope:com.wlancat.data.Command)
  private:
   inline void set_has_pin();
   inline void clear_has_pin();
   inline void set_has_command();
   inline void clear_has_command();
-  
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  inline void set_has_length();
+  inline void clear_has_length();
+  inline void set_has_checksum();
+  inline void clear_has_checksum();
   
   ::std::string* pin_;
   ::std::string* command_;
   ::google::protobuf::RepeatedPtrField< ::std::string> params_;
+  ::google::protobuf::uint64 length_;
+  ::std::string* checksum_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
   
   friend void  protobuf_AddDesc_command_2eproto();
   friend void protobuf_AssignDesc_command_2eproto();
@@ -320,21 +330,92 @@ Command::mutable_params() {
   return &params_;
 }
 
+// optional uint64 length = 4;
+inline bool Command::has_length() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void Command::set_has_length() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void Command::clear_has_length() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void Command::clear_length() {
+  length_ = GOOGLE_ULONGLONG(0);
+  clear_has_length();
+}
+inline ::google::protobuf::uint64 Command::length() const {
+  return length_;
+}
+inline void Command::set_length(::google::protobuf::uint64 value) {
+  set_has_length();
+  length_ = value;
+}
+
+// optional string checksum = 5;
+inline bool Command::has_checksum() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void Command::set_has_checksum() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void Command::clear_has_checksum() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void Command::clear_checksum() {
+  if (checksum_ != &::google::protobuf::internal::kEmptyString) {
+    checksum_->clear();
+  }
+  clear_has_checksum();
+}
+inline const ::std::string& Command::checksum() const {
+  return *checksum_;
+}
+inline void Command::set_checksum(const ::std::string& value) {
+  set_has_checksum();
+  if (checksum_ == &::google::protobuf::internal::kEmptyString) {
+    checksum_ = new ::std::string;
+  }
+  checksum_->assign(value);
+}
+inline void Command::set_checksum(const char* value) {
+  set_has_checksum();
+  if (checksum_ == &::google::protobuf::internal::kEmptyString) {
+    checksum_ = new ::std::string;
+  }
+  checksum_->assign(value);
+}
+inline void Command::set_checksum(const char* value, size_t size) {
+  set_has_checksum();
+  if (checksum_ == &::google::protobuf::internal::kEmptyString) {
+    checksum_ = new ::std::string;
+  }
+  checksum_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Command::mutable_checksum() {
+  set_has_checksum();
+  if (checksum_ == &::google::protobuf::internal::kEmptyString) {
+    checksum_ = new ::std::string;
+  }
+  return checksum_;
+}
+inline ::std::string* Command::release_checksum() {
+  clear_has_checksum();
+  if (checksum_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = checksum_;
+    checksum_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
 
 // @@protoc_insertion_point(namespace_scope)
 
 }  // namespace data
 }  // namespace wlancat
 }  // namespace com
-
-#ifndef SWIG
-namespace google {
-namespace protobuf {
-
-
-}  // namespace google
-}  // namespace protobuf
-#endif  // SWIG
 
 // @@protoc_insertion_point(global_scope)
 

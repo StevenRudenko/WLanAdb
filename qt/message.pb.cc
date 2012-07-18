@@ -8,69 +8,14 @@
 #include <google/protobuf/stubs/once.h>
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/wire_format_lite_inl.h>
-#include <google/protobuf/descriptor.h>
-#include <google/protobuf/reflection_ops.h>
-#include <google/protobuf/wire_format.h>
 // @@protoc_insertion_point(includes)
 
 namespace com {
 namespace wlancat {
 namespace data {
 
-namespace {
-
-const ::google::protobuf::Descriptor* Message_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  Message_reflection_ = NULL;
-const ::google::protobuf::EnumDescriptor* Message_Type_descriptor_ = NULL;
-
-}  // namespace
-
-
-void protobuf_AssignDesc_message_2eproto() {
-  protobuf_AddDesc_message_2eproto();
-  const ::google::protobuf::FileDescriptor* file =
-    ::google::protobuf::DescriptorPool::generated_pool()->FindFileByName(
-      "message.proto");
-  GOOGLE_CHECK(file != NULL);
-  Message_descriptor_ = file->message_type(0);
-  static const int Message_offsets_[2] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Message, type_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Message, client_),
-  };
-  Message_reflection_ =
-    new ::google::protobuf::internal::GeneratedMessageReflection(
-      Message_descriptor_,
-      Message::default_instance_,
-      Message_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Message, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Message, _unknown_fields_),
-      -1,
-      ::google::protobuf::DescriptorPool::generated_pool(),
-      ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(Message));
-  Message_Type_descriptor_ = Message_descriptor_->enum_type(0);
-}
-
-namespace {
-
-GOOGLE_PROTOBUF_DECLARE_ONCE(protobuf_AssignDescriptors_once_);
-inline void protobuf_AssignDescriptorsOnce() {
-  ::google::protobuf::GoogleOnceInit(&protobuf_AssignDescriptors_once_,
-                 &protobuf_AssignDesc_message_2eproto);
-}
-
-void protobuf_RegisterTypes(const ::std::string&) {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    Message_descriptor_, &Message::default_instance());
-}
-
-}  // namespace
-
 void protobuf_ShutdownFile_message_2eproto() {
   delete Message::default_instance_;
-  delete Message_reflection_;
 }
 
 void protobuf_AddDesc_message_2eproto() {
@@ -80,15 +25,6 @@ void protobuf_AddDesc_message_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::com::wlancat::data::protobuf_AddDesc_client_2eproto();
-  ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\rmessage.proto\022\020com.wlancat.data\032\014clien"
-    "t.proto\"\203\001\n\007Message\022,\n\004type\030\001 \002(\0162\036.com."
-    "wlancat.data.Message.Type\022(\n\006client\030\002 \001("
-    "\0132\030.com.wlancat.data.Client\" \n\004Type\022\n\n\006R"
-    "EQEST\020\000\022\014\n\010RESPONSE\020\001B \n\020com.wlancat.dat"
-    "aB\014MessageProto", 215);
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
-    "message.proto", &protobuf_RegisterTypes);
   Message::default_instance_ = new Message();
   Message::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_message_2eproto);
@@ -104,10 +40,6 @@ struct StaticDescriptorInitializer_message_2eproto {
 
 // ===================================================================
 
-const ::google::protobuf::EnumDescriptor* Message_Type_descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return Message_Type_descriptor_;
-}
 bool Message_Type_IsValid(int value) {
   switch(value) {
     case 0:
@@ -131,7 +63,7 @@ const int Message::kClientFieldNumber;
 #endif  // !_MSC_VER
 
 Message::Message()
-  : ::google::protobuf::Message() {
+  : ::google::protobuf::MessageLite() {
   SharedCtor();
 }
 
@@ -140,7 +72,7 @@ void Message::InitAsDefaultInstance() {
 }
 
 Message::Message(const Message& from)
-  : ::google::protobuf::Message() {
+  : ::google::protobuf::MessageLite() {
   SharedCtor();
   MergeFrom(from);
 }
@@ -167,11 +99,6 @@ void Message::SetCachedSize(int size) const {
   _cached_size_ = size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
-const ::google::protobuf::Descriptor* Message::descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return Message_descriptor_;
-}
-
 const Message& Message::default_instance() {
   if (default_instance_ == NULL) protobuf_AddDesc_message_2eproto();  return *default_instance_;
 }
@@ -190,7 +117,6 @@ void Message::Clear() {
     }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
-  mutable_unknown_fields()->Clear();
 }
 
 bool Message::MergePartialFromCodedStream(
@@ -209,8 +135,6 @@ bool Message::MergePartialFromCodedStream(
                  input, &value)));
           if (::com::wlancat::data::Message_Type_IsValid(value)) {
             set_type(static_cast< ::com::wlancat::data::Message_Type >(value));
-          } else {
-            mutable_unknown_fields()->AddVarint(1, value);
           }
         } else {
           goto handle_uninterpreted;
@@ -239,8 +163,7 @@ bool Message::MergePartialFromCodedStream(
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
           return true;
         }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, mutable_unknown_fields()));
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
         break;
       }
     }
@@ -259,36 +182,10 @@ void Message::SerializeWithCachedSizes(
   
   // optional .com.wlancat.data.Client client = 2;
   if (has_client()) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+    ::google::protobuf::internal::WireFormatLite::WriteMessage(
       2, this->client(), output);
   }
   
-  if (!unknown_fields().empty()) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        unknown_fields(), output);
-  }
-}
-
-::google::protobuf::uint8* Message::SerializeWithCachedSizesToArray(
-    ::google::protobuf::uint8* target) const {
-  // required .com.wlancat.data.Message.Type type = 1;
-  if (has_type()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
-      1, this->type(), target);
-  }
-  
-  // optional .com.wlancat.data.Client client = 2;
-  if (has_client()) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteMessageNoVirtualToArray(
-        2, this->client(), target);
-  }
-  
-  if (!unknown_fields().empty()) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        unknown_fields(), target);
-  }
-  return target;
 }
 
 int Message::ByteSize() const {
@@ -309,27 +206,15 @@ int Message::ByteSize() const {
     }
     
   }
-  if (!unknown_fields().empty()) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        unknown_fields());
-  }
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = total_size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
   return total_size;
 }
 
-void Message::MergeFrom(const ::google::protobuf::Message& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  const Message* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const Message*>(
-      &from);
-  if (source == NULL) {
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
-  } else {
-    MergeFrom(*source);
-  }
+void Message::CheckTypeAndMergeFrom(
+    const ::google::protobuf::MessageLite& from) {
+  MergeFrom(*::google::protobuf::down_cast<const Message*>(&from));
 }
 
 void Message::MergeFrom(const Message& from) {
@@ -342,13 +227,6 @@ void Message::MergeFrom(const Message& from) {
       mutable_client()->::com::wlancat::data::Client::MergeFrom(from.client());
     }
   }
-  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
-}
-
-void Message::CopyFrom(const ::google::protobuf::Message& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
 }
 
 void Message::CopyFrom(const Message& from) {
@@ -371,17 +249,12 @@ void Message::Swap(Message* other) {
     std::swap(type_, other->type_);
     std::swap(client_, other->client_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
-    _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
   }
 }
 
-::google::protobuf::Metadata Message::GetMetadata() const {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::Metadata metadata;
-  metadata.descriptor = Message_descriptor_;
-  metadata.reflection = Message_reflection_;
-  return metadata;
+::std::string Message::GetTypeName() const {
+  return "com.wlancat.data.Message";
 }
 
 

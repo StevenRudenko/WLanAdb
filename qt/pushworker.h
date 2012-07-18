@@ -3,17 +3,24 @@
 
 #include <QElapsedTimer>
 #include <QObject>
+#include <QString>
 #include <QTextStream>
 
-#include "io_compatibility.h"
+#include "worker.h"
 
-class PushWorker : public QObject
+using namespace com::wlancat::data;
+
+class PushWorker : public Worker
 {
     Q_OBJECT
 public:
     explicit PushWorker(QObject *parent = 0);
     virtual ~PushWorker();
     
+public:
+    virtual Command getCommand(Command &command);
+    bool setFilename(const QString& filename);
+
 signals:
     
 public slots:
@@ -22,10 +29,8 @@ public slots:
     void onFileSendingEnded(const QString& filename);
     
 private:
-    QTextStream qout;
+    QString filename;
     QElapsedTimer timer;
-
-    const int SCREEN_WIDTH;
 };
 
 #endif // PUSHWORKER_H

@@ -7,15 +7,18 @@
 #include <QString>
 #include <QTextStream>
 
-#include "io_compatibility.h"
+#include "worker.h"
 
-class LogcatWorker : public QObject
+class LogcatWorker : public Worker
 {
     Q_OBJECT
 public:
     explicit LogcatWorker(QObject *parent = 0);
     virtual ~LogcatWorker();
     
+public:
+    virtual Command getCommand(Command &command);
+
 signals:
     
 public slots:
@@ -29,13 +32,10 @@ private:
 
 private:
     QTextStream qin;
-    QTextStream qout;
 
     QRegExp logRegEx;
     QHash<QString, int> tagsList;
     int nextColor;
-
-    const int SCREEN_WIDTH;
 };
 
 #endif // LOGWRITER_H

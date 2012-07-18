@@ -1,5 +1,6 @@
 package com.wlancat.data;
 
+option optimize_for = LITE_RUNTIME;
 option java_package = "com.wlancat.data";
 option java_outer_classname = "CommandProto";
 
@@ -7,4 +8,6 @@ message Command {
   optional string pin = 1;
   optional string command = 2;
   repeated string params = 3;
+  optional uint64 length = 4;
+  optional string checksum = 5;
 }

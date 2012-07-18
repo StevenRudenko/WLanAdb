@@ -8,70 +8,14 @@
 #include <google/protobuf/stubs/once.h>
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/wire_format_lite_inl.h>
-#include <google/protobuf/descriptor.h>
-#include <google/protobuf/reflection_ops.h>
-#include <google/protobuf/wire_format.h>
 // @@protoc_insertion_point(includes)
 
 namespace com {
 namespace wlancat {
 namespace data {
 
-namespace {
-
-const ::google::protobuf::Descriptor* Client_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  Client_reflection_ = NULL;
-
-}  // namespace
-
-
-void protobuf_AssignDesc_client_2eproto() {
-  protobuf_AddDesc_client_2eproto();
-  const ::google::protobuf::FileDescriptor* file =
-    ::google::protobuf::DescriptorPool::generated_pool()->FindFileByName(
-      "client.proto");
-  GOOGLE_CHECK(file != NULL);
-  Client_descriptor_ = file->message_type(0);
-  static const int Client_offsets_[5] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Client, id_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Client, ip_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Client, port_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Client, name_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Client, use_pin_),
-  };
-  Client_reflection_ =
-    new ::google::protobuf::internal::GeneratedMessageReflection(
-      Client_descriptor_,
-      Client::default_instance_,
-      Client_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Client, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Client, _unknown_fields_),
-      -1,
-      ::google::protobuf::DescriptorPool::generated_pool(),
-      ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(Client));
-}
-
-namespace {
-
-GOOGLE_PROTOBUF_DECLARE_ONCE(protobuf_AssignDescriptors_once_);
-inline void protobuf_AssignDescriptorsOnce() {
-  ::google::protobuf::GoogleOnceInit(&protobuf_AssignDescriptors_once_,
-                 &protobuf_AssignDesc_client_2eproto);
-}
-
-void protobuf_RegisterTypes(const ::std::string&) {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    Client_descriptor_, &Client::default_instance());
-}
-
-}  // namespace
-
 void protobuf_ShutdownFile_client_2eproto() {
   delete Client::default_instance_;
-  delete Client_reflection_;
 }
 
 void protobuf_AddDesc_client_2eproto() {
@@ -80,13 +24,6 @@ void protobuf_AddDesc_client_2eproto() {
   already_here = true;
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-  ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\014client.proto\022\020com.wlancat.data\"M\n\006Clie"
-    "nt\022\n\n\002id\030\001 \002(\t\022\n\n\002ip\030\002 \001(\t\022\014\n\004port\030\003 \001(\005"
-    "\022\014\n\004name\030\004 \001(\t\022\017\n\007use_pin\030\005 \001(\010B\037\n\020com.w"
-    "lancat.dataB\013ClientProto", 144);
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
-    "client.proto", &protobuf_RegisterTypes);
   Client::default_instance_ = new Client();
   Client::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_client_2eproto);
@@ -111,7 +48,7 @@ const int Client::kUsePinFieldNumber;
 #endif  // !_MSC_VER
 
 Client::Client()
-  : ::google::protobuf::Message() {
+  : ::google::protobuf::MessageLite() {
   SharedCtor();
 }
 
@@ -119,7 +56,7 @@ void Client::InitAsDefaultInstance() {
 }
 
 Client::Client(const Client& from)
-  : ::google::protobuf::Message() {
+  : ::google::protobuf::MessageLite() {
   SharedCtor();
   MergeFrom(from);
 }
@@ -157,11 +94,6 @@ void Client::SetCachedSize(int size) const {
   _cached_size_ = size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
-const ::google::protobuf::Descriptor* Client::descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return Client_descriptor_;
-}
-
 const Client& Client::default_instance() {
   if (default_instance_ == NULL) protobuf_AddDesc_client_2eproto();  return *default_instance_;
 }
@@ -193,7 +125,6 @@ void Client::Clear() {
     use_pin_ = false;
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
-  mutable_unknown_fields()->Clear();
 }
 
 bool Client::MergePartialFromCodedStream(
@@ -208,9 +139,6 @@ bool Client::MergePartialFromCodedStream(
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
                 input, this->mutable_id()));
-          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-            this->id().data(), this->id().length(),
-            ::google::protobuf::internal::WireFormat::PARSE);
         } else {
           goto handle_uninterpreted;
         }
@@ -225,9 +153,6 @@ bool Client::MergePartialFromCodedStream(
          parse_ip:
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
                 input, this->mutable_ip()));
-          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-            this->ip().data(), this->ip().length(),
-            ::google::protobuf::internal::WireFormat::PARSE);
         } else {
           goto handle_uninterpreted;
         }
@@ -258,9 +183,6 @@ bool Client::MergePartialFromCodedStream(
          parse_name:
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
                 input, this->mutable_name()));
-          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-            this->name().data(), this->name().length(),
-            ::google::protobuf::internal::WireFormat::PARSE);
         } else {
           goto handle_uninterpreted;
         }
@@ -290,8 +212,7 @@ bool Client::MergePartialFromCodedStream(
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
           return true;
         }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, mutable_unknown_fields()));
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
         break;
       }
     }
@@ -304,18 +225,12 @@ void Client::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required string id = 1;
   if (has_id()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->id().data(), this->id().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
     ::google::protobuf::internal::WireFormatLite::WriteString(
       1, this->id(), output);
   }
   
   // optional string ip = 2;
   if (has_ip()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->ip().data(), this->ip().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
     ::google::protobuf::internal::WireFormatLite::WriteString(
       2, this->ip(), output);
   }
@@ -327,9 +242,6 @@ void Client::SerializeWithCachedSizes(
   
   // optional string name = 4;
   if (has_name()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->name().data(), this->name().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
     ::google::protobuf::internal::WireFormatLite::WriteString(
       4, this->name(), output);
   }
@@ -339,59 +251,6 @@ void Client::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteBool(5, this->use_pin(), output);
   }
   
-  if (!unknown_fields().empty()) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        unknown_fields(), output);
-  }
-}
-
-::google::protobuf::uint8* Client::SerializeWithCachedSizesToArray(
-    ::google::protobuf::uint8* target) const {
-  // required string id = 1;
-  if (has_id()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->id().data(), this->id().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        1, this->id(), target);
-  }
-  
-  // optional string ip = 2;
-  if (has_ip()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->ip().data(), this->ip().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        2, this->ip(), target);
-  }
-  
-  // optional int32 port = 3;
-  if (has_port()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->port(), target);
-  }
-  
-  // optional string name = 4;
-  if (has_name()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->name().data(), this->name().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        4, this->name(), target);
-  }
-  
-  // optional bool use_pin = 5;
-  if (has_use_pin()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(5, this->use_pin(), target);
-  }
-  
-  if (!unknown_fields().empty()) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        unknown_fields(), target);
-  }
-  return target;
 }
 
 int Client::ByteSize() const {
@@ -432,27 +291,15 @@ int Client::ByteSize() const {
     }
     
   }
-  if (!unknown_fields().empty()) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        unknown_fields());
-  }
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = total_size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
   return total_size;
 }
 
-void Client::MergeFrom(const ::google::protobuf::Message& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  const Client* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const Client*>(
-      &from);
-  if (source == NULL) {
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
-  } else {
-    MergeFrom(*source);
-  }
+void Client::CheckTypeAndMergeFrom(
+    const ::google::protobuf::MessageLite& from) {
+  MergeFrom(*::google::protobuf::down_cast<const Client*>(&from));
 }
 
 void Client::MergeFrom(const Client& from) {
@@ -474,13 +321,6 @@ void Client::MergeFrom(const Client& from) {
       set_use_pin(from.use_pin());
     }
   }
-  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
-}
-
-void Client::CopyFrom(const ::google::protobuf::Message& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
 }
 
 void Client::CopyFrom(const Client& from) {
@@ -503,17 +343,12 @@ void Client::Swap(Client* other) {
     std::swap(name_, other->name_);
     std::swap(use_pin_, other->use_pin_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
-    _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
   }
 }
 
-::google::protobuf::Metadata Client::GetMetadata() const {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::Metadata metadata;
-  metadata.descriptor = Client_descriptor_;
-  metadata.reflection = Client_reflection_;
-  return metadata;
+::std::string Client::GetTypeName() const {
+  return "com.wlancat.data.Client";
 }
 
 

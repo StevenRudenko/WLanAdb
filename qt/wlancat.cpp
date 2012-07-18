@@ -1,6 +1,7 @@
 #include "wlancat.h"
 
 #include "io_compatibility.h"
+#include "utils.h"
 
 #include "message.pb.h"
 
@@ -130,7 +131,7 @@ void WLanCat::selectClient()
 
         Client client = i.value();
         const QString& clientName = QString::fromStdString(client.name());
-        qout << tr("%1) %2 - %3 (%4)").arg(QString(index), clientName, i.key(), QString::number(client.port())) << endl;
+        qout << tr("%1) %2 - %3 (%4)").arg(QString::number(index), clientName, i.key(), QString::number(client.port())) << endl;
     }
     qout << tr("Please select device by typing it number (Default: 1):") << endl;
 
@@ -182,24 +183,34 @@ void WLanCat::onConnectedToClient()
         pin = qin.readLine();
         io_compatibility::setInputEcho(true);
 
+        // encoding pin
+        pin = utils::getHash(pin);
         cmd.set_pin(pin.toStdString());
     }
 
     QByteArray data;
     QDataStream request(&data, QIODevice::WriteOnly);
-    request << cmd.ByteSize();
-    request.writeRawData(cmd.SerializeAsString().c_str(), cmd.ByteSize());
-    p2pClient->send(data);
 
     QString command = QString::fromUtf8(cmd.command().c_str());
     if (0 == command.compare("push")) {
-        connect(p2pClient, SIGNAL(onFileSendingStarted(QString)), &pushWorker, SLOT(onFileSendingStarted(QString)));
-        connect(p2pClient, SIGNAL(onFileSendingProgress(QString,qint64,qint64)), &pushWorker, SLOT(onFileSendingProgress(QString,qint64,qint64)));
-        connect(p2pClient, SIGNAL(onFileSendingEnded(QString)), &pushWorker, SLOT(onFileSendingEnded(QString)));
+        QString filename = QString::fromUtf8(cmd.params(0).c_str());
+        pushWorker.setFilename(filename);
+        pushWorker.getCommand(cmd);
 
-        QString file = QString::fromUtf8(cmd.params(0).c_str());
-        p2pClient->sendFile(file);
+        request << cmd.ByteSize();
+        request.writeRawData(cmd.SerializeAsString().c_str(), cmd.ByteSize());
+        p2pClient->send(data);
+
+        connect(p2pClient, SIGNAL(onFileSendingStarted(const QString&)), &pushWorker, SLOT(onFileSendingStarted(const QString&)));
+        connect(p2pClient, SIGNAL(onFileSendingProgress(const QString&,qint64,qint64)), &pushWorker, SLOT(onFileSendingProgress(const QString&,qint64,qint64)));
+        connect(p2pClient, SIGNAL(onFileSendingEnded(const QString&)), &pushWorker, SLOT(onFileSendingEnded(const QString&)));
+
+        p2pClient->sendFile(filename);
     } else if (0 == command.compare("logcat")) {
+        request << cmd.ByteSize();
+        request.writeRawData(cmd.SerializeAsString().c_str(), cmd.ByteSize());
+        p2pClient->send(data);
+
         connect(p2pClient, SIGNAL(onDataRecieved(const QString&)), &logcatWorker, SLOT(onLogLine(const QString&)));
     } else {
         //TODO: show help message here
@@ -211,6 +222,6 @@ void WLanCat::onConnectedToClient()
 
 void WLanCat::onDisconnectedFromClient()
 {
-    qout << tr("Connection with client was closed") << endl;
+    qout << endl;// << tr("Connection with client was closed") << endl;
     exit(0);
 }

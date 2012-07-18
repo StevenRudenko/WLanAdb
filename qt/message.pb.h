@@ -22,7 +22,6 @@
 #include <google/protobuf/generated_message_util.h>
 #include <google/protobuf/repeated_field.h>
 #include <google/protobuf/extension_set.h>
-#include <google/protobuf/generated_message_reflection.h>
 #include "client.pb.h"
 // @@protoc_insertion_point(includes)
 
@@ -46,19 +45,9 @@ const Message_Type Message_Type_Type_MIN = Message_Type_REQEST;
 const Message_Type Message_Type_Type_MAX = Message_Type_RESPONSE;
 const int Message_Type_Type_ARRAYSIZE = Message_Type_Type_MAX + 1;
 
-const ::google::protobuf::EnumDescriptor* Message_Type_descriptor();
-inline const ::std::string& Message_Type_Name(Message_Type value) {
-  return ::google::protobuf::internal::NameOfEnum(
-    Message_Type_descriptor(), value);
-}
-inline bool Message_Type_Parse(
-    const ::std::string& name, Message_Type* value) {
-  return ::google::protobuf::internal::ParseNamedEnum<Message_Type>(
-    Message_Type_descriptor(), name, value);
-}
 // ===================================================================
 
-class Message : public ::google::protobuf::Message {
+class Message : public ::google::protobuf::MessageLite {
  public:
   Message();
   virtual ~Message();
@@ -70,15 +59,6 @@ class Message : public ::google::protobuf::Message {
     return *this;
   }
   
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-  
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-  
-  static const ::google::protobuf::Descriptor* descriptor();
   static const Message& default_instance();
   
   void Swap(Message* other);
@@ -86,8 +66,7 @@ class Message : public ::google::protobuf::Message {
   // implements Message ----------------------------------------------
   
   Message* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
+  void CheckTypeAndMergeFrom(const ::google::protobuf::MessageLite& from);
   void CopyFrom(const Message& from);
   void MergeFrom(const Message& from);
   void Clear();
@@ -98,7 +77,6 @@ class Message : public ::google::protobuf::Message {
       ::google::protobuf::io::CodedInputStream* input);
   void SerializeWithCachedSizes(
       ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
   int GetCachedSize() const { return _cached_size_; }
   private:
   void SharedCtor();
@@ -106,7 +84,7 @@ class Message : public ::google::protobuf::Message {
   void SetCachedSize(int size) const;
   public:
   
-  ::google::protobuf::Metadata GetMetadata() const;
+  ::std::string GetTypeName() const;
   
   // nested types ----------------------------------------------------
   
@@ -122,17 +100,6 @@ class Message : public ::google::protobuf::Message {
     Message_Type_Type_MAX;
   static const int Type_ARRAYSIZE =
     Message_Type_Type_ARRAYSIZE;
-  static inline const ::google::protobuf::EnumDescriptor*
-  Type_descriptor() {
-    return Message_Type_descriptor();
-  }
-  static inline const ::std::string& Type_Name(Type value) {
-    return Message_Type_Name(value);
-  }
-  static inline bool Type_Parse(const ::std::string& name,
-      Type* value) {
-    return Message_Type_Parse(name, value);
-  }
   
   // accessors -------------------------------------------------------
   
@@ -157,8 +124,6 @@ class Message : public ::google::protobuf::Message {
   inline void clear_has_type();
   inline void set_has_client();
   inline void clear_has_client();
-  
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::com::wlancat::data::Client* client_;
   int type_;
@@ -238,19 +203,6 @@ inline ::com::wlancat::data::Client* Message::release_client() {
 }  // namespace data
 }  // namespace wlancat
 }  // namespace com
-
-#ifndef SWIG
-namespace google {
-namespace protobuf {
-
-template <>
-inline const EnumDescriptor* GetEnumDescriptor< ::com::wlancat::data::Message_Type>() {
-  return ::com::wlancat::data::Message_Type_descriptor();
-}
-
-}  // namespace google
-}  // namespace protobuf
-#endif  // SWIG
 
 // @@protoc_insertion_point(global_scope)
 

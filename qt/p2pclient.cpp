@@ -1,7 +1,8 @@
 #include "p2pclient.h"
 
 namespace {
-const int SIZE_BLOCK_FOR_SEND_FILE = 64 * 1024;
+const int FILE_BUFFER = 32 * 1024;
+const int READ_BUFFER = 4 * 1024;
 }
 
 P2PClient::P2PClient(QObject *parent) :
@@ -11,7 +12,7 @@ P2PClient::P2PClient(QObject *parent) :
     tcpSocket = new QTcpSocket();
     tcpSocket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
     tcpSocket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
-    tcpSocket->setReadBufferSize(4096);
+    tcpSocket->setReadBufferSize(READ_BUFFER);
 
     connect(tcpSocket, SIGNAL(connected()), this, SLOT(connectedToServer()));
     connect(tcpSocket, SIGNAL(disconnected()), this, SLOT(connectionClosedByServer()));
@@ -22,6 +23,7 @@ P2PClient::P2PClient(QObject *parent) :
 P2PClient::~P2PClient()
 {
     disconnectFromServer();
+
     if (tcpSocket != NULL) {
         delete tcpSocket;
         tcpSocket = NULL;
@@ -30,6 +32,7 @@ P2PClient::~P2PClient()
 
 void P2PClient::connectToServer(const QString& server, int port)
 {
+    tcpSocket->abort();
     tcpSocket->connectToHost(server, port);
 }
 
@@ -83,16 +86,19 @@ void P2PClient::sendNextPartOfFile() {
     if (readFile == NULL)
         return;
 
-    char block[SIZE_BLOCK_FOR_SEND_FILE];
+    char block[FILE_BUFFER];
     if (!readFile->atEnd()) {
-        qint64 in = readFile->read(block, sizeof(block));
-        tcpSocket->write(block, in);
+        qint64 read = readFile->read(block, sizeof(block));
+        tcpSocket->write(block, read);
         emit onFileSendingProgress(readFile->fileName(), readFile->pos(), readFile->size());
     } else {
+        tcpSocket->flush();
+        disconnect(tcpSocket, SIGNAL(bytesWritten(qint64)), this, SLOT(sendNextPartOfFile()));
+
         emit onFileSendingEnded(readFile->fileName());
         readFile->close();
+        delete readFile;
         readFile = NULL;
-        disconnect(tcpSocket, SIGNAL(bytesWritten(qint64)), this, SLOT(sendNextPartOfFile()));
     }
 }
 
@@ -104,9 +110,13 @@ void P2PClient::read()
     }
 
     while (!in->atEnd()) {
+        if (!tcpSocket->canReadLine())
+            break;
+
         QString line = in->readLine();
         if (line.isEmpty())
             break;
+
         onDataRecieved(line);
     }
 }
