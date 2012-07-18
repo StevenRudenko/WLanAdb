@@ -35,8 +35,7 @@ public class LogcatWorker extends BaseWorker implements OnLogMessageListener {
       try {
         mOutputStream.write(message);
         mOutputStream.newLine();
-        //mOutputStream.write("\r\n");
-        //mOutputStream.flush();
+        mOutputStream.flush();
       } catch (IOException e) {
         if (DEBUG)
           Log.e(TAG, "Fail to write line to stream: " + e.getMessage());

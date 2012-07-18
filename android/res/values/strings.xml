@@ -9,6 +9,7 @@
     <string name="loading">Loading&#8230;</string>
     <!-- Menu items labels -->
     <string name="menu_settings">Settings</string>
+    <!-- Logcat filter labels -->
     <!-- Preferences labels -->
     <string name="pref_client_settings">Client settings</string>
     <string name="pref_client_id">Client ID</string>

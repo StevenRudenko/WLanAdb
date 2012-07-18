@@ -1,5 +1,6 @@
 package com.wlancat.fragment;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -8,15 +9,18 @@ import com.wlancat.data.LogcatLine;
 import com.wlancat.logcat.LogReader;
 import com.wlancat.logcat.LogReader.OnLogMessageListener;
 import com.wlancat.ui.LogcatAdapter;
+import com.wlancat.utils.AndroidUtils;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
 public class LogcatFragment extends Fragment implements OnLogMessageListener {
+  private static final String TAG = LogcatFragment.class.getSimpleName();
 
   private final LogReader mLogReader = new LogReader(this);
   private final Pattern mLogLinePattern = Pattern.compile("^([A-Z])\\/(.*)\\(\\s*(\\d+)\\s*\\): (.*)$");
@@ -41,6 +45,16 @@ public class LogcatFragment extends Fragment implements OnLogMessageListener {
   @Override
   public void onResume() {
     mLogReader.startOnTread();
+
+    final List<AndroidUtils.RunningProcess> processes = AndroidUtils.getRunningProcesses(getActivity());
+    Log.d(TAG, "--------- RUNNING PROCESSES ---------");
+    for (AndroidUtils.RunningProcess process : processes) {
+      Log.d(TAG, process.name + " [" + process.pid + "] owned by " + process.uid);
+    }
+    Log.d(TAG, "-------------------------------------");
+
+    mAdapter.getFilter().setType("W", true).setType("I", true);
+
     super.onResume();
   }
 
