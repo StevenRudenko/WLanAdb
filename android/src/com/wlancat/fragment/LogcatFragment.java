@@ -1,11 +1,11 @@
 package com.wlancat.fragment;
 
 import java.util.Collection;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.wlancat.R;
 import com.wlancat.data.LogcatLine;
+import com.wlancat.logcat.LogFilter;
+import com.wlancat.logcat.LogParser;
 import com.wlancat.logcat.LogReader;
 import com.wlancat.logcat.LogReader.OnLogMessageListener;
 import com.wlancat.logcat.PidsController;
@@ -29,8 +29,9 @@ public class LogcatFragment extends Fragment implements OnLogMessageListener, On
   private static final String TAG = LogcatFragment.class.getSimpleName();
 
   private final LogReader mLogReader = new LogReader(this);
+
+  private final LogFilter mLogFilter = new LogFilter();
   private PidsController mPidsController;
-  private final Pattern mLogLinePattern = Pattern.compile("^([A-Z])\\/(.*)\\(\\s*(\\d+)\\s*\\): (.*)$");
 
   private PidsAdapter mPidsAdapter;
   private LogcatAdapter mLogsAdapter;
@@ -47,10 +48,11 @@ public class LogcatFragment extends Fragment implements OnLogMessageListener, On
     viewList.setEmptyView(viewEmpty);
 
     mLogsAdapter = new LogcatAdapter(context);
+    mLogsAdapter.getFilter().setLogFilter(mLogFilter);
     viewList.setAdapter(mLogsAdapter);
 
     // logcat filter actions section
-    mPidsController = new PidsController(context, this);
+    mPidsController = new PidsController(context);
     mPidsAdapter = new PidsAdapter(context);
     final ListView viewPidsList = (ListView) v.findViewById(R.id.logcatFiltersPidsList);
     viewPidsList.setAdapter(mPidsAdapter);
@@ -77,6 +79,8 @@ public class LogcatFragment extends Fragment implements OnLogMessageListener, On
   @Override
   public void onResume() {
     mLogReader.startOnNewTread();
+    mPidsController.addOnPidsUpdateListener(this);
+    mPidsController.addOnPidsUpdateListener(mLogFilter);
     mPidsController.start();
 
     super.onResume();
@@ -85,6 +89,8 @@ public class LogcatFragment extends Fragment implements OnLogMessageListener, On
   @Override
   public void onPause() {
     mLogReader.stop();
+    mPidsController.removeOnPidsUpdateListener(this);
+    mPidsController.removeOnPidsUpdateListener(mLogFilter);
     mPidsController.stop();
 
     super.onPause();
@@ -92,21 +98,16 @@ public class LogcatFragment extends Fragment implements OnLogMessageListener, On
 
   @Override
   public void onLogMessage(String message) {
-    final Matcher matcher = mLogLinePattern.matcher(message);
-    if (!matcher.matches())
+    final LogcatLine logcatLine = LogParser.parse(message);
+    if (logcatLine == null)
       return;
 
-    final LogcatLine logcatLine = new LogcatLine();
-    logcatLine.type = matcher.group(1);
-    logcatLine.tag = matcher.group(2);
-    logcatLine.pid = Integer.parseInt(matcher.group(3));
-    logcatLine.text = matcher.group(4);
     mLogsAdapter.add(logcatLine);
   }
 
   @Override
-  public void onPidsUpdated(Collection<RunningProcess> pids) {
-    mPidsAdapter.setItems(pids);
+  public void onPidsUpdated(Collection<RunningProcess> processes) {
+    mPidsAdapter.setItems(processes);
   }
 
   @Override
@@ -114,22 +115,28 @@ public class LogcatFragment extends Fragment implements OnLogMessageListener, On
     final int id = buttonView.getId();
     switch (id) {
     case R.id.logcatFilterTypeV:
-      mLogsAdapter.getFilter().setType(LogcatAdapter.LogcatFilter.TYPE_V, isChecked).filter();
+      mLogFilter.setType(LogFilter.TYPE_V, isChecked);
+      mLogsAdapter.getFilter().filter();
       break;
     case R.id.logcatFilterTypeD:
-      mLogsAdapter.getFilter().setType(LogcatAdapter.LogcatFilter.TYPE_D, isChecked).filter();
+      mLogFilter.setType(LogFilter.TYPE_D, isChecked);
+      mLogsAdapter.getFilter().filter();
       break;
     case R.id.logcatFilterTypeI:
-      mLogsAdapter.getFilter().setType(LogcatAdapter.LogcatFilter.TYPE_I, isChecked).filter();
+      mLogFilter.setType(LogFilter.TYPE_I, isChecked);
+      mLogsAdapter.getFilter().filter();
       break;
     case R.id.logcatFilterTypeW:
-      mLogsAdapter.getFilter().setType(LogcatAdapter.LogcatFilter.TYPE_W, isChecked).filter();
+      mLogFilter.setType(LogFilter.TYPE_W, isChecked);
+      mLogsAdapter.getFilter().filter();
       break;
     case R.id.logcatFilterTypeE:
-      mLogsAdapter.getFilter().setType(LogcatAdapter.LogcatFilter.TYPE_E, isChecked).filter();
+      mLogFilter.setType(LogFilter.TYPE_E, isChecked);
+      mLogsAdapter.getFilter().filter();
       break;
     case R.id.logcatFilterTypeA:
-      mLogsAdapter.getFilter().setType(LogcatAdapter.LogcatFilter.TYPE_A, isChecked).filter();
+      mLogFilter.setType(LogFilter.TYPE_A, isChecked);
+      mLogsAdapter.getFilter().filter();
       break;
 
     case R.id.logcatFilterHideSystemPids:

@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 
 import com.wlancat.data.ClientSettings;
+import com.wlancat.logcat.PidsController;
 
 import android.util.Log;
 
@@ -26,15 +27,18 @@ public class P2PServer implements Runnable {
   private ServerSocket mServerSocket;
   private Thread mListenThread;
 
-  private ClientSettings mClientSettings;
+  private final PidsController mPidsController;
+  private final ClientSettings mClientSettings;
+
   private int mActiveConnections = 0;
 
   private OnConnectionsCountChanged mListener;
 
   private volatile boolean isRunning = false;
 
-  public P2PServer(ClientSettings clientSettings) {
+  public P2PServer(ClientSettings clientSettings, PidsController pidsController) {
     mClientSettings = clientSettings;
+    this.mPidsController = pidsController;
   }
 
   public int start(OnConnectionsCountChanged listener) {
@@ -113,6 +117,7 @@ public class P2PServer implements Runnable {
       try {
         Log.d(TAG, "New client asked for a connection");
         final P2PConnection connection = new P2PConnection(socket, mConnectionHanler);
+        connection.setPidsController(mPidsController);
         mClientsHandler.execute(connection);
       } catch (RejectedExecutionException e) {
         Log.d(TAG, "There is no available slots to handle connection!");

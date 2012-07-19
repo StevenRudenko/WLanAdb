@@ -43,26 +43,28 @@ public class AndroidUtils {
 
     final List<RunningProcess> result = new ArrayList<RunningProcess>();
     for (ActivityManager.RunningAppProcessInfo info : list) {
-      final ApplicationInfo appInfo;
+      String name = null;
       try {
-        appInfo = pm.getApplicationInfo(info.processName, PackageManager.GET_META_DATA);
+        final ApplicationInfo appInfo = pm.getApplicationInfo(info.processName, PackageManager.GET_META_DATA);
+        name = pm.getApplicationLabel(appInfo).toString();
       } catch (NameNotFoundException e) {
-        continue;
+        name = info.processName;
       }
 
-      final CharSequence name = pm.getApplicationLabel(appInfo);
-      result.add(new RunningProcess(name, info.pid, info.uid));
+      result.add(new RunningProcess(name, info.processName, info.pid, info.uid));
     }
     return result;
   }
 
   public static class RunningProcess {
-    public final CharSequence name;
+    public final String name;
+    public final String processName;
     public final int pid;
     public final int uid;
 
-    private RunningProcess(CharSequence name, int pid, int uid) {
+    private RunningProcess(String name, String processName, int pid, int uid) {
       this.name = name;
+      this.processName = processName;
       this.pid = pid;
       this.uid = uid;
     }

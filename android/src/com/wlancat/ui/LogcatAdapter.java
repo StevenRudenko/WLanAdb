@@ -1,15 +1,14 @@
 package com.wlancat.ui;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import com.wlancat.R;
 import com.wlancat.data.LogcatLine;
+import com.wlancat.logcat.LogFilter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -90,41 +89,10 @@ public class LogcatAdapter extends BaseAdapter implements Filterable {
   }
 
   public class LogcatFilter extends Filter {
-    public static final String TYPE_V = "V";
-    public static final String TYPE_D = "D";
-    public static final String TYPE_I = "I";
-    public static final String TYPE_W = "W";
-    public static final String TYPE_E = "E";
-    public static final String TYPE_A = "A";
+    private LogFilter mFilter = null;
 
-    private static final String TYPE_ALL = TYPE_V + TYPE_D + TYPE_I + TYPE_W + TYPE_E + TYPE_A;
-
-    private String types = TYPE_ALL;
-    private HashSet<Integer> pids = new HashSet<Integer>();
-    private String searchTerm;
-
-    public LogcatFilter setType(String type, boolean show) {
-      if (type == null)
-        return this;
-
-      if (!show)
-        types = types.replaceAll(type, "");
-      else if (!types.contains(type))
-        types = types + type;
-      return this;
-    }
-
-    public LogcatFilter setPid(int pid, boolean show) {
-      if (!show)
-        pids.remove(pid);
-      else
-        pids.add(pid);
-      return this;
-    }
-
-    public LogcatFilter setSearchTerm(String searchTerm) {
-      this.searchTerm = searchTerm;
-      return this;
+    public void setLogFilter(LogFilter filter) {
+      mFilter = filter;
     }
 
     public void filter() {
@@ -143,7 +111,13 @@ public class LogcatAdapter extends BaseAdapter implements Filterable {
       final int count = values.size();
       final ArrayList<LogcatLine> newValues = new ArrayList<LogcatLine>();
 
-      if (TextUtils.isEmpty(types)) {
+      if (mFilter == null) {
+        results.values = values;
+        results.count = values.size();
+        return results;
+      }
+
+      if (mFilter.filterAll()) {
         results.values = newValues;
         results.count = 0;
         return results;
@@ -151,14 +125,7 @@ public class LogcatAdapter extends BaseAdapter implements Filterable {
 
       for (int i = 0; i < count; ++i) {
         final LogcatLine value = values.get(i);
-
-        if (TextUtils.isEmpty(types) || !types.contains(value.type))
-          continue;
-
-        if (!pids.isEmpty() && !pids.contains(value.pid))
-          continue;
-
-        if (!TextUtils.isEmpty(searchTerm) && !value.text.contains(searchTerm))
+        if (mFilter.filter(value))
           continue;
 
         newValues.add(value);

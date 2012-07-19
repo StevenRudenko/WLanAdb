@@ -3,6 +3,7 @@ package com.wlancat.service;
 import java.net.InetAddress;
 
 import com.wlancat.data.ClientSettings;
+import com.wlancat.logcat.PidsController;
 import com.wlancat.network.BroadcastServer;
 import com.wlancat.network.P2PServer;
 import com.wlancat.network.P2PServer.OnConnectionsCountChanged;
@@ -74,7 +75,7 @@ public class WLanCatService extends Service implements OnConnectionsCountChanged
     mClientSettings = new ClientSettings(this);
     mClientSettings.start();
 
-    mP2pServer = new P2PServer(mClientSettings);
+    mP2pServer = new P2PServer(mClientSettings, new PidsController(this));
     mP2pServer.start(this);
 
     mClientSettings.setIp(localAddress).setPort(mP2pServer.getPort()).commit();

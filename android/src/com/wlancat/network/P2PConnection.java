@@ -10,6 +10,7 @@ import android.util.Log;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.wlancat.config.MyConfig;
 import com.wlancat.data.CommandProto.Command;
+import com.wlancat.logcat.PidsController;
 import com.wlancat.utils.IOUtilities;
 import com.wlancat.worker.BaseWorker;
 import com.wlancat.worker.BaseWorker.WorkerListener;
@@ -30,6 +31,8 @@ public class P2PConnection implements Runnable, WorkerListener {
   private final Socket mSocket;
   private final ConnectionHandler mConnectionHandler;
 
+  private PidsController mPidsController;
+
   private Command command;
   private BaseWorker worker;
 
@@ -48,6 +51,10 @@ public class P2PConnection implements Runnable, WorkerListener {
     } catch (SocketException e) {
       Log.e(TAG, "Fail to set Keep-Alive to socket", e);
     }
+  }
+
+  public void setPidsController(PidsController pidsController) {
+    mPidsController = pidsController;
   }
 
   private void close() {
@@ -130,7 +137,9 @@ public class P2PConnection implements Runnable, WorkerListener {
 
       final String command = this.command.getCommand();
       if (command.equals("logcat")) {
-        worker = new LogcatWorker(this.command, mSocket.getInputStream(), mSocket.getOutputStream(), this);
+        final LogcatWorker worker = new LogcatWorker(this.command, mSocket.getInputStream(), mSocket.getOutputStream(), this);
+        worker.setPidsController(mPidsController);
+        this.worker = worker;
       } else if (command.equals("push")) {
         worker = new PushWorker(this.command, mSocket.getInputStream(), mSocket.getOutputStream(), this);
       }

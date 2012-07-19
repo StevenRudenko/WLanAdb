@@ -11,63 +11,99 @@ import android.os.Handler;
 import android.os.Message;
 
 import com.wlancat.utils.AndroidUtils;
+import com.wlancat.utils.WeakHashSet;
 
 public class PidsController {
 
   public interface OnPidsUpdateListener {
-    public void onPidsUpdated(Collection<AndroidUtils.RunningProcess> pids);
+    public void onPidsUpdated(Collection<AndroidUtils.RunningProcess> processes);
   }
 
+  private static final long PIDS_UPDATE_DELAY = 5000;
   private static final int MSG_PIDS_UPDATE = 1;
-  private static final long DELAY_PIDS_UPDATE = 15000;
 
   private final ActivityManager mActivityManager;
   private final PackageManager mPackageManager;
 
   private final PidsUpdater mUpdater = new PidsUpdater();
-  private final OnPidsUpdateListener mListener;
+  private final WeakHashSet<OnPidsUpdateListener> mListeners = new WeakHashSet<OnPidsUpdateListener>();
 
-  public PidsController(Context context, OnPidsUpdateListener listener) {
-    mListener = listener;
+  private HashSet<AndroidUtils.RunningProcess> mProcesses = null;
 
+  public PidsController(Context context) {
     mActivityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
     mPackageManager = context.getPackageManager();
   }
 
   public void start() {
-    mUpdater.sendEmptyMessage(MSG_PIDS_UPDATE);
+    updateProcessesList();
+
+    mUpdater.sendEmptyMessageDelayed(MSG_PIDS_UPDATE, PIDS_UPDATE_DELAY);
   }
 
   public void stop() {
     mUpdater.removeMessages(MSG_PIDS_UPDATE);
   }
 
-  private class PidsUpdater extends Handler {
-    private final HashSet<AndroidUtils.RunningProcess> mProcesses = new HashSet<AndroidUtils.RunningProcess>();
+  public Collection<AndroidUtils.RunningProcess> getRunningProcesses() {
+    return mProcesses;
+  }
 
-    @Override
-    public void handleMessage(Message msg) {
-      super.handleMessage(msg);
+  public void addOnPidsUpdateListener(OnPidsUpdateListener listener) {
+    synchronized (mListeners) {
+      mListeners.add(listener);
+      if (mProcesses != null)
+        listener.onPidsUpdated(mProcesses);
+    }
+  }
 
-      final List<AndroidUtils.RunningProcess> processes = AndroidUtils.getRunningProcesses(mActivityManager, mPackageManager);
-      boolean needUpdate = false;
+  public void removeOnPidsUpdateListener(OnPidsUpdateListener listener) {
+    synchronized (mListeners) {
+      mListeners.remove(listener);
+    }
+  }
 
+  public void onPidsUpdated() {
+    synchronized (mListeners) {
+      for (OnPidsUpdateListener listener : mListeners) {
+        listener.onPidsUpdated(mProcesses);
+      }
+    }
+  }
+
+  private void updateProcessesList() {
+    final List<AndroidUtils.RunningProcess> processes = AndroidUtils.getRunningProcesses(mActivityManager, mPackageManager);
+    boolean needUpdate = false;
+
+    final HashSet<AndroidUtils.RunningProcess> copy = new HashSet<AndroidUtils.RunningProcess>();
+    if (mProcesses != null) {
       for (AndroidUtils.RunningProcess process : mProcesses) {
-        if (!processes.contains(process)) {
-          mProcesses.remove(process);
+        if (processes.contains(process)) {
+          copy.add(process);
+        } else {
           needUpdate = true;
         }
       }
+    }
 
-      for (AndroidUtils.RunningProcess process : processes) {
-        if (mProcesses.add(process))
-          needUpdate = true;
-      }
+    for (AndroidUtils.RunningProcess process : processes) {
+      if (copy.add(process))
+        needUpdate = true;
+    }
 
-      if (needUpdate)
-        mListener.onPidsUpdated(mProcesses);
+    if (needUpdate) {
+      mProcesses = copy;
+      onPidsUpdated();
+    }
+  }
 
-      sendEmptyMessageDelayed(MSG_PIDS_UPDATE, DELAY_PIDS_UPDATE);
+  private class PidsUpdater extends Handler {
+    @Override
+    public void handleMessage(Message msg) {
+      super.handleMessage(msg);
+      updateProcessesList();
+
+      sendEmptyMessageDelayed(MSG_PIDS_UPDATE, PIDS_UPDATE_DELAY);
     }
   }
 }
