@@ -3,7 +3,11 @@
 #include "io_compatibility.h"
 #include "utils.h"
 
-#include "message.pb.h"
+#include "./data/message.pb.h"
+
+#include "./worker/pushworker.h"
+#include "./worker/logcatworker.h"
+#include "./worker/installworker.h"
 
 using namespace std;
 using namespace com::wlancat::data;
@@ -16,7 +20,7 @@ const int MAX_REQUESTS_SENT = 5;
 }
 
 WLanCat::WLanCat(int argc, char *argv[]) :
-    QObject(NULL), p2pClient(NULL), qout(stdout), requestsSent(0)
+    QObject(NULL), p2pClient(NULL), qout(stdout), worker(NULL), requestsSent(0)
 {
     if (argc < 2) {
         //TODO: add help output
@@ -31,6 +35,8 @@ WLanCat::WLanCat(int argc, char *argv[]) :
         qout << "Argument " << i << ": " << argv[i] << endl;
         *cmd.add_params() = argv[i];
     }
+
+
 
     // Verify that the version of the library that we linked against is
     // compatible with the version of the headers we compiled against.
@@ -50,16 +56,21 @@ WLanCat::WLanCat(int argc, char *argv[]) :
 
 WLanCat::~WLanCat()
 {
-    if (broadcast != 0) {
+    if (broadcast != NULL) {
         broadcast->stop();
         delete broadcast;
-        broadcast = 0;
+        broadcast = NULL;
     }
 
-    if (p2pClient != 0) {
+    if (p2pClient != NULL) {
         p2pClient->disconnectFromServer();
         delete p2pClient;
-        p2pClient = 0;
+        p2pClient = NULL;
+    }
+
+    if (worker != NULL) {
+        delete worker;
+        worker = NULL;
     }
 
     // Optional:  Delete all global objects allocated by libprotobuf.
@@ -133,7 +144,7 @@ void WLanCat::selectClient()
         const QString& clientName = QString::fromStdString(client.name());
         qout << tr("%1) %2 - %3 (%4)").arg(QString::number(index), clientName, i.key(), QString::number(client.port())) << endl;
     }
-    qout << tr("Please select device by typing it number (Default: 1):") << endl;
+    qout << tr("Please select device [1..%1]:").arg(QString::number(size)) << endl;
 
     int selection;
     QTextStream qin(stdin);
@@ -192,26 +203,34 @@ void WLanCat::onConnectedToClient()
     QDataStream request(&data, QIODevice::WriteOnly);
 
     QString command = QString::fromUtf8(cmd.command().c_str());
-    if (0 == command.compare("push")) {
+    if (0 == command.compare("push") || 0 == command.compare("install")) {
+        if (0 == command.compare("push"))
+            worker = new PushWorker();
+        else
+            worker = new InstallWorker();
+        worker->getCommand(cmd);
+
+        request << cmd.ByteSize();
+        request.writeRawData(cmd.SerializeAsString().c_str(), cmd.ByteSize());
+        p2pClient->send(data);
+
+        connect(p2pClient, SIGNAL(onFileSendingStarted(const QString&)), worker, SLOT(onFileSendingStarted(const QString&)));
+        connect(p2pClient, SIGNAL(onFileSendingProgress(const QString&,qint64,qint64)), worker, SLOT(onFileSendingProgress(const QString&,qint64,qint64)));
+        connect(p2pClient, SIGNAL(onFileSendingEnded(const QString&)), worker, SLOT(onFileSendingEnded(const QString&)));
+
         QString filename = QString::fromUtf8(cmd.params(0).c_str());
-        pushWorker.setFilename(filename);
-        pushWorker.getCommand(cmd);
-
-        request << cmd.ByteSize();
-        request.writeRawData(cmd.SerializeAsString().c_str(), cmd.ByteSize());
-        p2pClient->send(data);
-
-        connect(p2pClient, SIGNAL(onFileSendingStarted(const QString&)), &pushWorker, SLOT(onFileSendingStarted(const QString&)));
-        connect(p2pClient, SIGNAL(onFileSendingProgress(const QString&,qint64,qint64)), &pushWorker, SLOT(onFileSendingProgress(const QString&,qint64,qint64)));
-        connect(p2pClient, SIGNAL(onFileSendingEnded(const QString&)), &pushWorker, SLOT(onFileSendingEnded(const QString&)));
-
-        p2pClient->sendFile(filename);
+        if (!p2pClient->sendFile(filename)) {
+            qout << tr("Fail to open file: %1").arg(filename) << endl;
+            exit(0);
+        }
     } else if (0 == command.compare("logcat")) {
+        worker = new LogcatWorker();
         request << cmd.ByteSize();
         request.writeRawData(cmd.SerializeAsString().c_str(), cmd.ByteSize());
+
         p2pClient->send(data);
 
-        connect(p2pClient, SIGNAL(onDataRecieved(const QString&)), &logcatWorker, SLOT(onLogLine(const QString&)));
+        connect(p2pClient, SIGNAL(onDataRecieved(const QString&)), worker, SLOT(onLogLine(const QString&)));
     } else {
         //TODO: show help message here
         qout << tr("Unknown command: ") << cmd.command().c_str() << endl;

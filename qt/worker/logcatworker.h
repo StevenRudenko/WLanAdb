@@ -17,7 +17,7 @@ public:
     virtual ~LogcatWorker();
     
 public:
-    virtual Command getCommand(Command &command);
+    virtual void getCommand(Command &command);
 
 signals:
     

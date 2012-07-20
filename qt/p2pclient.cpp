@@ -110,8 +110,10 @@ void P2PClient::read()
     }
 
     while (!in->atEnd()) {
-        if (!tcpSocket->canReadLine())
+        if (!tcpSocket->canReadLine()) {
+            in->readLine();
             break;
+        }
 
         QString line = in->readLine();
         if (line.isEmpty())

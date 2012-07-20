@@ -18,15 +18,14 @@ public:
     virtual ~PushWorker();
     
 public:
-    virtual Command getCommand(Command &command);
-    bool setFilename(const QString& filename);
+    virtual void getCommand(Command &command);
 
 signals:
     
 public slots:
-    void onFileSendingStarted(const QString& filename);
-    void onFileSendingProgress(const QString& filename, qint64 sent, qint64 total);
-    void onFileSendingEnded(const QString& filename);
+    virtual void onFileSendingStarted(const QString& filename);
+    virtual void onFileSendingProgress(const QString& filename, qint64 sent, qint64 total);
+    virtual void onFileSendingEnded(const QString& filename);
     
 private:
     QString filename;

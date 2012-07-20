@@ -46,8 +46,7 @@ LogcatWorker::~LogcatWorker() {
     tagsList.clear();
 }
 
-Command LogcatWorker::getCommand(Command &command) {
-    return command;
+void LogcatWorker::getCommand(Command &) {
 }
 
 void LogcatWorker::onLogLine(const QString& str)
@@ -114,11 +113,11 @@ void LogcatWorker::printMessage(const QString& messageString) {
     int current = 0;
     const int len = messageString.length();
     while (current < len) {
-        int next = qMin(current + wrap_area, len);
+        int next = qMin(wrap_area, len - current);
         QString part = messageString.mid(current, next);
-        qout << part << endl;
-        if (next < len)
+        if (current > 0)
             qout << QString(HEADER_WIDTH, ' ');
-        current = next;
+        qout << part << endl;
+        current += next;
     }
 }

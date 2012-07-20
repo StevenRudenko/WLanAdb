@@ -55,25 +55,20 @@ PushWorker::PushWorker(QObject *parent) :
 {
 }
 
-PushWorker::~PushWorker() {
-
+PushWorker::~PushWorker()
+{
 }
 
-bool PushWorker::setFilename(const QString &filename) {
-    this->filename = filename;
-    QFileInfo fileInfo(filename);
-    return fileInfo.isFile() && fileInfo.exists();
-}
-
-Command PushWorker::getCommand(Command &command) {
+void PushWorker::getCommand(Command &command)
+{
+    QString filename = QString::fromUtf8(command.params(0).c_str());
     QFileInfo fileInfo(filename);
     if (!fileInfo.isFile() || !fileInfo.exists())
-        return command;
+        return;
 
     QString checksum = utils::getFileChecksum(filename);
     command.set_checksum(checksum.toStdString());
     command.set_length(fileInfo.size());
-    return command;
 }
 
 void PushWorker::onFileSendingStarted(const QString &filename)

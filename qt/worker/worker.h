@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QTextStream>
 
-#include "command.pb.h"
+#include "./data/command.pb.h"
 
 using namespace com::wlancat::data;
 
@@ -16,7 +16,7 @@ public:
     virtual ~Worker();
     
 public:
-    virtual Command getCommand(Command& command) = 0;
+    virtual void getCommand(Command& command) = 0;
 
 signals:
     

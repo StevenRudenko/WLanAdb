@@ -14,30 +14,32 @@ CONFIG   -= app_bundle
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    message.pb.cc \
-    client.pb.cc \
     broadcastserver.cpp \
     wlancat.cpp \
     p2pclient.cpp \
-    command.pb.cc \
     io_compatibility.cpp \
-    logcatworker.cpp \
-    pushworker.cpp \
     utils.cpp \
-    worker.cpp
+    worker/installworker.cpp \
+    worker/worker.cpp \
+    worker/pushworker.cpp \
+    worker/logcatworker.cpp \
+    data/message.pb.cc \
+    data/command.pb.cc \
+    data/client.pb.cc
 
 HEADERS += \
-    message.pb.h \
-    client.pb.h \
     broadcastserver.h \
     wlancat.h \
     p2pclient.h \
-    command.pb.h \
     io_compatibility.h \
-    logcatworker.h \
-    pushworker.h \
     utils.h \
-    worker.h
+    worker/installworker.h \
+    worker/worker.h \
+    worker/pushworker.h \
+    worker/logcatworker.h \
+    data/message.pb.h \
+    data/command.pb.h \
+    data/client.pb.h
 
 TRANSLATIONS = main_en.ts \
                main_ru.ts \

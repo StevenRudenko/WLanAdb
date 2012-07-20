@@ -7,12 +7,12 @@
 #include <QTextStream>
 
 #include "broadcastserver.h"
-#include "client.pb.h"
-#include "command.pb.h"
 #include "p2pclient.h"
 
-#include "logcatworker.h"
-#include "pushworker.h"
+#include "./data/client.pb.h"
+#include "./data/command.pb.h"
+
+#include "./worker/worker.h"
 
 using namespace com::wlancat::data;
 
@@ -46,8 +46,7 @@ private:
 
     QTextStream qout;
 
-    LogcatWorker logcatWorker;
-    PushWorker pushWorker;
+    Worker* worker;
 
     QHash<QString, Client> clients;
     Client client;
