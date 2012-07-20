@@ -66,7 +66,8 @@ public class PidsController {
   public void onPidsUpdated() {
     synchronized (mListeners) {
       for (OnPidsUpdateListener listener : mListeners) {
-        listener.onPidsUpdated(mProcesses);
+        if (listener != null)
+          listener.onPidsUpdated(mProcesses);
       }
     }
   }

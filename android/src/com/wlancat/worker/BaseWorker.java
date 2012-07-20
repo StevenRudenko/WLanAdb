@@ -7,18 +7,29 @@ import com.wlancat.data.CommandProto.Command;
 
 public abstract class BaseWorker {
   public static interface WorkerListener {
+    public void onSuccess();
     public void onError();
   }
 
-  protected final WorkerListener listener;
   protected final Command command;
 
-  public BaseWorker(Command command, InputStream in, OutputStream out, WorkerListener listener) {
+  protected WorkerListener listener;
+
+  public BaseWorker(Command command) {
     this.command = command;
+  }
+
+  public void setInputStream(InputStream in) {
+  }
+
+  public void setOutputStream(OutputStream out) {
+  }
+  
+  public void setWorkerListener(WorkerListener listener) {
     this.listener = listener;
   }
 
-  public abstract void start();
+  public abstract boolean execute();
 
-  public abstract void stop();
+  public abstract void terminate();
 }

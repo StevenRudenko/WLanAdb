@@ -108,6 +108,9 @@ public class LogFilter implements OnPidsUpdateListener {
     if (logLine == null)
       return true;
 
+    if (apps.isEmpty())
+        return filter(logLine);
+
     final Matcher startProc = START_PROC_PATTERN.matcher(logMessage);
     if (startProc.matches()) {
       final String processName = startProc.group(1);
@@ -129,6 +132,10 @@ public class LogFilter implements OnPidsUpdateListener {
         return false;
       }
     }
+
+    // filter put lines if we didn't find pids for apps
+    if (pids.isEmpty())
+      return true;
 
     return filter(logLine);
   }

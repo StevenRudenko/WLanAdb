@@ -4,31 +4,30 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
-import com.wlancat.data.ClientSettings;
-import com.wlancat.logcat.PidsController;
+import com.wlancat.worker.CommandListener;
+import com.wlancat.worker.CommandProcessor;
 
 import android.util.Log;
 
-public class P2PServer implements Runnable {
+public class P2PServer extends CommandListener implements Runnable {
   private static final String TAG = P2PServer.class.getSimpleName();
 
   public interface OnConnectionsCountChanged {
     public void onConnectionsCountChanged(int connectionsCount);
   }
 
-  private static final int MAX_CLIENTS_AT_TIME = 2;
+  private static final int MAX_CONNECTIONS = Runtime.getRuntime().availableProcessors() * 5;
 
-  private final ExecutorService mClientsHandler = Executors.newFixedThreadPool(MAX_CLIENTS_AT_TIME);
+  private final ExecutorService mConnectionsPool = new ConnectionsPoolExecutor();
 
   private ServerSocket mServerSocket;
   private Thread mListenThread;
-
-  private final PidsController mPidsController;
-  private final ClientSettings mClientSettings;
 
   private int mActiveConnections = 0;
 
@@ -36,9 +35,8 @@ public class P2PServer implements Runnable {
 
   private volatile boolean isRunning = false;
 
-  public P2PServer(ClientSettings clientSettings, PidsController pidsController) {
-    mClientSettings = clientSettings;
-    this.mPidsController = pidsController;
+  public P2PServer(CommandProcessor commandProcessor) {
+    super(commandProcessor);
   }
 
   public int start(OnConnectionsCountChanged listener) {
@@ -66,7 +64,8 @@ public class P2PServer implements Runnable {
 
     isRunning = false;
 
-    mClientsHandler.shutdownNow();
+    // wait for all of the executor threads to finish
+    mConnectionsPool.shutdownNow();
 
     if (mListenThread != null) {
       final Thread inherited = mListenThread;
@@ -86,7 +85,7 @@ public class P2PServer implements Runnable {
   }
 
   public int getActiveConnectionsCount() {
-    synchronized (mConnectionHanler) {
+    synchronized (mConnectionsPool) {
       return mActiveConnections;
     }
   }
@@ -116,9 +115,9 @@ public class P2PServer implements Runnable {
 
       try {
         Log.d(TAG, "New client asked for a connection");
-        final P2PConnection connection = new P2PConnection(socket, mConnectionHanler);
-        connection.setPidsController(mPidsController);
-        mClientsHandler.execute(connection);
+        final P2PConnection connection = new P2PConnection(socket, getCommandProcessor());
+        connection.setCommandProcessor(getCommandProcessor());
+        mConnectionsPool.execute(connection);
       } catch (RejectedExecutionException e) {
         Log.d(TAG, "There is no available slots to handle connection!");
         try {
@@ -130,35 +129,39 @@ public class P2PServer implements Runnable {
   }
 
   private void setActiveConnectionsCount(int count) {
-    synchronized (mConnectionHanler) {
+    synchronized (mConnectionsPool) {
       if (mActiveConnections == count)
         return;
 
       Log.d(TAG, "Active connections: " + count);
       mActiveConnections = count;
-      mListener.onConnectionsCountChanged(mActiveConnections);
+      if (mListener != null)
+        mListener.onConnectionsCountChanged(mActiveConnections);
     }
   }
 
-  private final P2PConnection.ConnectionHandler mConnectionHanler = new P2PConnection.ConnectionHandler() {
-    @Override
-    public void onConnectionEstablished() {
-      setActiveConnectionsCount(mActiveConnections+1);
+  private class ConnectionsPoolExecutor extends ThreadPoolExecutor {
+    public ConnectionsPoolExecutor() {
+      super(MAX_CONNECTIONS, // core thread pool size
+          MAX_CONNECTIONS, // maximum thread pool size
+          1, // time to wait before resizing pool
+          TimeUnit.MINUTES,
+          new ArrayBlockingQueue<Runnable>(MAX_CONNECTIONS, true),
+          new ThreadPoolExecutor.CallerRunsPolicy());
     }
 
     @Override
-    public void onConnectionClosed() {
-      setActiveConnectionsCount(mActiveConnections-1);
+    protected void beforeExecute(Thread t, Runnable r) {
+      super.beforeExecute(t, r);
+
+      setActiveConnectionsCount(getActiveCount() + 1);
     }
 
     @Override
-    public boolean checkPin(String pin) {
-      return mClientSettings.checkPin(pin);
-    }
+    protected void afterExecute(Runnable r, Throwable t) {
+      super.afterExecute(r, t);
 
-    @Override
-    public boolean isPinRequired() {
-      return mClientSettings.hasPin();
+      setActiveConnectionsCount(getActiveCount() - 1);
     }
-  };
+  }
 }

@@ -2,6 +2,7 @@ package com.wlancat.network;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.net.Socket;
 import java.net.SocketException;
 
@@ -10,28 +11,18 @@ import android.util.Log;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.wlancat.config.MyConfig;
 import com.wlancat.data.CommandProto.Command;
-import com.wlancat.logcat.PidsController;
 import com.wlancat.utils.IOUtilities;
 import com.wlancat.worker.BaseWorker;
-import com.wlancat.worker.BaseWorker.WorkerListener;
-import com.wlancat.worker.LogcatWorker;
-import com.wlancat.worker.PushWorker;
+import com.wlancat.worker.CommandListener;
+import com.wlancat.worker.CommandProcessor;
 
-public class P2PConnection implements Runnable, WorkerListener {
+public class P2PConnection extends CommandListener implements Runnable {
   private static final String TAG = P2PConnection.class.getSimpleName();
   private static final boolean DEBUG = MyConfig.DEBUG && true;
 
-  public static interface ConnectionHandler {
-    void onConnectionEstablished();
-    boolean checkPin(String pin);
-    boolean isPinRequired();
-    void onConnectionClosed();
-  }
-
   private final Socket mSocket;
-  private final ConnectionHandler mConnectionHandler;
 
-  private PidsController mPidsController;
+  private WeakReference<CommandProcessor> mCommandProcessor;
 
   private Command command;
   private BaseWorker worker;
@@ -42,8 +33,9 @@ public class P2PConnection implements Runnable, WorkerListener {
    * parallel to the others). This will workaround some TCP
    * behaviors.
    */
-  protected P2PConnection(Socket socket, ConnectionHandler connectionHandler) {
-    mConnectionHandler = connectionHandler;
+  protected P2PConnection(Socket socket, CommandProcessor commandProcessor) {
+    super(commandProcessor);
+
     mSocket = socket;
     try {
       mSocket.setKeepAlive(true);
@@ -53,8 +45,8 @@ public class P2PConnection implements Runnable, WorkerListener {
     }
   }
 
-  public void setPidsController(PidsController pidsController) {
-    mPidsController = pidsController;
+  public void setCommandProcessor(CommandProcessor commandProcessor) {
+    mCommandProcessor = new WeakReference<CommandProcessor>(commandProcessor);
   }
 
   private void close() {
@@ -62,7 +54,7 @@ public class P2PConnection implements Runnable, WorkerListener {
       return;
 
     if (worker != null) {
-      worker.stop();
+      worker.terminate();
       worker = null;
     }
 
@@ -84,15 +76,11 @@ public class P2PConnection implements Runnable, WorkerListener {
       Log.e(TAG, "Fail to close Socket", ignore);
     }
 
-    mConnectionHandler.onConnectionClosed();
-
     if (DEBUG)
       Log.d(TAG, "Connection was closed");
   }
 
   public void run() {
-    mConnectionHandler.onConnectionEstablished();
-
     try {
       final DataInputStream mInputStream = new DataInputStream(mSocket.getInputStream());
       final int commandLength = mInputStream.readInt();
@@ -111,50 +99,25 @@ public class P2PConnection implements Runnable, WorkerListener {
         Log.w(TAG, "Fail to parse command", e);
       }
 
-      // we can't perform any action without specifying command.
-      if (command == null) {
+      CommandProcessor commandProcessor = mCommandProcessor.get();
+      if (commandProcessor == null) {
         close();
         return;
       }
 
-      if (DEBUG)
-        Log.d(TAG, "Command recieved:\n" + command.toString());
-
-
-      if (mConnectionHandler.isPinRequired()) {
-        // pin was not provided to connect with device. terminating connection.
-        if (!command.hasPin()) {
-          close();
-          return;
-        }
-
-        // if pin is not correct. terminating connection
-        if (!mConnectionHandler.checkPin(command.getPin())) {
-          close();
-          return;
-        }
+      worker = commandProcessor.getWorker(command);
+      if (worker == null) {
+        close();
+        return;
       }
 
-      final String command = this.command.getCommand();
-      if (command.equals("logcat")) {
-        final LogcatWorker worker = new LogcatWorker(this.command, mSocket.getInputStream(), mSocket.getOutputStream(), this);
-        worker.setPidsController(mPidsController);
-        this.worker = worker;
-      } else if (command.equals("push")) {
-        worker = new PushWorker(this.command, mSocket.getInputStream(), mSocket.getOutputStream(), this);
-      }
-
-      if (worker != null)
-        worker.start();
+      worker.setInputStream(mSocket.getInputStream());
+      worker.setOutputStream(mSocket.getOutputStream());
+      worker.execute();
     } catch (IOException e) {
       Log.e(TAG, "Error while communicating with client", e);
     } finally {
       close();
     }
-  }
-
-  @Override
-  public void onError() {
-    close();
   }
 }

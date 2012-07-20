@@ -31,6 +31,9 @@
         <activity
             android:name=".SettingsActivity"
             android:configChanges="keyboard|keyboardHidden|orientation" />
+        <activity
+            android:name=".ApkInstallerActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation" />
 
         <service
             android:name=".service.WLanCatService"

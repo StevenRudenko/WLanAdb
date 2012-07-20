@@ -2,16 +2,13 @@ package com.wlancat.worker;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
 import android.util.Log;
 
-import com.wlancat.data.LogcatLine;
 import com.wlancat.data.CommandProto.Command;
 import com.wlancat.logcat.LogFilter;
-import com.wlancat.logcat.LogParser;
 import com.wlancat.logcat.LogReader;
 import com.wlancat.logcat.PidsController;
 import com.wlancat.logcat.LogReader.OnLogMessageListener;
@@ -24,17 +21,16 @@ public class LogcatWorker extends BaseWorker implements OnLogMessageListener {
   private static final String PARAM_PID = "--pid=";
   private static final String PARAM_TYPE = "--type=";
 
-  private final BufferedWriter mOutputStream;
+  private final LogFilter mLogFilter;
   private final LogReader mLogReader;
 
+  private BufferedWriter mOutputStream;
   private PidsController mPidsController;
-  private final LogFilter mLogFilter;
 
-  public LogcatWorker(Command command, InputStream in, OutputStream out, WorkerListener listener) {
-    super(command, in, out, listener);
+  public LogcatWorker(Command command) {
+    super(command);
 
     mLogReader = new LogReader(this);
-    mOutputStream = new BufferedWriter(new OutputStreamWriter(out));
 
     final int count = command.getParamsCount();
     if (count == 0) {
@@ -54,6 +50,12 @@ public class LogcatWorker extends BaseWorker implements OnLogMessageListener {
 
       parseFilterParameter(param);
     }
+  }
+
+  @Override
+  public void setOutputStream(OutputStream out) {
+    super.setOutputStream(out);
+    mOutputStream = new BufferedWriter(new OutputStreamWriter(out));
   }
 
   public void setPidsController(PidsController pidsController) {
@@ -80,7 +82,7 @@ public class LogcatWorker extends BaseWorker implements OnLogMessageListener {
   }
 
   @Override
-  public void start() {
+  public boolean execute() {
     mPidsController.addOnPidsUpdateListener(mLogFilter);
     mPidsController.start();
 
@@ -88,10 +90,12 @@ public class LogcatWorker extends BaseWorker implements OnLogMessageListener {
       Log.v(TAG, "Filter: " + mLogFilter);
 
     mLogReader.start();
+
+    return true;
   }
 
   @Override
-  public void stop() {
+  public void terminate() {
     mPidsController.removeOnPidsUpdateListener(mLogFilter);
     mPidsController.stop();
     mLogReader.stop();

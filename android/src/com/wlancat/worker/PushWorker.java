@@ -19,25 +19,45 @@ import com.wlancat.utils.IOUtilities;
 
 public class PushWorker extends BaseWorker {
   private static final String TAG = PushWorker.class.getSimpleName();
-  private static final boolean DEBUG = true;
+  private static final boolean DEBUG = MyConfig.DEBUG && true;
 
-  private final InputStream in;
-  private final File file;
+  protected final File file;
 
-  public PushWorker(Command command, InputStream in, OutputStream out, WorkerListener listener) {
-    super(command, in, out, listener);
+  private InputStream in;
 
-    this.in = in;
+  public PushWorker(Command command) {
+    super(command);
 
     final File downloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
     final String inPath = command.getParams(0);
 
     final File inFile = new File(inPath);
     file = new File(downloads, inFile.getName());
+
+    final int count = command.getParamsCount();
+    if (count == 0) {
+      if (DEBUG)
+        Log.v(TAG, "No parameters were set");
+    } else {
+      if (DEBUG)
+        Log.v(TAG, "There were " + count + " parameters set");
+    }
+
+    for (int i=0; i<count; ++i) {
+      final String param = command.getParams(i);
+      if (DEBUG)
+        Log.v(TAG, "" + i + " parameter: " + param);
+    }
   }
 
   @Override
-  public void start() {
+  public void setInputStream(InputStream in) {
+    super.setInputStream(in);
+    this.in = in;
+  }
+
+  @Override
+  public boolean execute() {
     MessageDigest md = null;
     try {
       md = MessageDigest.getInstance("MD5");
@@ -60,6 +80,7 @@ public class PushWorker extends BaseWorker {
       if (DEBUG)
         Log.e(TAG, "Fail to write file data to stream", e);
       listener.onError();
+      return false;
     } finally {
       IOUtilities.closeStream(fout);
     }
@@ -69,12 +90,18 @@ public class PushWorker extends BaseWorker {
       if (MyConfig.DEBUG)
         Log.d(TAG, "Files checksums in <> out: " + command.getChecksum() + " <> " + checksum);
 
-      if (!checksum.equals(command.getChecksum()))
+      if (!checksum.equals(command.getChecksum())) {
         Log.e(TAG, "File is corrupted!");
+        return false;
+      }
+
+      return true;
     }
+
+    return false;
   }
 
   @Override
-  public void stop() {
+  public void terminate() {
   }
 }
