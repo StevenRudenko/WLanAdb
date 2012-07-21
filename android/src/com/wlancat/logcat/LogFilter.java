@@ -6,12 +6,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.text.TextUtils;
+import android.util.Log;
 
+import com.wlancat.config.MyConfig;
 import com.wlancat.data.LogcatLine;
 import com.wlancat.logcat.PidsController.OnPidsUpdateListener;
 import com.wlancat.utils.AndroidUtils.RunningProcess;
 
 public class LogFilter implements OnPidsUpdateListener {
+  private static final String TAG = LogFilter.class.getSimpleName();
+  private static final boolean DEBUG = MyConfig.DEBUG && true;
 
   public static final String TYPE_V = "V";
   public static final String TYPE_D = "D";
@@ -105,11 +109,14 @@ public class LogFilter implements OnPidsUpdateListener {
 
   public boolean filter(String logMessage) {
     final LogcatLine logLine = LogParser.parse(logMessage);
-    if (logLine == null)
+    if (logLine == null) {
+      if (DEBUG)
+        Log.w(TAG, "Fail to parse line: " + logMessage);
       return true;
+    }
 
     if (apps.isEmpty())
-        return filter(logLine);
+      return filter(logLine);
 
     final Matcher startProc = START_PROC_PATTERN.matcher(logMessage);
     if (startProc.matches()) {
@@ -120,16 +127,16 @@ public class LogFilter implements OnPidsUpdateListener {
         pids.add(pid);
         return false;
       }
-    }
+    } else {
+      final Matcher endProc = END_PROC_PATTERN.matcher(logMessage);
+      if (endProc.matches()) {
+        final String processName = endProc.group(1);
 
-    final Matcher endProc = END_PROC_PATTERN.matcher(logMessage);
-    if (endProc.matches()) {
-      final String processName = endProc.group(1);
-
-      if (apps.contains(processName)) {
-        final int pid = Integer.parseInt(endProc.group(2));
-        pids.remove(pid);
-        return false;
+        if (apps.contains(processName)) {
+          final int pid = Integer.parseInt(endProc.group(2));
+          pids.remove(pid);
+          return false;
+        }
       }
     }
 
@@ -155,9 +162,10 @@ public class LogFilter implements OnPidsUpdateListener {
       result.append(app + " ");
     }
 
-    result.append("] SEARCH: [")
-    .append(searchTerm)
-    .append("]");
+    result.append("] SEARCH: [");
+    if (searchTerm != null)
+      result.append(searchTerm);
+    result.append("]");
 
     return result.toString();
   }

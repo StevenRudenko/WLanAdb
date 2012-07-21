@@ -25,6 +25,13 @@ public class PushWorker extends BaseWorker {
 
   private InputStream in;
 
+  /*TODO: Write the image to disk first. Then try to open sockets 
+   * in parallel each transferring a different offset of the
+   * image (e.g. split the image to 3 jobs, transfer each in
+   * parallel to the others). This will workaround some TCP
+   * behaviors.
+   */
+
   public PushWorker(Command command) {
     super(command);
 

@@ -19,7 +19,7 @@ public class InstallWorker extends PushWorker {
       return false;
 
     if (listener != null)
-      listener.onSuccess(); 
+      listener.onWorkerFinished(); 
     return true;
   }
 

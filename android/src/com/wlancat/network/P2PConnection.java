@@ -27,12 +27,6 @@ public class P2PConnection extends CommandListener implements Runnable {
   private Command command;
   private BaseWorker worker;
 
-  /* Write the image to disk first. Then try to open sockets 
-   * in parallel each transferring a different offset of the
-   * image (e.g. split the image to 3 jobs, transfer each in
-   * parallel to the others). This will workaround some TCP
-   * behaviors.
-   */
   protected P2PConnection(Socket socket, CommandProcessor commandProcessor) {
     super(commandProcessor);
 

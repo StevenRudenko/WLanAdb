@@ -7,7 +7,7 @@ import com.wlancat.data.CommandProto.Command;
 
 public abstract class BaseWorker {
   public static interface WorkerListener {
-    public void onSuccess();
+    public void onWorkerFinished();
     public void onError();
   }
 

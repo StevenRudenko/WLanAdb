@@ -4,10 +4,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
+    <!--
     <fragment
         android:id="@+id/logcat"
         android:name="com.wlancat.fragment.LogcatFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+    -->
 
 </LinearLayout>

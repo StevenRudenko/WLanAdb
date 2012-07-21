@@ -29,6 +29,8 @@ public class WLanCatService extends Service implements OnConnectionsCountChanged
   private BroadcastServer mBroadcastServer;
   private UdpMessager mUdpMessager;
   private P2PServer mP2pServer;
+
+  private PidsController mPidsController;
   private ClientSettings mClientSettings;
 
   @Override
@@ -79,6 +81,8 @@ public class WLanCatService extends Service implements OnConnectionsCountChanged
       stopSelf();
       return;
     }
+
+    mPidsController = new PidsController(this);
 
     mClientSettings = new ClientSettings(this);
     mClientSettings.start();
@@ -149,7 +153,7 @@ public class WLanCatService extends Service implements OnConnectionsCountChanged
     final BaseWorker worker;
     if (comm.equals("logcat")) {
       final LogcatWorker logcatWorker = new LogcatWorker(command);
-      logcatWorker.setPidsController(new PidsController(this));
+      logcatWorker.setPidsController(mPidsController);
       worker = logcatWorker;
     } else if (comm.equals("push")) {
       return new PushWorker(command);
@@ -168,7 +172,7 @@ public class WLanCatService extends Service implements OnConnectionsCountChanged
 
       installWorker.setWorkerListener(new BaseWorker.WorkerListener() {
         @Override
-        public void onSuccess() {
+        public void onWorkerFinished() {
           final Intent installIntent = new Intent(getBaseContext(), ApkInstallerActivity.class);
           installIntent.setData(Uri.fromFile(installWorker.getApkFile()));
           installIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -193,7 +197,7 @@ public class WLanCatService extends Service implements OnConnectionsCountChanged
 
     @Override
     public int getPort() throws RemoteException {
-      return mP2pServer != null ? mP2pServer.getPort() : -1;
+      return mP2pServer == null ? -1 : mP2pServer.getPort();
     }
 
     @Override

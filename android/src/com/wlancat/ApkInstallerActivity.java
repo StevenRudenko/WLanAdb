@@ -11,7 +11,7 @@ import android.util.Log;
 
 public class ApkInstallerActivity extends Activity {
   private static final String TAG = ApkInstallerActivity.class.getSimpleName();
-  private static final boolean DEBUG = MyConfig.DEBUG && false;
+  private static final boolean DEBUG = MyConfig.DEBUG && true;
 
   private static final int SUBACTIVITY_INSTALLER = 100;
 
@@ -28,7 +28,7 @@ public class ApkInstallerActivity extends Activity {
     final Intent promptInstall = new Intent(Intent.ACTION_INSTALL_PACKAGE);
     promptInstall.setData(apkFileUri);
     promptInstall.putExtra(Intent.EXTRA_ALLOW_REPLACE, true);
-    //promptInstall.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+    promptInstall.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
     final boolean launchOnSuccess = intent.getBooleanExtra(EXTRA_LAUNCH_ON_SUCCESS, true);
     if (launchOnSuccess) {

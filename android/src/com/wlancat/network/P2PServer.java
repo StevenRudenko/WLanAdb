@@ -10,6 +10,7 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import com.wlancat.config.MyConfig;
 import com.wlancat.worker.CommandListener;
 import com.wlancat.worker.CommandProcessor;
 
@@ -17,6 +18,7 @@ import android.util.Log;
 
 public class P2PServer extends CommandListener implements Runnable {
   private static final String TAG = P2PServer.class.getSimpleName();
+  private static final boolean DEBUG = MyConfig.DEBUG && true;
 
   public interface OnConnectionsCountChanged {
     public void onConnectionsCountChanged(int connectionsCount);
@@ -49,7 +51,8 @@ public class P2PServer extends CommandListener implements Runnable {
       mServerSocket = new ServerSocket(0);
       mServerSocket.setReuseAddress(true);
     } catch (IOException e) {
-      Log.d(TAG, "Can't open server socket connection", e);
+      if (DEBUG)
+        Log.e(TAG, "Can't open server socket connection", e);
       return -1;
     }
 
@@ -76,7 +79,8 @@ public class P2PServer extends CommandListener implements Runnable {
     try {
       mServerSocket.close();
     } catch (IOException e) {
-      Log.e(TAG, "Can't close server socket", e);
+      if (DEBUG)
+        Log.e(TAG, "Can't close server socket", e);
     }
   }
 
@@ -91,7 +95,8 @@ public class P2PServer extends CommandListener implements Runnable {
   }
 
   public void run() {
-    Log.d(TAG, "Waiting for clients connection...");
+    if (DEBUG)
+      Log.v(TAG, "Waiting for clients connection...");
 
     while (isRunning) {
       final Socket socket;
@@ -102,24 +107,30 @@ public class P2PServer extends CommandListener implements Runnable {
         socket = mServerSocket.accept();
       } catch (SocketException e) {
         if (isRunning) {
-          Log.e(TAG, "Failed to accept connection with client.", e);
+          if (DEBUG)
+            Log.e(TAG, "Failed to accept connection with client.", e);
           continue;
         } else {
-          Log.w(TAG, "Cancel waiting for a clients because on closing connection.");
+          if (DEBUG)
+            Log.w(TAG, "Cancel waiting for a clients because on closing connection.");
           break;
         }
       } catch (IOException e) {
-        Log.e(TAG, "Failed to accept connection with client", e);
+        if (DEBUG)
+          Log.e(TAG, "Failed to accept connection with client", e);
         continue;
       }
 
       try {
-        Log.d(TAG, "New client asked for a connection");
+        if (DEBUG)
+          Log.v(TAG, "New client asked for a connection");
         final P2PConnection connection = new P2PConnection(socket, getCommandProcessor());
         connection.setCommandProcessor(getCommandProcessor());
         mConnectionsPool.execute(connection);
       } catch (RejectedExecutionException e) {
-        Log.d(TAG, "There is no available slots to handle connection!");
+        if (DEBUG)
+          Log.w(TAG, "There is no available slots to handle connection!");
+
         try {
           socket.close();
         } catch (Exception ignore) {
@@ -133,7 +144,8 @@ public class P2PServer extends CommandListener implements Runnable {
       if (mActiveConnections == count)
         return;
 
-      Log.d(TAG, "Active connections: " + count);
+      if (DEBUG)
+        Log.v(TAG, "Active connections: " + count);
       mActiveConnections = count;
       if (mListener != null)
         mListener.onConnectionsCountChanged(mActiveConnections);
@@ -154,7 +166,7 @@ public class P2PServer extends CommandListener implements Runnable {
     protected void beforeExecute(Thread t, Runnable r) {
       super.beforeExecute(t, r);
 
-      setActiveConnectionsCount(getActiveCount() + 1);
+      setActiveConnectionsCount(getActiveCount());
     }
 
     @Override

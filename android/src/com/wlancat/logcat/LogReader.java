@@ -1,8 +1,12 @@
 package com.wlancat.logcat;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+
+import com.wlancat.config.MyConfig;
+import com.wlancat.utils.IOUtilities;
 
 import android.annotation.SuppressLint;
 import android.os.Handler;
@@ -11,6 +15,7 @@ import android.util.Log;
 
 public class LogReader {
   private static final String TAG = LogReader.class.getSimpleName();
+  private static final boolean DEBUG = MyConfig.DEBUG && true;
 
   public interface OnLogMessageListener {
     /**
@@ -25,12 +30,7 @@ public class LogReader {
   private static final String LOGCAT_CMD = "logcat";
 
   @SuppressLint("HandlerLeak")
-  private final Handler mUiTread = new Handler(Looper.getMainLooper()) {
-    public void handleMessage(android.os.Message msg) {
-      final String message = (String) msg.obj;
-      listener.onLogMessage(message);
-    };
-  };
+  private Handler mReadLogsHandler = null;
 
   /**
    * Thread used to read log messages.
@@ -52,6 +52,8 @@ public class LogReader {
    * Starts logs reading process.
    */
   public void startOnNewTread() {
+    mReadLogsHandler = new ReadLogsHandler();
+
     mReadLogThread = new ReadLogsThread();
     mReadLogThread.start();
   }
@@ -62,6 +64,7 @@ public class LogReader {
   public void stop() {
     isRunning = false;
 
+    mReadLogsHandler = null;
     mReadLogThread = null;
   }
 
@@ -73,40 +76,29 @@ public class LogReader {
     try {
       logcatProc = Runtime.getRuntime().exec(LOGCAT_CMD);
 
-      reader = new BufferedReader(new InputStreamReader(logcatProc.getInputStream()));
+      reader = new BufferedReader(new InputStreamReader(new DataInputStream(logcatProc.getInputStream())));
 
       String line;
       while (isRunning && (line = reader.readLine()) != null) {
-        if (!isRunning)
-          break;
-
-        if (line == null || line.length() == 0)
-          continue;
-
         if (mReadLogThread != null) {
-          final android.os.Message msg = mUiTread.obtainMessage(MSG_LOG_MESSAGE, line);
-          mUiTread.sendMessage(msg);
+          final android.os.Message msg = mReadLogsHandler.obtainMessage(MSG_LOG_MESSAGE, line);
+          mReadLogsHandler.sendMessage(msg);
         } else {
           listener.onLogMessage(line);
         }
       }
-      Log.d(TAG, "LogCat reading finished!");
+      if (DEBUG)
+        Log.d(TAG, "LogCat reading finished!");
     } catch (IOException e) {
-      Log.e(TAG, "Fail to read LogCat output", e);
+      if (DEBUG)
+        Log.e(TAG, "Fail to read LogCat output", e);
     } finally {
       if (logcatProc != null) {
         logcatProc.destroy();
         logcatProc = null;
       }
 
-      if (reader != null) {
-        try {
-          reader.close();
-          reader = null;
-        } catch (IOException e) {
-          Log.e(TAG, "Fail to close LogCat reader stream", e);
-        }
-      }
+      IOUtilities.closeStream(reader);
     }
   }
 
@@ -118,7 +110,6 @@ public class LogReader {
   private class ReadLogsThread extends Thread {
     public ReadLogsThread() {
       setName(TAG);
-      //setPriority(Thread.MAX_PRIORITY);
     }
 
     @Override
@@ -126,4 +117,16 @@ public class LogReader {
       LogReader.this.start();
     }
   };
+
+  private class ReadLogsHandler extends Handler {
+    public ReadLogsHandler() {
+      super(Looper.getMainLooper());
+    }
+
+    @Override
+    public void handleMessage(android.os.Message msg) {
+      final String message = (String) msg.obj;
+      listener.onLogMessage(message);
+    };
+  }
 }

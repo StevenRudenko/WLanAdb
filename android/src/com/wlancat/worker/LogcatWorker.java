@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 
 import android.util.Log;
 
+import com.wlancat.config.MyConfig;
 import com.wlancat.data.CommandProto.Command;
 import com.wlancat.logcat.LogFilter;
 import com.wlancat.logcat.LogReader;
@@ -15,7 +16,7 @@ import com.wlancat.logcat.LogReader.OnLogMessageListener;
 
 public class LogcatWorker extends BaseWorker implements OnLogMessageListener {
   private static final String TAG = LogcatWorker.class.getSimpleName();
-  private static final boolean DEBUG = true;
+  private static final boolean DEBUG = MyConfig.DEBUG && true;
 
   private static final String PARAM_APP = "--app=";
   private static final String PARAM_PID = "--pid=";
@@ -64,9 +65,6 @@ public class LogcatWorker extends BaseWorker implements OnLogMessageListener {
 
   @Override
   public synchronized void onLogMessage(String message) {
-    if (mOutputStream == null)
-      return;
-
     if (mLogFilter != null && mLogFilter.filter(message))
       return;
 
@@ -77,17 +75,21 @@ public class LogcatWorker extends BaseWorker implements OnLogMessageListener {
     } catch (IOException e) {
       if (DEBUG)
         Log.e(TAG, "Fail to write line to stream: " + e.getMessage());
-      listener.onError();
+      terminate();
+      if (listener != null)
+        listener.onError();
     }
   }
 
   @Override
   public boolean execute() {
-    mPidsController.addOnPidsUpdateListener(mLogFilter);
-    mPidsController.start();
+    if (mLogFilter != null) {
+      mPidsController.addOnPidsUpdateListener(mLogFilter);
+      mPidsController.start();
 
-    if (DEBUG && mLogFilter != null)
-      Log.v(TAG, "Filter: " + mLogFilter);
+      if (DEBUG)
+        Log.v(TAG, "Filter: " + mLogFilter);
+    }
 
     mLogReader.start();
 
@@ -96,9 +98,12 @@ public class LogcatWorker extends BaseWorker implements OnLogMessageListener {
 
   @Override
   public void terminate() {
-    mPidsController.removeOnPidsUpdateListener(mLogFilter);
-    mPidsController.stop();
     mLogReader.stop();
+
+    if (mLogFilter != null) {
+      mPidsController.removeOnPidsUpdateListener(mLogFilter);
+      mPidsController.stop();
+    }
   }
 
   private void parseFilterParameter(String param) {

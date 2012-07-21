@@ -11,7 +11,6 @@ import android.os.Handler;
 import android.os.Message;
 
 import com.wlancat.utils.AndroidUtils;
-import com.wlancat.utils.WeakHashSet;
 
 public class PidsController {
 
@@ -26,7 +25,7 @@ public class PidsController {
   private final PackageManager mPackageManager;
 
   private final PidsUpdater mUpdater = new PidsUpdater();
-  private final WeakHashSet<OnPidsUpdateListener> mListeners = new WeakHashSet<OnPidsUpdateListener>();
+  private final HashSet<OnPidsUpdateListener> mListeners = new HashSet<OnPidsUpdateListener>();
 
   private HashSet<AndroidUtils.RunningProcess> mProcesses = null;
 
