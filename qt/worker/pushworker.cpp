@@ -5,6 +5,8 @@
 
 #include "utils.h"
 
+#include "myconfig.h"
+
 namespace {
 
 const int PERCENT_WIDTH = 4;
@@ -73,12 +75,18 @@ void PushWorker::getCommand(Command &command)
 
 void PushWorker::onFileSendingStarted(const QString &filename)
 {
+    if (SILENT)
+        return;
+
     qout << "\rSending " << filename << "..." << endl;
     timer.start();
 }
 
 void PushWorker::onFileSendingProgress(const QString &, qint64 sent, qint64 total)
 {
+    if (SILENT)
+        return;
+
     const quint64 elapsed = timer.elapsed();
     if (elapsed == 0)
         return;
@@ -121,6 +129,9 @@ void PushWorker::onFileSendingProgress(const QString &, qint64 sent, qint64 tota
 
 void PushWorker::onFileSendingEnded(const QString &filename)
 {
+    if (SILENT)
+        return;
+
     quint64 elapsed = timer.elapsed() / 1000;
     QTime time;
     time = time.addSecs(elapsed);

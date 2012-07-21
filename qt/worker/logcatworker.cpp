@@ -2,6 +2,8 @@
 
 #include "io_compatibility.h"
 
+#include "myconfig.h"
+
 namespace {
 
 const int TIME_WIDTH = -1;

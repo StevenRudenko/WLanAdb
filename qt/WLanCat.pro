@@ -39,7 +39,8 @@ HEADERS += \
     worker/logcatworker.h \
     data/message.pb.h \
     data/command.pb.h \
-    data/client.pb.h
+    data/client.pb.h \
+    myconfig.h
 
 TRANSLATIONS = main_en.ts \
                main_ru.ts \

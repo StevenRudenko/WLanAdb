@@ -9,6 +9,8 @@
 #include "./worker/logcatworker.h"
 #include "./worker/installworker.h"
 
+#include "myconfig.h"
+
 using namespace std;
 using namespace com::wlancat::data;
 
@@ -29,14 +31,15 @@ WLanCat::WLanCat(int argc, char *argv[]) :
     }
 
     cmd.set_command(argv[1]);
-    qout << "Command: " << argv[1] << endl;
-    qout << "Arguments count: " << argc << endl;
     for (int i=2; i<argc; ++i) {
-        qout << "Argument " << i << ": " << argv[i] << endl;
+        QString arg(argv[i]);
+        if (0 == arg.compare("-s")) {
+            SILENT = true;
+            continue;
+        }
+
         *cmd.add_params() = argv[i];
     }
-
-
 
     // Verify that the version of the library that we linked against is
     // compatible with the version of the headers we compiled against.
@@ -98,10 +101,12 @@ void WLanCat::onMessageRequested()
 
     ++requestsSent;
 
-    qout << tr("\rSearching for devices");
-    for (int i=0; i<requestsSent; ++i)
-        qout << ".";
-    qout.flush();
+    if (!SILENT) {
+        qout << tr("\rSearching for devices");
+        for (int i=0; i<requestsSent; ++i)
+            qout << ".";
+        qout.flush();
+    }
 }
 
 void WLanCat::onMessageRecieved(const QByteArray& data)
@@ -134,22 +139,27 @@ void WLanCat::selectClient()
     QHashIterator<QString, Client> i(clients);
     uint index = 0;
 
-    qout << tr("\rThere are %1 devices found:").arg(size) << endl;
-    while (i.hasNext()) {
-        i.next();
-
-        ++index;
-
-        Client client = i.value();
-        const QString& clientName = QString::fromStdString(client.name());
-        qout << tr("%1) %2 - %3 (%4)").arg(QString::number(index), clientName, i.key(), QString::number(client.port())) << endl;
-    }
-    qout << tr("Please select device [1..%1]:").arg(QString::number(size)) << endl;
-
     int selection;
-    QTextStream qin(stdin);
+    if (!SILENT) {
+        qout << tr("\rThere are %1 devices found:").arg(size) << endl;
+        while (i.hasNext()) {
+            i.next();
 
-    qin >> selection;
+            ++index;
+
+            Client client = i.value();
+            const QString& clientName = QString::fromStdString(client.name());
+            qout << tr("%1) %2 - %3 (%4)").arg(QString::number(index), clientName, i.key(), QString::number(client.port())) << endl;
+        }
+        qout << tr("Please select device [1..%1]:").arg(QString::number(size)) << endl;
+
+
+        QTextStream qin(stdin);
+
+        qin >> selection;
+    } else {
+        selection = 1;
+    }
 
     if (selection > 0 && selection <= size) {
         client = clients.values().at(--selection);
@@ -171,7 +181,9 @@ void WLanCat::connectToClient() {
     const QString clientName = QString::fromStdString(client.name());
     const QString clientIp = QString::fromStdString(client.ip());
 
-    qout << tr("\rTrying connect to %1 - %2 (%3)").arg(clientName, clientIp, QString::number(client.port()));
+    if (!SILENT) {
+        qout << tr("\rTrying connect to %1 - %2 (%3)").arg(clientName, clientIp, QString::number(client.port()));
+    }
 
     p2pClient->connectToServer(clientIp, client.port());
 }
@@ -181,8 +193,9 @@ void WLanCat::onConnectedToClient()
     const QString clientName = QString::fromStdString(client.name());
     const QString clientIp = QString::fromStdString(client.ip());
 
-    qout << tr("\rConnected to %1 - %2 (%3)").arg(clientName, clientIp, QString::number(client.port())) << endl;
-    qout.flush();
+    if (!SILENT) {
+        qout << tr("\rConnected to %1 - %2 (%3)").arg(clientName, clientIp, QString::number(client.port())) << endl;
+    }
 
     if (client.use_pin()) {
         qout << tr("Client requests PIN to access its log. Please enter PIN:") << endl;
@@ -241,6 +254,8 @@ void WLanCat::onConnectedToClient()
 
 void WLanCat::onDisconnectedFromClient()
 {
-    qout << endl;// << tr("Connection with client was closed") << endl;
+    if (!SILENT) {
+        qout << endl;// << tr("Connection with client was closed") << endl;
+    }
     exit(0);
 }

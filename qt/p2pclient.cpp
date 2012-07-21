@@ -2,7 +2,7 @@
 
 namespace {
 const int FILE_BUFFER = 32 * 1024;
-const int READ_BUFFER = 4 * 1024;
+const int READ_BUFFER = 8 * 1024;
 }
 
 P2PClient::P2PClient(QObject *parent) :
@@ -109,9 +109,8 @@ void P2PClient::read()
         //in->setCodec("UTF-8");
     }
 
-    while (!in->atEnd()) {
+    while (true) {
         if (!tcpSocket->canReadLine()) {
-            in->readLine();
             break;
         }
 
