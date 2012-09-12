@@ -27,9 +27,11 @@ const int BACKGROUND_MAGENTA    = 45;
 const int BACKGROUND_CYAN       = 46;
 const int BACKGROUND_WHITE      = 47;
 #else
+/*
 const int IGNORE                = -1;
 const int RESET                 = 7;
 
+const int FOREGROUND_INTENSITY  = 0x0008; // foreground color is intensified
 const int FOREGROUND_BLACK      = 0;
 const int FOREGROUND_RED        = FOREGROUND_RED;
 const int FOREGROUND_GREEN      = FOREGROUND_GREEN;
@@ -39,6 +41,7 @@ const int FOREGROUND_MAGENTA    = FOREGROUND_RED   | FOREGROUND_BLUE;
 const int FOREGROUND_CYAN       = FOREGROUND_GREEN | FOREGROUND_BLUE;
 const int FOREGROUND_WHITE      = FOREGROUND_RED   | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
 
+const int BACKGROUND_INTENSITY  = 0x0080; // background color is intensified.
 const int BACKGROUND_BLACK      = 0;
 const int BACKGROUND_RED        = BACKGROUND_RED;
 const int BACKGROUND_GREEN      = BACKGROUND_GREEN;
@@ -47,6 +50,7 @@ const int BACKGROUND_BLUE       = BACKGROUND_BLUE;
 const int BACKGROUND_MAGENTA    = BACKGROUND_RED   | BACKGROUND_BLUE;
 const int BACKGROUND_CYAN       = BACKGROUND_GREEN | BACKGROUND_BLUE;
 const int BACKGROUND_WHITE      = BACKGROUND_RED   | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY;
+*/
 #endif
 
 void setInputEcho(bool on = true);

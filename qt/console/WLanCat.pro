@@ -35,7 +35,8 @@ INCLUDEPATH += $$PWD/../lib/
 DEPENDPATH += $$PWD/../lib/
 
 # WLanAdbLib library
-LIBS += -L$$PWD/../WLanAdbLib-bin/ -lWLanAdbLib
+win32: LIBS += -L$$PWD/../WLanAdbLib-bin/release/ -lWLanAdbLib
+else:unix: LIBS += -L$$PWD/../WLanAdbLib-bin/ -lWLanAdbLib
 
 # Protobuf library
 win32: LIBS += -L$$PWD/../libs/ -lprotobuf-lite

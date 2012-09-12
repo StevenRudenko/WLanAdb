@@ -30,6 +30,7 @@ const int BACKGROUND_WHITE      = 47;
 const int IGNORE                = -1;
 const int RESET                 = 7;
 
+const int FOREGROUND_INTENSITY  = 0x0008; // foreground color is intensified
 const int FOREGROUND_BLACK      = 0;
 const int FOREGROUND_RED        = FOREGROUND_RED;
 const int FOREGROUND_GREEN      = FOREGROUND_GREEN;
@@ -39,6 +40,7 @@ const int FOREGROUND_MAGENTA    = FOREGROUND_RED   | FOREGROUND_BLUE;
 const int FOREGROUND_CYAN       = FOREGROUND_GREEN | FOREGROUND_BLUE;
 const int FOREGROUND_WHITE      = FOREGROUND_RED   | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
 
+const int BACKGROUND_INTENSITY  = 0x0080; // background color is intensified.
 const int BACKGROUND_BLACK      = 0;
 const int BACKGROUND_RED        = BACKGROUND_RED;
 const int BACKGROUND_GREEN      = BACKGROUND_GREEN;
