@@ -1,6 +1,5 @@
 #include "wlanadbterminal.h"
 
-#include <data/message.pb.h>
 #include <commands.h>
 
 #include "./utils/io_compatibility.h"
@@ -11,7 +10,6 @@
 #include "./adapter/installadapter.h"
 
 using namespace std;
-using namespace com::wlanadb::data;
 
 namespace {
 const QString HELP("help");

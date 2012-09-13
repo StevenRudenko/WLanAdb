@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="WLanCat" default="wlancat">
+<project name="WLanCat" default="wlanadb">
 
     <!-- The local.properties file is created and updated by the 'android' tool.
          It contains the path to the SDK. It should *NOT* be checked into
@@ -110,7 +110,7 @@
                             <echo level="info">Installing ${out.final.file} onto default emulator or device...</echo>
                             <exec executable="bash" failonerror="true">
 				<arg value="-c"/>
-				<arg value="WLanCat install ${out.final.file} -l"/>
+				<arg value="WLanAdbUI install ${out.final.file} -l"/>
                             </exec>
 
                             <!-- now install the tested project if applicable -->
