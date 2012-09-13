@@ -11,7 +11,7 @@
 // @@protoc_insertion_point(includes)
 
 namespace com {
-namespace wlancat {
+namespace wlanadb {
 namespace data {
 
 void protobuf_ShutdownFile_client_2eproto() {
@@ -44,6 +44,8 @@ const int Client::kIdFieldNumber;
 const int Client::kIpFieldNumber;
 const int Client::kPortFieldNumber;
 const int Client::kNameFieldNumber;
+const int Client::kModelFieldNumber;
+const int Client::kFirmwareFieldNumber;
 const int Client::kUsePinFieldNumber;
 #endif  // !_MSC_VER
 
@@ -67,6 +69,8 @@ void Client::SharedCtor() {
   ip_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   port_ = 0;
   name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  model_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  firmware_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   use_pin_ = false;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
@@ -84,6 +88,12 @@ void Client::SharedDtor() {
   }
   if (name_ != &::google::protobuf::internal::kEmptyString) {
     delete name_;
+  }
+  if (model_ != &::google::protobuf::internal::kEmptyString) {
+    delete model_;
+  }
+  if (firmware_ != &::google::protobuf::internal::kEmptyString) {
+    delete firmware_;
   }
   if (this != default_instance_) {
   }
@@ -120,6 +130,16 @@ void Client::Clear() {
     if (has_name()) {
       if (name_ != &::google::protobuf::internal::kEmptyString) {
         name_->clear();
+      }
+    }
+    if (has_model()) {
+      if (model_ != &::google::protobuf::internal::kEmptyString) {
+        model_->clear();
+      }
+    }
+    if (has_firmware()) {
+      if (firmware_ != &::google::protobuf::internal::kEmptyString) {
+        firmware_->clear();
       }
     }
     use_pin_ = false;
@@ -186,12 +206,40 @@ bool Client::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(40)) goto parse_use_pin;
+        if (input->ExpectTag(42)) goto parse_model;
         break;
       }
       
-      // optional bool use_pin = 5;
+      // optional string model = 5;
       case 5: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_model:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_model()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(50)) goto parse_firmware;
+        break;
+      }
+      
+      // optional string firmware = 6;
+      case 6: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_firmware:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_firmware()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(56)) goto parse_use_pin;
+        break;
+      }
+      
+      // optional bool use_pin = 7;
+      case 7: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_use_pin:
@@ -246,9 +294,21 @@ void Client::SerializeWithCachedSizes(
       4, this->name(), output);
   }
   
-  // optional bool use_pin = 5;
+  // optional string model = 5;
+  if (has_model()) {
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      5, this->model(), output);
+  }
+  
+  // optional string firmware = 6;
+  if (has_firmware()) {
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      6, this->firmware(), output);
+  }
+  
+  // optional bool use_pin = 7;
   if (has_use_pin()) {
-    ::google::protobuf::internal::WireFormatLite::WriteBool(5, this->use_pin(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteBool(7, this->use_pin(), output);
   }
   
 }
@@ -285,7 +345,21 @@ int Client::ByteSize() const {
           this->name());
     }
     
-    // optional bool use_pin = 5;
+    // optional string model = 5;
+    if (has_model()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->model());
+    }
+    
+    // optional string firmware = 6;
+    if (has_firmware()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->firmware());
+    }
+    
+    // optional bool use_pin = 7;
     if (has_use_pin()) {
       total_size += 1 + 1;
     }
@@ -317,6 +391,12 @@ void Client::MergeFrom(const Client& from) {
     if (from.has_name()) {
       set_name(from.name());
     }
+    if (from.has_model()) {
+      set_model(from.model());
+    }
+    if (from.has_firmware()) {
+      set_firmware(from.firmware());
+    }
     if (from.has_use_pin()) {
       set_use_pin(from.use_pin());
     }
@@ -341,6 +421,8 @@ void Client::Swap(Client* other) {
     std::swap(ip_, other->ip_);
     std::swap(port_, other->port_);
     std::swap(name_, other->name_);
+    std::swap(model_, other->model_);
+    std::swap(firmware_, other->firmware_);
     std::swap(use_pin_, other->use_pin_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     std::swap(_cached_size_, other->_cached_size_);
@@ -348,14 +430,14 @@ void Client::Swap(Client* other) {
 }
 
 ::std::string Client::GetTypeName() const {
-  return "com.wlancat.data.Client";
+  return "com.wlanadb.data.Client";
 }
 
 
 // @@protoc_insertion_point(namespace_scope)
 
 }  // namespace data
-}  // namespace wlancat
+}  // namespace wlanadb
 }  // namespace com
 
 // @@protoc_insertion_point(global_scope)

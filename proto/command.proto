@@ -1,7 +1,7 @@
-package com.wlancat.data;
+package com.wlanadb.data;
 
 option optimize_for = LITE_RUNTIME;
-option java_package = "com.wlancat.data";
+option java_package = "com.wlanadb.data";
 option java_outer_classname = "CommandProto";
 
 message Command {

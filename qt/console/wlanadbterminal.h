@@ -1,5 +1,5 @@
-#ifndef WLANCAT_H
-#define WLANCAT_H
+#ifndef WLanAdbTerminal_H
+#define WLanAdbTerminal_H
 
 #include <QObject>
 #include <QString>
@@ -12,14 +12,14 @@
 
 #include "./adapter/adapter.h"
 
-using namespace com::wlancat::data;
+using namespace com::wlanadb::data;
 
-class WLanCat : public QObject
+class WLanAdbTerminal : public QObject
 {
     Q_OBJECT
 public:
-    WLanCat(int argc, char *argv[]);
-    virtual ~WLanCat();
+    WLanAdbTerminal(int argc, char *argv[]);
+    virtual ~WLanAdbTerminal();
 
 private slots:
 
@@ -42,4 +42,4 @@ private:
     AdbProcessor* proc;
 };
 
-#endif // WLANCAT_H
+#endif // WLanAdbTerminal_H

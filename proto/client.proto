@@ -1,7 +1,7 @@
-package com.wlancat.data;
+package com.wlanadb.data;
 
 option optimize_for = LITE_RUNTIME;
-option java_package = "com.wlancat.data";
+option java_package = "com.wlanadb.data";
 option java_outer_classname = "ClientProto";
 
 message Client {
@@ -9,5 +9,7 @@ message Client {
   optional string ip = 2;
   optional int32 port = 3;
   optional string name = 4;
-  optional bool use_pin = 5;
+  optional string model = 5;
+  optional string firmware = 6;
+  optional bool use_pin = 7;
 }

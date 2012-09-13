@@ -1,16 +1,16 @@
 #include <QtCore/QCoreApplication>
 
-#include "wlancat.h"
+#include "wlanadbterminal.h"
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    WLanCat* wlancat = new WLanCat(argc, argv);
+    WLanAdbTerminal* wlanadb = new WLanAdbTerminal(argc, argv);
 
     int result = a.exec();
 
-    delete wlancat;
+    delete wlanadb;
 
     return result;
 }

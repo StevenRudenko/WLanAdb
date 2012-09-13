@@ -7,7 +7,7 @@
 QT       += core, network
 QT       -= gui
 
-TARGET = WLanCat
+TARGET = WLanAdbTerminal
 CONFIG   += console
 CONFIG   += static
 CONFIG   -= app_bundle
@@ -15,21 +15,21 @@ CONFIG   -= app_bundle
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    wlancat.cpp \
     adapter/adapter.cpp \
     adapter/installadapter.cpp \
     adapter/logcatadapter.cpp \
     adapter/pushadapter.cpp \
-    utils/io_compatibility.cpp
+    utils/io_compatibility.cpp \
+    wlanadbterminal.cpp
 
 HEADERS += \
-    wlancat.h \
     adapter/adapter.h \
     adapter/installadapter.h \
     adapter/logcatadapter.h \
     adapter/pushadapter.h \
     utils/myconfig.h \
-    utils/io_compatibility.h
+    utils/io_compatibility.h \
+    wlanadbterminal.h
 
 INCLUDEPATH += $$PWD/../lib/
 DEPENDPATH += $$PWD/../lib/

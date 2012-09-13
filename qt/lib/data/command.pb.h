@@ -25,7 +25,7 @@
 // @@protoc_insertion_point(includes)
 
 namespace com {
-namespace wlancat {
+namespace wlanadb {
 namespace data {
 
 // Internal implementation detail -- do not call these.
@@ -136,7 +136,7 @@ class Command : public ::google::protobuf::MessageLite {
   inline ::std::string* mutable_checksum();
   inline ::std::string* release_checksum();
   
-  // @@protoc_insertion_point(class_scope:com.wlancat.data.Command)
+  // @@protoc_insertion_point(class_scope:com.wlanadb.data.Command)
  private:
   inline void set_has_pin();
   inline void clear_has_pin();
@@ -414,7 +414,7 @@ inline ::std::string* Command::release_checksum() {
 // @@protoc_insertion_point(namespace_scope)
 
 }  // namespace data
-}  // namespace wlancat
+}  // namespace wlanadb
 }  // namespace com
 
 // @@protoc_insertion_point(global_scope)

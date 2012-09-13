@@ -79,6 +79,11 @@ bool WLanAdb::start(AdbProcessor *proc)
 
 void WLanAdb::searchClients(int port, int tries)
 {
+    searchClients(port, tries, QString());
+}
+
+void WLanAdb::searchClients(int port, int tries, const QString &serialNumber)
+{
     if (NULL != devices)
         delete devices;
 
@@ -86,14 +91,14 @@ void WLanAdb::searchClients(int port, int tries)
 
     connect(devices, SIGNAL(onClientSearchCompleted(QList<Client>)), this, SIGNAL(onClientSearchCompleted(QList<Client>)));
 
-    devices->searchClients(port, tries);
+    devices->searchClients(port, tries, serialNumber);
 }
 
 void WLanAdb::connectToClient(const Client& client)
 {
     this->client = client;
 
-    if (p2pClient != NULL)
+    if (NULL != p2pClient)
         delete p2pClient;
 
     p2pClient = new P2PClient();
@@ -101,9 +106,7 @@ void WLanAdb::connectToClient(const Client& client)
     connect(p2pClient, SIGNAL(connected()), this, SLOT(connectedToClient()));
     connect(p2pClient, SIGNAL(disconnected()), this, SIGNAL(onDisconnectedFromClient()));
 
-    const QString clientIp = QString::fromStdString(client.ip());
-
-    p2pClient->connectToServer(clientIp, client.port());
+    p2pClient->connectToServer(client.ip().c_str(), client.port());
 }
 
 void WLanAdb::disconnectFromClient() {

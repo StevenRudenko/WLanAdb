@@ -62,18 +62,12 @@ PushAdapter::~PushAdapter()
 
 void PushAdapter::onFileSendingStarted(const QString &filename)
 {
-    if (SILENT)
-        return;
-
-    qout << "\rSending " << filename << "..." << endl;
+    qout << tr("\rSending %1...").arg(filename) << endl;
     timer.start();
 }
 
 void PushAdapter::onFileSendingProgress(const QString &, qint64 sent, qint64 total)
 {
-    if (SILENT)
-        return;
-
     const quint64 elapsed = timer.elapsed();
     if (elapsed == 0)
         return;
@@ -116,9 +110,6 @@ void PushAdapter::onFileSendingProgress(const QString &, qint64 sent, qint64 tot
 
 void PushAdapter::onFileSendingEnded(const QString &filename)
 {
-    if (SILENT)
-        return;
-
     quint64 elapsed = timer.elapsed() / 1000;
     QTime time;
     time = time.addSecs(elapsed);

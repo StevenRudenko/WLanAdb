@@ -1,4 +1,4 @@
-#include "wlancat.h"
+#include "wlanadbterminal.h"
 
 #include <data/message.pb.h>
 #include <commands.h>
@@ -11,14 +11,15 @@
 #include "./adapter/installadapter.h"
 
 using namespace std;
-using namespace com::wlancat::data;
+using namespace com::wlanadb::data;
 
 namespace {
 const QString HELP("help");
 const QString VERSION("version");
+const QString SERIAL_NUMBER("-s");
 }
 
-WLanCat::WLanCat(int argc, char *argv[]) :
+WLanAdbTerminal::WLanAdbTerminal(int argc, char *argv[]) :
     QObject(NULL), qout(stdout), adapter(NULL)
 {
     if (argc < 2) {
@@ -38,12 +39,22 @@ WLanCat::WLanCat(int argc, char *argv[]) :
         return;
     }
 
-    //TODO: fix this
+    // looking for params
+    QString clientSerialNumber;
     for (int i=2; i<argc; ++i) {
         QString arg(argv[i]);
-        if (0 == arg.compare("-s")) {
-            SILENT = true;
-            continue;
+        if (arg.startsWith(SERIAL_NUMBER)) {
+            clientSerialNumber = arg.remove(0, SERIAL_NUMBER.length());
+            if (clientSerialNumber.isEmpty()) {
+                if (i == argc-1) {
+                    qout << tr("Fail to parse %1 parameter!").arg(SERIAL_NUMBER) << endl;
+                    exit(0);
+                    return;
+                }
+                clientSerialNumber = QString(argv[i+1]);
+            }
+            qout << tr("Looking for device with serial number: %1").arg(clientSerialNumber) << endl;
+            break;
         }
     }
 
@@ -59,10 +70,10 @@ WLanCat::WLanCat(int argc, char *argv[]) :
     connect(&wlanadb, SIGNAL(onConnectedToClient(Client)), this, SLOT(onConnectedToClient(Client)));
     connect(&wlanadb, SIGNAL(onDisconnectedFromClient()), this, SLOT(onDisconnectedFromClient()));
 
-    wlanadb.searchClients(BROADCAST_PORT, MAX_CLIENT_SEARCH_TRIES);
+    wlanadb.searchClients(BROADCAST_PORT, MAX_CLIENT_SEARCH_TRIES, clientSerialNumber);
 }
 
-WLanCat::~WLanCat()
+WLanAdbTerminal::~WLanAdbTerminal()
 {
     if (proc != NULL) {
         delete proc;
@@ -75,7 +86,7 @@ WLanCat::~WLanCat()
     }
 }
 
-void WLanCat::selectClient(const QList<Client> &clients)
+void WLanAdbTerminal::selectClient(const QList<Client> &clients)
 {
     const QString command = QString::fromUtf8(proc->getCommand().command().c_str());
     const bool devicesCommand = 0 == Commands::DEVICES.compare(command);
@@ -96,9 +107,11 @@ void WLanCat::selectClient(const QList<Client> &clients)
     qout << tr("\rThere are %1 devices found:").arg(size) << endl;
     for (int i=0; i<size; ++i) {
         Client client = clients.at(i);
+        const QString& clientId = QString::fromStdString(client.id());
         const QString& clientName = QString::fromStdString(client.name());
-        const QString& clientIp = QString::fromStdString(client.ip());
-        qout << tr("%1) %2 - %3 (%4)").arg(QString::number(i+1), clientName, clientIp, QString::number(client.port())) << endl;
+        const QString& clientModel = QString::fromStdString(client.model());
+        const QString& clientFirmware = QString::fromStdString(client.firmware());
+        qout << tr("%1) %2\t%3 - %4 (%5)").arg(QString::number(i+1), clientId, clientName, clientModel, clientFirmware) << endl;
     }
 
     if (devicesCommand) {
@@ -121,14 +134,9 @@ void WLanCat::selectClient(const QList<Client> &clients)
     }
 }
 
-void WLanCat::onConnectedToClient(const Client& client)
+void WLanAdbTerminal::onConnectedToClient(const Client& client)
 {
-    const QString clientName = QString::fromStdString(client.name());
-    const QString clientIp = QString::fromStdString(client.ip());
-
-    if (!SILENT) {
-        qout << tr("\rConnected to %1 - %2 (%3)").arg(clientName, clientIp, QString::number(client.port())) << endl;
-    }
+    qout << tr("\rConnected to %1").arg(client.name().c_str()) << endl;
 
     if (client.use_pin()) {
         qout << tr("Client requests PIN to access its log. Please enter PIN:") << endl;
@@ -165,15 +173,13 @@ void WLanCat::onConnectedToClient(const Client& client)
     }
 }
 
-void WLanCat::onDisconnectedFromClient()
+void WLanAdbTerminal::onDisconnectedFromClient()
 {
-    if (!SILENT) {
-        qout << endl;// << tr("Connection with client was closed") << endl;
-    }
+    qout << endl;
     exit(0);
 }
 
-void WLanCat::printHelp()
+void WLanAdbTerminal::printHelp()
 {
     printVersion();
     /*
@@ -197,7 +203,7 @@ void WLanCat::printHelp()
 */
 }
 
-void WLanCat::printVersion()
+void WLanAdbTerminal::printVersion()
 {
     qout << tr("Android Debug Bridge version %1").arg("0.1b") << endl;
 }

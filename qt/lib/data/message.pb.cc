@@ -11,7 +11,7 @@
 // @@protoc_insertion_point(includes)
 
 namespace com {
-namespace wlancat {
+namespace wlanadb {
 namespace data {
 
 void protobuf_ShutdownFile_message_2eproto() {
@@ -24,7 +24,7 @@ void protobuf_AddDesc_message_2eproto() {
   already_here = true;
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-  ::com::wlancat::data::protobuf_AddDesc_client_2eproto();
+  ::com::wlanadb::data::protobuf_AddDesc_client_2eproto();
   Message::default_instance_ = new Message();
   Message::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_message_2eproto);
@@ -68,7 +68,7 @@ Message::Message()
 }
 
 void Message::InitAsDefaultInstance() {
-  client_ = const_cast< ::com::wlancat::data::Client*>(&::com::wlancat::data::Client::default_instance());
+  client_ = const_cast< ::com::wlanadb::data::Client*>(&::com::wlanadb::data::Client::default_instance());
 }
 
 Message::Message(const Message& from)
@@ -113,7 +113,7 @@ void Message::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     type_ = 0;
     if (has_client()) {
-      if (client_ != NULL) client_->::com::wlancat::data::Client::Clear();
+      if (client_ != NULL) client_->::com::wlanadb::data::Client::Clear();
     }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -125,7 +125,7 @@ bool Message::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required .com.wlancat.data.Message.Type type = 1;
+      // required .com.wlanadb.data.Message.Type type = 1;
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
@@ -133,8 +133,8 @@ bool Message::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
                  input, &value)));
-          if (::com::wlancat::data::Message_Type_IsValid(value)) {
-            set_type(static_cast< ::com::wlancat::data::Message_Type >(value));
+          if (::com::wlanadb::data::Message_Type_IsValid(value)) {
+            set_type(static_cast< ::com::wlanadb::data::Message_Type >(value));
           }
         } else {
           goto handle_uninterpreted;
@@ -143,7 +143,7 @@ bool Message::MergePartialFromCodedStream(
         break;
       }
       
-      // optional .com.wlancat.data.Client client = 2;
+      // optional .com.wlanadb.data.Client client = 2;
       case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
@@ -174,13 +174,13 @@ bool Message::MergePartialFromCodedStream(
 
 void Message::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // required .com.wlancat.data.Message.Type type = 1;
+  // required .com.wlanadb.data.Message.Type type = 1;
   if (has_type()) {
     ::google::protobuf::internal::WireFormatLite::WriteEnum(
       1, this->type(), output);
   }
   
-  // optional .com.wlancat.data.Client client = 2;
+  // optional .com.wlanadb.data.Client client = 2;
   if (has_client()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessage(
       2, this->client(), output);
@@ -192,13 +192,13 @@ int Message::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required .com.wlancat.data.Message.Type type = 1;
+    // required .com.wlanadb.data.Message.Type type = 1;
     if (has_type()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::EnumSize(this->type());
     }
     
-    // optional .com.wlancat.data.Client client = 2;
+    // optional .com.wlanadb.data.Client client = 2;
     if (has_client()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
@@ -224,7 +224,7 @@ void Message::MergeFrom(const Message& from) {
       set_type(from.type());
     }
     if (from.has_client()) {
-      mutable_client()->::com::wlancat::data::Client::MergeFrom(from.client());
+      mutable_client()->::com::wlanadb::data::Client::MergeFrom(from.client());
     }
   }
 }
@@ -254,14 +254,14 @@ void Message::Swap(Message* other) {
 }
 
 ::std::string Message::GetTypeName() const {
-  return "com.wlancat.data.Message";
+  return "com.wlanadb.data.Message";
 }
 
 
 // @@protoc_insertion_point(namespace_scope)
 
 }  // namespace data
-}  // namespace wlancat
+}  // namespace wlanadb
 }  // namespace com
 
 // @@protoc_insertion_point(global_scope)

@@ -11,7 +11,7 @@
 // @@protoc_insertion_point(includes)
 
 namespace com {
-namespace wlancat {
+namespace wlanadb {
 namespace data {
 
 void protobuf_ShutdownFile_command_2eproto() {
@@ -346,14 +346,14 @@ void Command::Swap(Command* other) {
 }
 
 ::std::string Command::GetTypeName() const {
-  return "com.wlancat.data.Command";
+  return "com.wlanadb.data.Command";
 }
 
 
 // @@protoc_insertion_point(namespace_scope)
 
 }  // namespace data
-}  // namespace wlancat
+}  // namespace wlanadb
 }  // namespace com
 
 // @@protoc_insertion_point(global_scope)

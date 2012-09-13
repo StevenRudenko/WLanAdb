@@ -9,7 +9,7 @@
 
 #include "./network/p2pclient.h"
 
-using namespace com::wlancat::data;
+using namespace com::wlanadb::data;
 
 class WLanAdb : public QObject {
 
@@ -32,6 +32,7 @@ public:
 
 public:
     void searchClients(int port, int tries);
+    void searchClients(int port, int tries, const QString& serialNumber);
 
     void connectToClient(const Client& client);
     void disconnectFromClient();

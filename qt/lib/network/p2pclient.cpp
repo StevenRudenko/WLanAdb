@@ -14,7 +14,7 @@ P2PClient::P2PClient(QObject *parent) :
     tcpSocket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
     tcpSocket->setReadBufferSize(READ_BUFFER);
 
-    connect(tcpSocket, SIGNAL(connected()), this, SLOT(connectedToServer()));
+    connect(tcpSocket, SIGNAL(connected()), this, SIGNAL(connected()));
     connect(tcpSocket, SIGNAL(disconnected()), this, SLOT(connectionClosedByServer()));
     connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(read()));
     connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error()));
@@ -51,11 +51,6 @@ void P2PClient::disconnectFromServer()
     tcpSocket->close();
 
     emit disconnected();
-}
-
-void P2PClient::connectedToServer()
-{
-    emit connected();
 }
 
 void P2PClient::send(QByteArray &bytes)
@@ -104,9 +99,8 @@ void P2PClient::sendNextPartOfFile() {
 
 void P2PClient::read()
 {
-    if (in == 0) {
+    if (NULL == in) {
         in = new QTextStream(tcpSocket);
-        //in->setCodec("UTF-8");
     }
 
     while (true) {

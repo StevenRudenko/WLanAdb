@@ -26,7 +26,7 @@
 // @@protoc_insertion_point(includes)
 
 namespace com {
-namespace wlancat {
+namespace wlanadb {
 namespace data {
 
 // Internal implementation detail -- do not call these.
@@ -103,29 +103,29 @@ class Message : public ::google::protobuf::MessageLite {
   
   // accessors -------------------------------------------------------
   
-  // required .com.wlancat.data.Message.Type type = 1;
+  // required .com.wlanadb.data.Message.Type type = 1;
   inline bool has_type() const;
   inline void clear_type();
   static const int kTypeFieldNumber = 1;
-  inline ::com::wlancat::data::Message_Type type() const;
-  inline void set_type(::com::wlancat::data::Message_Type value);
+  inline ::com::wlanadb::data::Message_Type type() const;
+  inline void set_type(::com::wlanadb::data::Message_Type value);
   
-  // optional .com.wlancat.data.Client client = 2;
+  // optional .com.wlanadb.data.Client client = 2;
   inline bool has_client() const;
   inline void clear_client();
   static const int kClientFieldNumber = 2;
-  inline const ::com::wlancat::data::Client& client() const;
-  inline ::com::wlancat::data::Client* mutable_client();
-  inline ::com::wlancat::data::Client* release_client();
+  inline const ::com::wlanadb::data::Client& client() const;
+  inline ::com::wlanadb::data::Client* mutable_client();
+  inline ::com::wlanadb::data::Client* release_client();
   
-  // @@protoc_insertion_point(class_scope:com.wlancat.data.Message)
+  // @@protoc_insertion_point(class_scope:com.wlanadb.data.Message)
  private:
   inline void set_has_type();
   inline void clear_has_type();
   inline void set_has_client();
   inline void clear_has_client();
   
-  ::com::wlancat::data::Client* client_;
+  ::com::wlanadb::data::Client* client_;
   int type_;
   
   mutable int _cached_size_;
@@ -145,7 +145,7 @@ class Message : public ::google::protobuf::MessageLite {
 
 // Message
 
-// required .com.wlancat.data.Message.Type type = 1;
+// required .com.wlanadb.data.Message.Type type = 1;
 inline bool Message::has_type() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -159,16 +159,16 @@ inline void Message::clear_type() {
   type_ = 0;
   clear_has_type();
 }
-inline ::com::wlancat::data::Message_Type Message::type() const {
-  return static_cast< ::com::wlancat::data::Message_Type >(type_);
+inline ::com::wlanadb::data::Message_Type Message::type() const {
+  return static_cast< ::com::wlanadb::data::Message_Type >(type_);
 }
-inline void Message::set_type(::com::wlancat::data::Message_Type value) {
-  GOOGLE_DCHECK(::com::wlancat::data::Message_Type_IsValid(value));
+inline void Message::set_type(::com::wlanadb::data::Message_Type value) {
+  GOOGLE_DCHECK(::com::wlanadb::data::Message_Type_IsValid(value));
   set_has_type();
   type_ = value;
 }
 
-// optional .com.wlancat.data.Client client = 2;
+// optional .com.wlanadb.data.Client client = 2;
 inline bool Message::has_client() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
@@ -179,20 +179,20 @@ inline void Message::clear_has_client() {
   _has_bits_[0] &= ~0x00000002u;
 }
 inline void Message::clear_client() {
-  if (client_ != NULL) client_->::com::wlancat::data::Client::Clear();
+  if (client_ != NULL) client_->::com::wlanadb::data::Client::Clear();
   clear_has_client();
 }
-inline const ::com::wlancat::data::Client& Message::client() const {
+inline const ::com::wlanadb::data::Client& Message::client() const {
   return client_ != NULL ? *client_ : *default_instance_->client_;
 }
-inline ::com::wlancat::data::Client* Message::mutable_client() {
+inline ::com::wlanadb::data::Client* Message::mutable_client() {
   set_has_client();
-  if (client_ == NULL) client_ = new ::com::wlancat::data::Client;
+  if (client_ == NULL) client_ = new ::com::wlanadb::data::Client;
   return client_;
 }
-inline ::com::wlancat::data::Client* Message::release_client() {
+inline ::com::wlanadb::data::Client* Message::release_client() {
   clear_has_client();
-  ::com::wlancat::data::Client* temp = client_;
+  ::com::wlanadb::data::Client* temp = client_;
   client_ = NULL;
   return temp;
 }
@@ -201,7 +201,7 @@ inline ::com::wlancat::data::Client* Message::release_client() {
 // @@protoc_insertion_point(namespace_scope)
 
 }  // namespace data
-}  // namespace wlancat
+}  // namespace wlanadb
 }  // namespace com
 
 // @@protoc_insertion_point(global_scope)

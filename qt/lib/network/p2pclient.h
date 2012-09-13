@@ -32,7 +32,6 @@ public slots:
     bool sendFile(const QString& filename);
 
 private slots:
-    void connectedToServer();
     void sendNextPartOfFile();
     void read();
     void connectionClosedByServer();

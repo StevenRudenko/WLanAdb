@@ -27,6 +27,7 @@ const int BACKGROUND_MAGENTA    = 45;
 const int BACKGROUND_CYAN       = 46;
 const int BACKGROUND_WHITE      = 47;
 #else
+// all constants will be defined by including <windows.h>
 /*
 const int IGNORE                = -1;
 const int RESET                 = 7;

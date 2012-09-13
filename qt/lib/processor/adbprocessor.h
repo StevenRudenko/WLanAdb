@@ -6,7 +6,7 @@
 #include "./network/p2pclient.h"
 #include "./data/command.pb.h"
 
-using namespace com::wlancat::data;
+using namespace com::wlanadb::data;
 
 class AdbProcessor : public QObject
 {

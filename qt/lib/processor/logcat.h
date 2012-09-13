@@ -16,9 +16,6 @@ public:
 
 signals:
     void onLogLine(const QString& str);
-
-private slots:
-    void logLine(const QString& str);
 };
 
 #endif // LOGCAT_H

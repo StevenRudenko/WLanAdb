@@ -8,7 +8,7 @@
 
 #include "adapter.h"
 
-using namespace com::wlancat::data;
+using namespace com::wlanadb::data;
 
 class PushAdapter : public Adapter
 {

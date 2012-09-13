@@ -9,7 +9,7 @@ InstallAdapter::~InstallAdapter()
 {
 }
 
-void InstallAdapter::onFileSendingEnded(const QString &filename)
+void InstallAdapter::onFileSendingEnded(const QString &)
 {
 
 }

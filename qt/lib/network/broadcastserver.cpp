@@ -40,6 +40,10 @@
 
 #include "broadcastserver.h"
 
+namespace {
+const int REQUEST_DELAY = 250;
+}
+
 BroadcastServer::BroadcastServer(int port)
     : QObject(NULL), port(port)
 {
@@ -69,7 +73,7 @@ void BroadcastServer::start(const QByteArray& datagram)
 {
     this->datagram = datagram;
     udpSocket->bind(port, QUdpSocket::ShareAddress);
-    timer->start(250);
+    timer->start(REQUEST_DELAY);
 }
 
 void BroadcastServer::stop()

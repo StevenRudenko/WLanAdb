@@ -25,7 +25,7 @@
 // @@protoc_insertion_point(includes)
 
 namespace com {
-namespace wlancat {
+namespace wlanadb {
 namespace data {
 
 // Internal implementation detail -- do not call these.
@@ -120,14 +120,36 @@ class Client : public ::google::protobuf::MessageLite {
   inline ::std::string* mutable_name();
   inline ::std::string* release_name();
   
-  // optional bool use_pin = 5;
+  // optional string model = 5;
+  inline bool has_model() const;
+  inline void clear_model();
+  static const int kModelFieldNumber = 5;
+  inline const ::std::string& model() const;
+  inline void set_model(const ::std::string& value);
+  inline void set_model(const char* value);
+  inline void set_model(const char* value, size_t size);
+  inline ::std::string* mutable_model();
+  inline ::std::string* release_model();
+  
+  // optional string firmware = 6;
+  inline bool has_firmware() const;
+  inline void clear_firmware();
+  static const int kFirmwareFieldNumber = 6;
+  inline const ::std::string& firmware() const;
+  inline void set_firmware(const ::std::string& value);
+  inline void set_firmware(const char* value);
+  inline void set_firmware(const char* value, size_t size);
+  inline ::std::string* mutable_firmware();
+  inline ::std::string* release_firmware();
+  
+  // optional bool use_pin = 7;
   inline bool has_use_pin() const;
   inline void clear_use_pin();
-  static const int kUsePinFieldNumber = 5;
+  static const int kUsePinFieldNumber = 7;
   inline bool use_pin() const;
   inline void set_use_pin(bool value);
   
-  // @@protoc_insertion_point(class_scope:com.wlancat.data.Client)
+  // @@protoc_insertion_point(class_scope:com.wlanadb.data.Client)
  private:
   inline void set_has_id();
   inline void clear_has_id();
@@ -137,17 +159,23 @@ class Client : public ::google::protobuf::MessageLite {
   inline void clear_has_port();
   inline void set_has_name();
   inline void clear_has_name();
+  inline void set_has_model();
+  inline void clear_has_model();
+  inline void set_has_firmware();
+  inline void clear_has_firmware();
   inline void set_has_use_pin();
   inline void clear_has_use_pin();
   
   ::std::string* id_;
   ::std::string* ip_;
   ::std::string* name_;
+  ::std::string* model_;
   ::google::protobuf::int32 port_;
   bool use_pin_;
+  ::std::string* firmware_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(7 + 31) / 32];
   
   friend void  protobuf_AddDesc_client_2eproto();
   friend void protobuf_AssignDesc_client_2eproto();
@@ -359,15 +387,131 @@ inline ::std::string* Client::release_name() {
   }
 }
 
-// optional bool use_pin = 5;
-inline bool Client::has_use_pin() const {
+// optional string model = 5;
+inline bool Client::has_model() const {
   return (_has_bits_[0] & 0x00000010u) != 0;
 }
-inline void Client::set_has_use_pin() {
+inline void Client::set_has_model() {
   _has_bits_[0] |= 0x00000010u;
 }
-inline void Client::clear_has_use_pin() {
+inline void Client::clear_has_model() {
   _has_bits_[0] &= ~0x00000010u;
+}
+inline void Client::clear_model() {
+  if (model_ != &::google::protobuf::internal::kEmptyString) {
+    model_->clear();
+  }
+  clear_has_model();
+}
+inline const ::std::string& Client::model() const {
+  return *model_;
+}
+inline void Client::set_model(const ::std::string& value) {
+  set_has_model();
+  if (model_ == &::google::protobuf::internal::kEmptyString) {
+    model_ = new ::std::string;
+  }
+  model_->assign(value);
+}
+inline void Client::set_model(const char* value) {
+  set_has_model();
+  if (model_ == &::google::protobuf::internal::kEmptyString) {
+    model_ = new ::std::string;
+  }
+  model_->assign(value);
+}
+inline void Client::set_model(const char* value, size_t size) {
+  set_has_model();
+  if (model_ == &::google::protobuf::internal::kEmptyString) {
+    model_ = new ::std::string;
+  }
+  model_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Client::mutable_model() {
+  set_has_model();
+  if (model_ == &::google::protobuf::internal::kEmptyString) {
+    model_ = new ::std::string;
+  }
+  return model_;
+}
+inline ::std::string* Client::release_model() {
+  clear_has_model();
+  if (model_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = model_;
+    model_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// optional string firmware = 6;
+inline bool Client::has_firmware() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void Client::set_has_firmware() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void Client::clear_has_firmware() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void Client::clear_firmware() {
+  if (firmware_ != &::google::protobuf::internal::kEmptyString) {
+    firmware_->clear();
+  }
+  clear_has_firmware();
+}
+inline const ::std::string& Client::firmware() const {
+  return *firmware_;
+}
+inline void Client::set_firmware(const ::std::string& value) {
+  set_has_firmware();
+  if (firmware_ == &::google::protobuf::internal::kEmptyString) {
+    firmware_ = new ::std::string;
+  }
+  firmware_->assign(value);
+}
+inline void Client::set_firmware(const char* value) {
+  set_has_firmware();
+  if (firmware_ == &::google::protobuf::internal::kEmptyString) {
+    firmware_ = new ::std::string;
+  }
+  firmware_->assign(value);
+}
+inline void Client::set_firmware(const char* value, size_t size) {
+  set_has_firmware();
+  if (firmware_ == &::google::protobuf::internal::kEmptyString) {
+    firmware_ = new ::std::string;
+  }
+  firmware_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Client::mutable_firmware() {
+  set_has_firmware();
+  if (firmware_ == &::google::protobuf::internal::kEmptyString) {
+    firmware_ = new ::std::string;
+  }
+  return firmware_;
+}
+inline ::std::string* Client::release_firmware() {
+  clear_has_firmware();
+  if (firmware_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = firmware_;
+    firmware_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// optional bool use_pin = 7;
+inline bool Client::has_use_pin() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+inline void Client::set_has_use_pin() {
+  _has_bits_[0] |= 0x00000040u;
+}
+inline void Client::clear_has_use_pin() {
+  _has_bits_[0] &= ~0x00000040u;
 }
 inline void Client::clear_use_pin() {
   use_pin_ = false;
@@ -385,7 +529,7 @@ inline void Client::set_use_pin(bool value) {
 // @@protoc_insertion_point(namespace_scope)
 
 }  // namespace data
-}  // namespace wlancat
+}  // namespace wlanadb
 }  // namespace com
 
 // @@protoc_insertion_point(global_scope)

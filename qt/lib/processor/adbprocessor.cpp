@@ -5,6 +5,9 @@
 AdbProcessor::AdbProcessor(Command * cmd) :
     QObject(NULL), cmd(cmd)
 {
+    // Verify that the version of the library that we linked against is
+    // compatible with the version of the headers we compiled against.
+    GOOGLE_PROTOBUF_VERIFY_VERSION;
 }
 
 AdbProcessor::~AdbProcessor()
@@ -13,6 +16,9 @@ AdbProcessor::~AdbProcessor()
         delete cmd;
         cmd = NULL;
     }
+
+    // Optional:  Delete all global objects allocated by libprotobuf.
+    google::protobuf::ShutdownProtobufLibrary();
 }
 
 Command &AdbProcessor::getCommand() const

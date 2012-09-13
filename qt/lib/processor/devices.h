@@ -9,7 +9,7 @@
 
 #include "./data/client.pb.h"
 
-using namespace com::wlancat::data;
+using namespace com::wlanadb::data;
 
 class Devices : public AdbProcessor
 {
@@ -22,6 +22,7 @@ public:
 public:
     virtual bool start(P2PClient *);
     void searchClients(int port, int tries);
+    void searchClients(int port, int tries, const QString& serialNumber);
 
 signals:
     void onClientSearchCompleted(QList<Client> const &clients);
@@ -37,6 +38,7 @@ private:
 
     int tries;
     int requestsSent;
+    QString clientSerialNumber;
 };
 
 #endif // DEVICES_H

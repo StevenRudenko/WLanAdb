@@ -11,13 +11,8 @@ Logcat::~Logcat()
 
 bool Logcat::start(P2PClient *p2pClient)
 {
-    connect(p2pClient, SIGNAL(onDataRecieved(const QString&)), this, SLOT(logLine(const QString&)));
+    connect(p2pClient, SIGNAL(onDataRecieved(const QString&)), this, SIGNAL(onLogLine(const QString&)));
 
     AdbProcessor::start(p2pClient);
     return true;
-}
-
-void Logcat::logLine(const QString &str)
-{
-    emit onLogLine(str);
 }

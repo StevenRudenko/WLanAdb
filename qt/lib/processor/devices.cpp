@@ -4,14 +4,11 @@
 
 #include "./data/message.pb.h"
 
-using namespace com::wlancat::data;
+using namespace com::wlanadb::data;
 
 Devices::Devices(Command * cmd) :
     AdbProcessor(cmd), broadcast(NULL), requestsSent(0)
 {
-    // Verify that the version of the library that we linked against is
-    // compatible with the version of the headers we compiled against.
-    GOOGLE_PROTOBUF_VERIFY_VERSION;
 }
 
 Devices::~Devices() {
@@ -20,9 +17,6 @@ Devices::~Devices() {
         delete broadcast;
         broadcast = NULL;
     }
-
-    // Optional:  Delete all global objects allocated by libprotobuf.
-    google::protobuf::ShutdownProtobufLibrary();
 }
 
 void Devices::searchClients(int port, int tries) {
@@ -40,6 +34,12 @@ void Devices::searchClients(int port, int tries) {
     broadcast->start(datagram);
 }
 
+void Devices::searchClients(int port, int tries, const QString &serialNumber)
+{
+    clientSerialNumber = serialNumber;
+    searchClients(port, tries);
+}
+
 bool Devices::start(P2PClient *)
 {
     return false;
@@ -48,9 +48,11 @@ bool Devices::start(P2PClient *)
 void Devices::onMessageRequested()
 {
     if (tries == requestsSent) {
-        broadcast->stop();
-        delete broadcast;
-        broadcast = NULL;
+        if (NULL != broadcast) {
+            broadcast->stop();
+            delete broadcast;
+            broadcast = NULL;
+        }
 
         emit onClientSearchCompleted(clients.values());
         return;
@@ -74,5 +76,10 @@ void Devices::onMessageRecieved(const QByteArray& data)
     if (clients.contains(clientIp))
         return;
 
+    if (!clientSerialNumber.isEmpty()) {
+        const QString clientId = QString::fromStdString(client.id());
+        if (0 != clientSerialNumber.compare(clientId))
+            return;
+    }
     clients.insert(clientIp, client);
 }
