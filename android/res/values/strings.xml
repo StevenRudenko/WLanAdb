@@ -2,7 +2,7 @@
 <resources>
 
     <!-- Application name -->
-    <string name="app_name">WLanCat</string>
+    <string name="app_name">WLanAdb</string>
     <!-- General strings -->
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>

@@ -10,7 +10,7 @@
             android:title="@string/pref_client_name" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_security_settings" >
-        <com.wlancat.ui.prefs.PasswordPreference
+        <com.wlanadb.ui.prefs.PasswordPreference
             android:key="security_pin"
             android:title="@string/pref_security_pin" />
     </PreferenceCategory>
@@ -19,7 +19,7 @@
             android:key="about_credits"
             android:title="@string/pref_about_credits" />
 
-        <com.wlancat.ui.prefs.VersionPreference
+        <com.wlanadb.ui.prefs.VersionPreference
             android:defaultValue="@string/pref_about_version"
             android:key="about_version" />
     </PreferenceCategory>
