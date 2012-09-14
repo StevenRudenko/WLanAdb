@@ -17,10 +17,7 @@ QString getFileChecksum(const QString& filename) {
 QString getHash(const QString& text) {
     QByteArray data;
     data.append(text);
-
-    QCryptographicHash hash(QCryptographicHash::Sha1);
-    hash.addData(data);
-    return hash.result().toBase64().toHex();
+    return QCryptographicHash::hash(data, QCryptographicHash::Sha1).toBase64();
 }
 
 }

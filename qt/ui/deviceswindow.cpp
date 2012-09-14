@@ -5,6 +5,10 @@
 
 #include <commands.h>
 
+#include <QInputDialog>
+
+#include "utils/utils.h"
+
 DevicesWindow::DevicesWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::DevicesWindow)
@@ -66,9 +70,15 @@ void DevicesWindow::selectClient(const QList<Client> &clients)
 void DevicesWindow::onConnectedToClient(const Client& client)
 {
     if (client.use_pin()) {
-        //QString pin;
-        // request PIN by showing dialog
-        //proc->setPin(pin);
+        bool ok;
+        QString pin = QInputDialog::getText(this, tr("Enter PIN"),
+                                            tr("PIN code:"), QLineEdit::Password, QString(), &ok);
+        if (!ok || pin.isEmpty()) {
+            exit(0);
+            return;
+        }
+
+        proc->setPin(pin.toUtf8());
     }
 
     QString command = QString::fromUtf8(proc->getCommand().command().c_str());
