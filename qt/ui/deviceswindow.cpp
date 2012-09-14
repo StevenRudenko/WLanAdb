@@ -27,6 +27,8 @@ DevicesWindow::DevicesWindow(QWidget *parent) :
     connect(&wlanadb, SIGNAL(onDisconnectedFromClient()), this, SLOT(onDisconnectedFromClient()));
 
     wlanadb.searchClients(BROADCAST_PORT, MAX_CLIENT_SEARCH_TRIES);
+
+    ui->statusBar->showMessage(tr("Searching for clients..."));
 }
 
 DevicesWindow::~DevicesWindow()
@@ -72,11 +74,15 @@ void DevicesWindow::selectClient(const QList<Client> &clients)
         ui->devicesTableWidget->setItem(i, 3, model);
         ui->devicesTableWidget->setItem(i, 4, firmware);
     }
+
+    ui->statusBar->showMessage(tr("Select client"));
 }
 
 void DevicesWindow::onConnectedToClient(const Client& client)
 {
     if (client.use_pin()) {
+        ui->statusBar->showMessage(tr("PIN code required"));
+
         bool ok;
         QString pin = QInputDialog::getText(this, tr("Enter PIN"),
                                             tr("PIN code:"), QLineEdit::Password, QString(), &ok);
@@ -89,6 +95,8 @@ void DevicesWindow::onConnectedToClient(const Client& client)
     }
 
     QString command = QString::fromUtf8(proc->getCommand().command().c_str());
+
+    ui->statusBar->showMessage(tr("Connected to client"));
 
     if (0 == Commands::PUSH.compare(command) || 0 == Commands::INSTALL.compare(command)) {
         // just waiting for file transfaring finished
@@ -117,6 +125,8 @@ void DevicesWindow::onClientSelected(QTableWidgetItem *item)
         exit(0);
         return;
     }
+
+    ui->statusBar->showMessage(tr("Connecting to client..."));
 
     const int row = item->row();
     const Client client = clients.at(row);
