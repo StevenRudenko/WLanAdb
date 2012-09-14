@@ -9,7 +9,11 @@ DevicesWindow::DevicesWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::DevicesWindow)
 {
+    setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
+    setFixedSize(500, 300);
+
     ui->setupUi(this);
+    ui->devicesTableWidget->setColumnWidth(0, 150);
 
     connect(ui->devicesTableWidget, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(onClientSelected(QTableWidgetItem*)));
 
