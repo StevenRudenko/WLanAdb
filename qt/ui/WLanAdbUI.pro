@@ -18,6 +18,9 @@ HEADERS  += deviceswindow.h \
 
 FORMS    += deviceswindow.ui
 
+RESOURCES += \
+    main.qrc
+
 INCLUDEPATH += $$PWD/../lib/
 DEPENDPATH += $$PWD/../lib/
 
@@ -28,3 +31,6 @@ else:unix: LIBS += -L$$PWD/../WLanAdbLib-bin/ -lWLanAdbLib
 # Protobuf library
 win32: LIBS += -L$$PWD/../libs/ -lprotobuf-lite
 else:unix: LIBS += -L/usr/local/lib -lprotobuf-lite
+
+OTHER_FILES += \
+    images/icon_lock.png

@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>500</width>
+    <width>519</width>
     <height>300</height>
    </rect>
   </property>
@@ -22,6 +22,9 @@
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <widget class="QTableWidget" name="devicesTableWidget">
+        <property name="verticalScrollBarPolicy">
+         <enum>Qt::ScrollBarAsNeeded</enum>
+        </property>
         <property name="editTriggers">
          <set>QAbstractItemView::NoEditTriggers</set>
         </property>
@@ -40,6 +43,14 @@
         <attribute name="verticalHeaderVisible">
          <bool>false</bool>
         </attribute>
+        <column>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="toolTip">
+          <string>PIN required</string>
+         </property>
+        </column>
         <column>
          <property name="text">
           <string>Serial number</string>
@@ -71,7 +82,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>500</width>
+     <width>519</width>
      <height>25</height>
     </rect>
    </property>
