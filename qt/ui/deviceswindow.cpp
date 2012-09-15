@@ -9,8 +9,8 @@
 
 #include "utils/utils.h"
 
-DevicesWindow::DevicesWindow(QWidget *parent) :
-    QMainWindow(parent),
+DevicesWindow::DevicesWindow(int argc, char *argv[]) :
+    QMainWindow(NULL),
     ui(new Ui::DevicesWindow)
 {
     setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
@@ -26,9 +26,13 @@ DevicesWindow::DevicesWindow(QWidget *parent) :
     connect(&wlanadb, SIGNAL(onConnectedToClient(Client)), this, SLOT(onConnectedToClient(Client)));
     connect(&wlanadb, SIGNAL(onDisconnectedFromClient()), this, SLOT(onDisconnectedFromClient()));
 
+    proc = WLanAdb::prepareProcessor(argc, argv);
+
     wlanadb.searchClients(BROADCAST_PORT, MAX_CLIENT_SEARCH_TRIES);
 
     ui->statusBar->showMessage(tr("Searching for clients..."));
+
+    hide();
 }
 
 DevicesWindow::~DevicesWindow()
@@ -39,11 +43,6 @@ DevicesWindow::~DevicesWindow()
         delete proc;
         proc = NULL;
     }
-}
-
-void DevicesWindow::setArgs(int argc, char *argv[])
-{
-    proc = WLanAdb::prepareProcessor(argc, argv);
 }
 
 void DevicesWindow::selectClient(const QList<Client> &clients)
@@ -75,7 +74,15 @@ void DevicesWindow::selectClient(const QList<Client> &clients)
         ui->devicesTableWidget->setItem(i, 4, firmware);
     }
 
-    ui->statusBar->showMessage(tr("Select client"));
+    if (0 == size) {
+        ui->statusBar->showMessage(tr("No clients found"));
+        show();
+    } else if (1 == size) {
+        onClientSelected(ui->devicesTableWidget->item(0, 1));
+    } else {
+        ui->statusBar->showMessage(tr("Select client"));
+        show();
+    }
 }
 
 void DevicesWindow::onConnectedToClient(const Client& client)
@@ -126,7 +133,7 @@ void DevicesWindow::onClientSelected(QTableWidgetItem *item)
         return;
     }
 
-    ui->statusBar->showMessage(tr("Connecting to client..."));
+    //ui->statusBar->showMessage(tr("Connecting to client..."));
 
     const int row = item->row();
     const Client client = clients.at(row);

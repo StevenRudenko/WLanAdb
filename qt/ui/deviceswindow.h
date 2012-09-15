@@ -19,10 +19,8 @@ class DevicesWindow : public QMainWindow
     Q_OBJECT
     
 public:
-    explicit DevicesWindow(QWidget *parent = 0);
+    explicit DevicesWindow(int argc, char *argv[]);
     ~DevicesWindow();
-public :
-    void setArgs(int argc, char *argv[]);
 
 public slots:
 
