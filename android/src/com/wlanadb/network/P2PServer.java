@@ -155,8 +155,8 @@ public class P2PServer extends CommandListener implements Runnable {
     public ConnectionsPoolExecutor() {
       super(MAX_CONNECTIONS, // core thread pool size
           MAX_CONNECTIONS, // maximum thread pool size
-          1, // time to wait before resizing pool
-          TimeUnit.MINUTES,
+          60, // time to wait before resizing pool
+          TimeUnit.SECONDS,
           new ArrayBlockingQueue<Runnable>(MAX_CONNECTIONS, true),
           new ThreadPoolExecutor.CallerRunsPolicy());
     }

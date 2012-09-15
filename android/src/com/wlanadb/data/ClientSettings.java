@@ -27,7 +27,7 @@ import android.util.Log;
 
 public class ClientSettings {
   private static final String TAG = ClientSettings.class.getSimpleName();
-  private static final boolean DEBUG = MyConfig.DEBUG && true;
+  private static final boolean DEBUG = MyConfig.DEBUG && false;
 
   public interface OnClientChangeListener {
     public void onClientChanged(Client client);

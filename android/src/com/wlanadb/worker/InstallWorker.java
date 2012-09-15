@@ -5,6 +5,8 @@ import java.io.File;
 import com.wlanadb.data.CommandProto.Command;
 
 public class InstallWorker extends PushWorker {
+  @SuppressWarnings("unused")
+  private static final String TAG = InstallWorker.class.getSimpleName();
 
   public InstallWorker(Command command) {
     super(command);
@@ -27,7 +29,7 @@ public class InstallWorker extends PushWorker {
     return file;
   }
 
-  public static String getExtension(File f) {
+  private static String getExtension(File f) {
     String ext = null;
     String s = f.getName();
     int i = s.lastIndexOf('.');

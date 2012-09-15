@@ -37,6 +37,7 @@
 
         <service
             android:name=".service.WLanAdbService"
+            android:enabled="true"
             android:exported="false"
             android:process=":remote" >
             <intent-filter>
@@ -46,6 +47,7 @@
 
         <receiver
             android:name=".service.WiFiStateReceiver"
+            android:enabled="true"
             android:exported="false" >
             <intent-filter>
                 <action android:name="android.net.wifi.STATE_CHANGE" />

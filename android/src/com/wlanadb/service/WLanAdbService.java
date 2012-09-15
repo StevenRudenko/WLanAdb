@@ -3,6 +3,7 @@ package com.wlanadb.service;
 import java.net.InetAddress;
 
 import com.wlanadb.ApkInstallerActivity;
+import com.wlanadb.config.MyConfig;
 import com.wlanadb.data.ClientSettings;
 import com.wlanadb.data.CommandProto.Command;
 import com.wlanadb.logcat.PidsController;
@@ -26,6 +27,7 @@ import android.util.Log;
 
 public class WLanAdbService extends Service implements OnConnectionsCountChanged, CommandProcessor {
   private static final String TAG = WLanAdbService.class.getSimpleName();
+  private static final boolean DEBUG = MyConfig.DEBUG && true;
 
   private BroadcastServer mBroadcastServer;
   private UdpMessager mUdpMessager;
@@ -38,16 +40,19 @@ public class WLanAdbService extends Service implements OnConnectionsCountChanged
   public void onCreate() {
     super.onCreate();
 
-    Log.d(TAG, "Starting service...");
+    if (DEBUG)
+      Log.d(TAG, "Starting service...");
 
     if (!WiFiUtils.isWifiAvailable(this)) {
-      Log.w(TAG, "WARNING! No WiFi available on device.");
+      if (DEBUG)
+        Log.w(TAG, "WARNING! No WiFi available on device.");
       stopSelf();
       return;
     }
 
     if (!WiFiUtils.isWifiEnabled(this)) {
-      Log.w(TAG, "WARNING! WiFi dissabled.");
+      if (DEBUG)
+        Log.w(TAG, "WARNING! WiFi dissabled.");
       stopSelf();
       return;
     }
@@ -59,7 +64,8 @@ public class WLanAdbService extends Service implements OnConnectionsCountChanged
   public void onDestroy() {
     super.onDestroy();
 
-    Log.d(TAG, "Service stops...");
+    if (DEBUG)
+      Log.d(TAG, "Service stops...");
 
     stop();
   }
@@ -67,7 +73,8 @@ public class WLanAdbService extends Service implements OnConnectionsCountChanged
   @Override
   public IBinder onBind(Intent intent) {
     if (this.getClass().getName().equals(intent.getAction())) {
-      Log.d(TAG, "Bound by intent " + intent);
+      if (DEBUG)
+        Log.d(TAG, "Bound by intent " + intent);
       return apiEndpoint;
     } else {
       return null;
@@ -131,12 +138,14 @@ public class WLanAdbService extends Service implements OnConnectionsCountChanged
     if (command == null)
       return null;
 
-    Log.d(TAG, "  command: " + command.getCommand());
-    Log.d(TAG, "  params: " + command.getParamsCount());
-    for (String param : command.getParamsList()) {
-      Log.d(TAG, "    param: " + param);
+    if (DEBUG) {
+      Log.d(TAG, "  command: " + command.getCommand());
+      Log.d(TAG, "  params: " + command.getParamsCount());
+      for (String param : command.getParamsList()) {
+        Log.d(TAG, "    param: " + param);
+      }
+      Log.d(TAG, "  checksum: " + command.getChecksum());
     }
-    Log.d(TAG, "  checksum: " + command.getChecksum());
 
     if (mClientSettings.hasPin()) {
       // pin was not provided to connect with device. terminating connection.
@@ -170,13 +179,12 @@ public class WLanAdbService extends Service implements OnConnectionsCountChanged
       }
 
       final boolean launch = hasLaunchParam;
-
       installWorker.setWorkerListener(new BaseWorker.WorkerListener() {
         @Override
         public void onWorkerFinished() {
           final Intent installIntent = new Intent(getBaseContext(), ApkInstallerActivity.class);
           installIntent.setData(Uri.fromFile(installWorker.getApkFile()));
-          installIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+          installIntent.setFlags(Intent.FLAG_FROM_BACKGROUND | Intent.FLAG_ACTIVITY_NEW_TASK);
           installIntent.putExtra(ApkInstallerActivity.EXTRA_LAUNCH_ON_SUCCESS, launch);
           startActivity(installIntent);
         }

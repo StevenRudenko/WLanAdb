@@ -13,6 +13,7 @@ import android.util.Log;
 
 public class BroadcastServer implements Runnable {
   private static final String TAG = BroadcastServer.class.getSimpleName();
+  private static final boolean DEBUG = MyConfig.DEBUG && false;
 
   public interface BroadcastMessageHandler {
     public ByteString onDataPackageRecieved(ByteString data);
@@ -39,9 +40,11 @@ public class BroadcastServer implements Runnable {
   public void start(InetAddress broadcastAddress, InetAddress localAddress) {
     mBroadcastAddress = broadcastAddress;
     mLocalAddress = localAddress;
-    Log.d(TAG, "Updating addresses:");
-    Log.d(TAG, "- broadcast address: " + mBroadcastAddress.getHostAddress());
-    Log.d(TAG, "- local address: " + mLocalAddress.getHostAddress());
+    if (DEBUG) {
+      Log.d(TAG, "Updating addresses:");
+      Log.d(TAG, "- broadcast address: " + mBroadcastAddress.getHostAddress());
+      Log.d(TAG, "- local address: " + mLocalAddress.getHostAddress());
+    }
 
     isRunning = true;
 
@@ -96,7 +99,8 @@ public class BroadcastServer implements Runnable {
         super.run();
         try {
           final InetAddress reciever = address == null ? mBroadcastAddress : address;
-          Log.d(TAG, "Sending data to " + reciever.getHostAddress());
+          if (DEBUG)
+            Log.d(TAG, "Sending data to " + reciever.getHostAddress());
           final DatagramPacket packet = new DatagramPacket(data, data.length,
               reciever, BROADCAST_PORT);
           if (isRunning)
@@ -110,7 +114,8 @@ public class BroadcastServer implements Runnable {
   }
 
   public void run() {
-    Log.d(TAG, "Starting reciever loop...");
+    if (DEBUG)
+      Log.d(TAG, "Starting reciever loop...");
     isRunning = true;
 
     final String localHostAddress = mLocalAddress.getHostAddress();
@@ -143,7 +148,7 @@ public class BroadcastServer implements Runnable {
       final byte[] packetData = packet.getData();
 
       final ByteString data = ByteString.copyFrom(packetData, 0, packetLength);
-      if (MyConfig.DEBUG)
+      if (DEBUG)
         Log.d(TAG, "Recieved message from " + senderHostAddress + " : " + data.toStringUtf8());
       final ByteString response = mHandler.onDataPackageRecieved(data);
       if (response != null)
