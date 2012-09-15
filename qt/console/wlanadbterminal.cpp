@@ -15,6 +15,14 @@ namespace {
 const QString HELP("help");
 const QString VERSION("version");
 const QString SERIAL_NUMBER("-s");
+
+int shiftArray(int argc, char* argv[], int pos) {
+    for (int i=pos; i<argc; ++i) {
+        argv[i] = argv[i+1];
+    }
+    return --argc;
+}
+
 }
 
 WLanAdbTerminal::WLanAdbTerminal(int argc, char *argv[]) :
@@ -39,24 +47,29 @@ WLanAdbTerminal::WLanAdbTerminal(int argc, char *argv[]) :
 
     // looking for params
     QString clientSerialNumber;
-    for (int i=2; i<argc; ++i) {
+    int newArgc = argc;
+    for (int i=1; i<newArgc; ++i) {
         QString arg(argv[i]);
         if (arg.startsWith(SERIAL_NUMBER)) {
+            newArgc = shiftArray(newArgc, argv, i);
+            --i;
+
             clientSerialNumber = arg.remove(0, SERIAL_NUMBER.length());
             if (clientSerialNumber.isEmpty()) {
-                if (i == argc-1) {
+                if (i == newArgc-1) {
                     qout << tr("Fail to parse %1 parameter!").arg(SERIAL_NUMBER) << endl;
                     exit(0);
                     return;
                 }
                 clientSerialNumber = QString(argv[i+1]);
+
+                newArgc = shiftArray(newArgc, argv, i+1);
             }
             qout << tr("Looking for device with serial number: %1").arg(clientSerialNumber) << endl;
-            break;
         }
     }
 
-    proc = WLanAdb::prepareProcessor(argc, argv);
+    proc = WLanAdb::prepareProcessor(newArgc, argv);
     if (NULL == proc) {
         qout << tr("Can't create processor for command.") << endl;
         printHelp();
@@ -180,28 +193,21 @@ void WLanAdbTerminal::onDisconnectedFromClient()
 void WLanAdbTerminal::printHelp()
 {
     printVersion();
-    /*
-     -s <clien id>                 - directs command to the with the given client id.
-     devices                       - list all connected devices
-
-    device commands:
-      adb push <local> <remote>    - copy file/dir to device
-      adb pull <remote> [<local>]  - copy file/dir from device
-      adb logcat [ <filter-spec> ] - view device log
-      adb install [-l] [-r] [-s] [--algo <algorithm name> --key <hex-encoded key> --iv <hex-encoded iv>] <file>
-                                   - push this package file to the device and install it
-                                     ('-l' means forward-lock the app)
-                                     ('-r' means reinstall the app, keeping its data)
-                                     ('-s' means install on SD card instead of internal storage)
-                                     ('--algo', '--key', and '--iv' mean the file is encrypted already)
-      adb uninstall [-k] <package> - remove this app package from the device
-                                     ('-k' means keep the data and cache directories)
-      adb help                     - show this help message
-      adb version                  - show version num
-*/
+    qout << tr("Usage: WLanAdbUI [-s] <command> [command params]") << endl;
+    qout << tr("-s <serial number>            - directs command to the with the given serial number") << endl;
+    qout << endl;
+    qout << tr("commands:") << endl;
+    qout << tr("  devices                     - list all devices online") << endl;
+    qout << tr("  push <local>                - copy file to device") << endl;
+    qout << tr("  logcat [ <filter-spec> ]    - view device log") << endl;
+    qout << tr("  push <local>                - copy file to device") << endl;
+    qout << tr("  install <file> [-l]         - push this package file to the device and install it") << endl;
+    qout << tr("                                    ('-l' means auto-launch app after install)") << endl;
+    qout << tr("  help                        - show this help message") << endl;
+    qout << tr("  version                     - show version number") << endl;
 }
 
 void WLanAdbTerminal::printVersion()
 {
-    qout << tr("Android Debug Bridge version %1").arg("0.1b") << endl;
+    qout << tr("Wireless Android Debug Bridge version %1").arg("0.1b") << endl;
 }
