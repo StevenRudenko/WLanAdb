@@ -162,6 +162,8 @@ public class ClientSettings {
     if (DEBUG)
       Log.v(TAG, "setName: " + name);
 
+    if (TextUtils.isEmpty(name))
+      name = Build.MODEL;
     mClient = mClient.toBuilder().setName(name).build();
     return this;
   }
