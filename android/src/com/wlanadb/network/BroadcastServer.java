@@ -6,14 +6,16 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 
+import android.net.wifi.WifiManager;
+import android.net.wifi.WifiManager.MulticastLock;
+import android.util.Log;
+
 import com.google.protobuf.ByteString;
 import com.wlanadb.config.MyConfig;
 
-import android.util.Log;
-
 public class BroadcastServer implements Runnable {
   private static final String TAG = BroadcastServer.class.getSimpleName();
-  private static final boolean DEBUG = MyConfig.DEBUG && false;
+  private static final boolean DEBUG = MyConfig.DEBUG && true;
 
   public interface BroadcastMessageHandler {
     public ByteString onDataPackageRecieved(ByteString data);
@@ -31,19 +33,24 @@ public class BroadcastServer implements Runnable {
 
   private BroadcastMessageHandler mHandler;
 
+  private MulticastLock mMulticastLock;
   private volatile boolean isRunning = false;
 
   public BroadcastServer(BroadcastMessageHandler handler) {
     mHandler = handler;
   }
 
-  public void start(InetAddress broadcastAddress, InetAddress localAddress) {
+  public void start(WifiManager wifiManager, InetAddress broadcastAddress, InetAddress localAddress) {
+    mMulticastLock = wifiManager.createMulticastLock(TAG);
+    mMulticastLock.acquire();
+
     mBroadcastAddress = broadcastAddress;
     mLocalAddress = localAddress;
     if (DEBUG) {
       Log.d(TAG, "Updating addresses:");
       Log.d(TAG, "- broadcast address: " + mBroadcastAddress.getHostAddress());
       Log.d(TAG, "- local address: " + mLocalAddress.getHostAddress());
+      Log.d(TAG, "- port: " + BROADCAST_PORT);
     }
 
     isRunning = true;
@@ -65,9 +72,15 @@ public class BroadcastServer implements Runnable {
   }
 
   public void stop() {
+    if (DEBUG)
+      Log.d(TAG, "Closing socket...");
+
     isRunning = false;
 
     mSocket.close();
+
+    mMulticastLock.release();
+    mMulticastLock = null;
   }
 
   public void send(final ByteString data, final InetAddress reciever) {
@@ -93,7 +106,7 @@ public class BroadcastServer implements Runnable {
    * Send a UDP packet to specific address. If address is broadcast address then message will be send broadcast.
    */
   public void send(final byte[] data, final InetAddress address) {
-    new Thread(TAG+":RECIEVE") {
+    new Thread(TAG+":SEND") {
       @Override
       public void run() {
         super.run();
@@ -155,7 +168,6 @@ public class BroadcastServer implements Runnable {
         send(response, senderAddress);
     }
 
-    isRunning = false;
-    mSocket.close();
+    stop();
   }
 }

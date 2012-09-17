@@ -29,6 +29,8 @@ public class LogReader {
 
   private static final String LOGCAT_CMD = "logcat";
 
+  private final String[] params;
+
   @SuppressLint("HandlerLeak")
   private Handler mReadLogsHandler = null;
 
@@ -45,7 +47,12 @@ public class LogReader {
   private OnLogMessageListener listener;
 
   public LogReader(OnLogMessageListener listener) {
+    this(listener, null);
+  }
+
+  public LogReader(OnLogMessageListener listener, String[] params) {
     this.listener = listener;
+    this.params = params;
   }
 
   /**
@@ -74,7 +81,14 @@ public class LogReader {
     BufferedReader reader = null;
     Process logcatProc = null;
     try {
-      logcatProc = Runtime.getRuntime().exec(LOGCAT_CMD);
+      final StringBuilder paramsString = new StringBuilder();
+      if (params != null) {
+        for (String param : params) {
+          paramsString.append(" ");
+          paramsString.append(param);
+        }
+      }
+      logcatProc = Runtime.getRuntime().exec(LOGCAT_CMD + paramsString.toString());
 
       reader = new BufferedReader(new InputStreamReader(new DataInputStream(logcatProc.getInputStream())));
 

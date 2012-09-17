@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 
 import android.util.Log;
 
@@ -18,6 +19,8 @@ public class LogcatWorker extends BaseWorker implements OnLogMessageListener {
   private static final String TAG = LogcatWorker.class.getSimpleName();
   private static final boolean DEBUG = MyConfig.DEBUG && true;
 
+  private static final String PARAM_DUMP = "-d";
+  
   private static final String PARAM_APP = "--app=";
   private static final String PARAM_PID = "--pid=";
   private static final String PARAM_TYPE = "--type=";
@@ -28,10 +31,10 @@ public class LogcatWorker extends BaseWorker implements OnLogMessageListener {
   private BufferedWriter mOutputStream;
   private PidsController mPidsController;
 
+  private ArrayList<String> mLogcatParams = new ArrayList<String>();
+
   public LogcatWorker(Command command) {
     super(command);
-
-    mLogReader = new LogReader(this);
 
     final int count = command.getParamsCount();
     if (count == 0) {
@@ -51,6 +54,15 @@ public class LogcatWorker extends BaseWorker implements OnLogMessageListener {
 
       parseFilterParameter(param);
     }
+
+    final String[] params;
+    if (mLogcatParams.isEmpty())
+      params = null;
+    else {
+      params = new String[mLogcatParams.size()];
+      mLogcatParams.toArray(params);
+    }
+    mLogReader = new LogReader(this, params);
   }
 
   @Override
@@ -107,7 +119,9 @@ public class LogcatWorker extends BaseWorker implements OnLogMessageListener {
   }
 
   private void parseFilterParameter(String param) {
-    if (param.startsWith(PARAM_APP)) {
+    if (param.equals(PARAM_DUMP)) {
+      mLogcatParams.add(param);
+    } else if (param.startsWith(PARAM_APP)) {
       mLogFilter.setApp(param.replaceFirst(PARAM_APP, ""), true);
     } else if (param.startsWith(PARAM_PID)) {
       final int pid;

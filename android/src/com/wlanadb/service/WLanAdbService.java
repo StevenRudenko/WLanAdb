@@ -19,8 +19,10 @@ import com.wlanadb.worker.PushWorker;
 import com.wlancat.service.WLanServiceApi;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
@@ -86,6 +88,8 @@ public class WLanAdbService extends Service implements OnConnectionsCountChanged
     final InetAddress localAddress = WiFiUtils.getLocalAddress(this);
 
     if (localAddress == null) {
+      if (DEBUG)
+        Log.w(TAG, "Local address is NULL");
       stopSelf();
       return;
     }
@@ -104,7 +108,8 @@ public class WLanAdbService extends Service implements OnConnectionsCountChanged
     mClientSettings.addOnClientChangeListener(mUdpMessager);
 
     mBroadcastServer = new BroadcastServer(mUdpMessager);
-    mBroadcastServer.start(broadcastAddress, localAddress);
+    final WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+    mBroadcastServer.start(wifiManager, broadcastAddress, localAddress);
   }
 
   private void stop() {

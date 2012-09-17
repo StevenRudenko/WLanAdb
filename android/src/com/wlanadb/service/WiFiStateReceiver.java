@@ -1,5 +1,6 @@
 package com.wlanadb.service;
 
+import com.wlanadb.config.MyConfig;
 import com.wlanadb.utils.WiFiUtils;
 
 import android.content.BroadcastReceiver;
@@ -11,7 +12,7 @@ import android.util.Log;
 
 public class WiFiStateReceiver extends BroadcastReceiver {
   private static final String TAG = WiFiStateReceiver.class.getSimpleName();
-  private static final boolean DEBUG = false;
+  private static final boolean DEBUG = MyConfig.DEBUG && true;
 
   @Override
   public void onReceive(final Context context, final Intent intent) {
