@@ -7,6 +7,5 @@
 	<classpathentry kind="src" path="aidl"/>
 	<classpathentry kind="lib" path="libs/android-support-v4.jar"/>
 	<classpathentry kind="lib" path="libs/protobuf-java-2.4.1-lite.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/ActionsContentViewLib"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
