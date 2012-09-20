@@ -1,5 +1,6 @@
 package com.wlanadb;
 
+import com.wlanadb.actionbar.ActionBarActivity;
 import com.wlanadb.service.ConnectionsStatusReciever;
 import com.wlanadb.service.WLanAdbService;
 import com.wlancat.service.WLanServiceApi;
@@ -10,13 +11,12 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends ActionBarActivity {
   private static final String TAG = MainActivity.class.getSimpleName();
 
   private WLanServiceApi mServiceApi;

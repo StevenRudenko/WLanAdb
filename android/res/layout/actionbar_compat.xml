@@ -14,6 +14,8 @@
   limitations under the License.
   -->
 
-<resources>
-    <color name="actionbar_title_color">#ffffff</color>
-</resources>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@id/actionbar_compat"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal" />
