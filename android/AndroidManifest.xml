@@ -32,9 +32,11 @@
         </activity>
         <activity
             android:name=".SettingsActivity"
+            android:label="@string/menu_settings"
             android:configChanges="keyboard|keyboardHidden|orientation" />
         <activity
             android:name=".TrustedHotspotsActivity"
+            android:label="@string/pref_security_trusted_hotspots"
             android:configChanges="keyboard|keyboardHidden|orientation" />
         <activity
             android:name=".ApkInstallerActivity"

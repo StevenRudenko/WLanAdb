@@ -57,7 +57,7 @@ public class ClientSettings {
        mDeviceId = Build.SERIAL;
     } else {
       final String secureId = AndroidUtils.getAndroidId(context);
-      if (secureId == null) {
+      if (secureId == null || secureId.toLowerCase().equals("unknown")) {
         mDeviceId = UUID.randomUUID().toString();
       } else {
         mDeviceId = secureId.toUpperCase();

@@ -8,22 +8,29 @@ import java.util.HashSet;
 import java.util.Set;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.net.wifi.WifiConfiguration;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.TextView;
+
+import com.wlanadb.R;
 
 public class TrustedHotspotsAdapter extends BaseAdapter {
 
-  private final Context mContext;
+  private final LayoutInflater mInflater;
 
   private final HotspotsComparator mHotspotsComparator = new HotspotsComparator();
   private final ArrayList<WifiConfiguration> mHotspots = new ArrayList<WifiConfiguration>();
   private final HashSet<String> mTrustedSSIDs = new HashSet<String>();
 
+  private final HotspotClickListener mOnClickListener = new HotspotClickListener();
+
   public TrustedHotspotsAdapter(Context context) {
-    mContext = context;
+    mInflater = LayoutInflater.from(context);
   }
 
   public void setHotspots(Collection<WifiConfiguration> items) {
@@ -66,17 +73,52 @@ public class TrustedHotspotsAdapter extends BaseAdapter {
   @Override
   public View getView(int position, View convertView, ViewGroup parent) {
     final WifiConfiguration item = getItem(position);
-    final TextView tv;
+    final ViewHolder holder;
     if (convertView == null) {
-      tv = new TextView(mContext);
-      convertView = tv;
+      holder = new ViewHolder();
+      convertView = mInflater.inflate(R.layout.list_item_trusted_hotspot, parent, false);
+      holder.text = (TextView) convertView.findViewById(android.R.id.text1);
+      holder.check = (CheckBox) convertView.findViewById(android.R.id.checkbox);
+
+      convertView.setOnClickListener(mOnClickListener);
+
+      convertView.setTag(holder);
     } else {
-      tv = (TextView) convertView;
+      holder = (ViewHolder) convertView.getTag();
     }
 
-    tv.setText(item.SSID);
+    holder.text.setText(item.SSID);
+    holder.text.setTypeface(item.status == WifiConfiguration.Status.CURRENT ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
+    holder.check.setSelected(mTrustedSSIDs.contains(item.SSID));
+    holder.ssid = item.SSID;
 
     return convertView;
+  }
+
+  private static class ViewHolder {
+    private TextView text;
+    private CheckBox check;
+
+    private String ssid;
+  }
+
+  private class HotspotClickListener implements View.OnClickListener {
+
+    @Override
+    public void onClick(View v) {
+      final Object tag = v.getTag();
+      if (tag == null)
+        return;
+
+      if (tag instanceof ViewHolder) {
+        final ViewHolder holder = (ViewHolder) tag;
+        if (mTrustedSSIDs.contains(holder.ssid))
+          mTrustedSSIDs.remove(holder.ssid);
+        else
+          mTrustedSSIDs.add(holder.ssid);
+        notifyDataSetChanged();
+      }
+    }
   }
 
   private class HotspotsComparator implements Comparator<WifiConfiguration> {
