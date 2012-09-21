@@ -6,6 +6,7 @@ import com.wlanadb.data.ClientProto.Client;
 import com.wlanadb.data.ClientSettings.OnClientChangeListener;
 import com.wlanadb.ui.prefs.PasswordPreference;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
   private static final String PREF_CLIENT_ID = "client_id";
   private static final String PREF_CLIENT_NAME = "client_name";
   private static final String PREF_SECURITY_PIN = "security_pin";
+  private static final String PREF_SECURITY_TRUSTED_HOTSPOTS = "security_trusted_hotspots";
 
   private ClientSettings mClientSettings;
 
@@ -27,6 +29,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 
   private PasswordPreference mSecuityPinPref;
 
+  @SuppressWarnings("deprecation")
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -38,8 +41,10 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
     mClientNamePref = (EditTextPreference) screen.findPreference(PREF_CLIENT_NAME);
 
     mSecuityPinPref = (PasswordPreference) screen.findPreference(PREF_SECURITY_PIN);
+    final Intent intentTrustedHotspots = new Intent(getBaseContext(), TrustedHotspotsActivity.class);
+    screen.findPreference(PREF_SECURITY_TRUSTED_HOTSPOTS).setIntent(intentTrustedHotspots);
 
-    mClientSettings = new ClientSettings(this);
+    mClientSettings = new ClientSettings(getBaseContext());
     mClientSettings.addOnClientChangeListener(this);
   }
 
@@ -77,15 +82,21 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
       final String pin = sharedPreferences.getString(PREF_SECURITY_PIN, null);
       mClientSettings.setPin(pin).commit();
     }
+
     onClientChanged(mClientSettings.getClient());
   }
 
   @Override
-  public void onClientChanged(Client client) {
-    mClientIdPref.setSummary(client.getId());
-    mClientNamePref.setSummary(client.getName());
-    mClientNamePref.setText(client.getName());
-    mSecuityPinPref.setSummary(client.getUsePin() ? R.string.pref_security_pin_summary_set : R.string.pref_security_pin_summary_not_set);
+  public void onClientChanged(final Client client) {
+    runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        mClientIdPref.setSummary(client.getId());
+        mClientNamePref.setSummary(client.getName());
+        mClientNamePref.setText(client.getName());
+        mSecuityPinPref.setSummary(client.getUsePin() ? R.string.pref_security_pin_summary_set : R.string.pref_security_pin_summary_not_set);
+      }
+    });
   }
 
   private void clearPreferences() {

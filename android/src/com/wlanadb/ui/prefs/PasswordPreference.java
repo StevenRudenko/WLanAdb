@@ -47,7 +47,6 @@ public class PasswordPreference extends DialogPreference {
     });
   }
 
-
   @Override
   protected void onDialogClosed(boolean positiveResult) {
     super.onDialogClosed(positiveResult);
@@ -55,11 +54,21 @@ public class PasswordPreference extends DialogPreference {
     if (positiveResult) {
       final CharSequence text = viewPasswordText.getText();
       if (TextUtils.isEmpty(text)) {
-        getEditor().remove(getKey()).commit();
+        final String prevValue = getPersistedString(null);
+        //HACK: we need this to launch preferences change update
+        if (prevValue != null)
+          persistString(null);
+        else
+          persistString("");
       } else {
         final String password = HashHelper.getHashString(text.toString());
         persistString(password);
       }
     }
+  }
+
+  @Override
+  public boolean shouldCommit() {
+    return true;
   }
 }

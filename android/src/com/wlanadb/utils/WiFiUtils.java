@@ -2,9 +2,12 @@ package com.wlanadb.utils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.content.Context;
 import android.net.DhcpInfo;
+import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.text.format.Formatter;
@@ -59,6 +62,7 @@ public class WiFiUtils {
     if (ipAddress == 0)
       return null;
 
+    @SuppressWarnings("deprecation")
     final String ipAddressFormated = Formatter.formatIpAddress(ipAddress);
 
     try {
@@ -123,5 +127,13 @@ public class WiFiUtils {
     if (wifiManager == null)
       return false;
     return wifiManager.isWifiEnabled();
+  }
+
+  public static List<WifiConfiguration> getHotspotsList(Context context) {
+    final WifiManager wifiManager = (WifiManager) context
+        .getSystemService(Context.WIFI_SERVICE);
+    if (wifiManager == null)
+      return new ArrayList<WifiConfiguration>();
+    return wifiManager.getConfiguredNetworks();
   }
 }

@@ -55,7 +55,7 @@ public class MainActivity extends ActionBarActivity {
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     final MenuInflater inflater = getMenuInflater();
-    inflater.inflate(R.menu.main_menu_items, menu);
+    inflater.inflate(R.menu.menu_main, menu);
     return true;
   }
 
