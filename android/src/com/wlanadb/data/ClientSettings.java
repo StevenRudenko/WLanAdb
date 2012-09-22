@@ -35,8 +35,8 @@ public class ClientSettings {
 
   private static final String FILENAME = "ClientSettings.bin";
 
-  private final String mDeviceId;
   private final File mSettingsFile;
+  private final String mDeviceId;
 
   /**
    * The count of how many known (handled by SettingsProvider) 
@@ -53,17 +53,7 @@ public class ClientSettings {
   private Set<OnClientChangeListener> mListeners = new WeakHashSet<OnClientChangeListener>();
 
   public ClientSettings(Context context) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-       mDeviceId = Build.SERIAL;
-    } else {
-      final String secureId = AndroidUtils.getAndroidId(context);
-      if (secureId == null || secureId.toLowerCase().equals("unknown")) {
-        mDeviceId = UUID.randomUUID().toString();
-      } else {
-        mDeviceId = secureId.toUpperCase();
-      }
-    }
-
+    mDeviceId = generateSerial(context);
     mSettingsFile = context.getFileStreamPath(FILENAME);
 
     refresh();
@@ -176,6 +166,20 @@ public class ClientSettings {
   public ClientSettings refresh() {
     readFromFile();
     return this;
+  }
+
+  private String generateSerial(Context context) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+      if (!Build.SERIAL.toLowerCase().equals("unknown"))
+        return Build.SERIAL;
+    }
+
+    final String secureId = AndroidUtils.getAndroidId(context);
+    if (secureId == null || secureId.toLowerCase().equals("unknown")) {
+      return UUID.randomUUID().toString().toUpperCase();
+    } else {
+      return secureId.toUpperCase();
+    }
   }
 
   private void readFromFile() {

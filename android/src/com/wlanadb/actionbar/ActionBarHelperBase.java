@@ -90,7 +90,7 @@ public class ActionBarHelperBase extends ActionBarHelper {
         }
 
         LinearLayout.LayoutParams springLayoutParams = new LinearLayout.LayoutParams(
-                0, ViewGroup.LayoutParams.MATCH_PARENT);
+            0, ViewGroup.LayoutParams.MATCH_PARENT);
         springLayoutParams.weight = 1;
 
         // Add Home button
@@ -105,6 +105,13 @@ public class ActionBarHelperBase extends ActionBarHelper {
         titleText.setLayoutParams(springLayoutParams);
         titleText.setText(mActivity.getTitle());
         actionBarCompat.addView(titleText);
+
+        LinearLayout customViewContainer = new LinearLayout(mActivity);
+        customViewContainer.setId(R.id.actionbar_compat_custom_view);
+        LinearLayout.LayoutParams customLayoutParams = new LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        customViewContainer.setLayoutParams(customLayoutParams);
+        actionBarCompat.addView(customViewContainer);
     }
 
     /**{@inheritDoc}*/
@@ -120,6 +127,13 @@ public class ActionBarHelperBase extends ActionBarHelper {
         if (refreshIndicator != null) {
             refreshIndicator.setVisibility(refreshing ? View.VISIBLE : View.GONE);
         }
+    }
+
+    @Override
+    public void setCustomView(View v) {
+      ViewGroup customViewContainer = (ViewGroup) mActivity.findViewById(R.id.actionbar_compat_custom_view);
+      customViewContainer.removeAllViews();
+      customViewContainer.addView(v);
     }
 
     /**

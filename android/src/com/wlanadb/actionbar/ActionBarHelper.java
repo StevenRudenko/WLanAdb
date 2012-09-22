@@ -21,6 +21,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.View;
 
 /**
  * An abstract class that handles some common action bar-related functionality in the app. This
@@ -85,6 +86,8 @@ public abstract class ActionBarHelper {
      * (where the item ID was menu_refresh).
      */
     public abstract void setRefreshActionItemState(boolean refreshing);
+
+    public abstract void setCustomView(View v);
 
     /**
      * Returns a {@link MenuInflater} for use when inflating menus. The implementation of this

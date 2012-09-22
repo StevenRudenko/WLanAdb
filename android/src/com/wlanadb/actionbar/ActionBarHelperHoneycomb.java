@@ -69,6 +69,12 @@ public class ActionBarHelperHoneycomb extends ActionBarHelper {
         }
     }
 
+    @Override
+    public void setCustomView(View v) {
+      mActivity.getActionBar().setDisplayShowCustomEnabled(true);
+      mActivity.getActionBar().setCustomView(v);
+    }
+
     /**
      * Returns a {@link Context} suitable for inflating layouts for the action bar. The
      * implementation for this method in {@link ActionBarHelperICS} asks the action bar for a

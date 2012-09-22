@@ -18,12 +18,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/actionbar_compat_item"
     android:gravity="center_vertical"
-    android:minHeight="?android:attr/listPreferredItemHeightSmall"
+    android:minHeight="?android:attr/listPreferredItemHeight"
     android:orientation="horizontal"
     android:paddingLeft="16dip"
-    android:paddingRight="12dip"
-    android:background="@drawable/actionbar_compat_item" >
+    android:paddingRight="12dip" >
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -39,18 +39,17 @@
             android:ellipsize="marquee"
             android:gravity="center_vertical|left"
             android:singleLine="true"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="?android:attr/textColorAlertDialogListItem" />
+            android:textAppearance="?android:attr/textAppearanceMedium" />
     </LinearLayout>
 
     <CheckBox
         android:id="@android:id/checkbox"
         android:layout_width="35dip"
         android:layout_height="wrap_content"
+        android:button="@drawable/ic_check_trusted"
         android:clickable="false"
         android:focusable="false"
         android:gravity="center_vertical"
-        android:button="@drawable/ic_check_trusted"
         android:paddingRight="12dip" />
 
 </LinearLayout>

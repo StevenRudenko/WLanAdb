@@ -1,5 +1,6 @@
 package com.wlanadb;
 
+import com.wlanadb.actionbar.ActionBarPreferenceActivity;
 import com.wlanadb.compat.SharedPreferencesApply;
 import com.wlanadb.data.ClientSettings;
 import com.wlanadb.data.ClientProto.Client;
@@ -11,11 +12,10 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 
-public class SettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener, OnClientChangeListener {
+public class SettingsActivity extends ActionBarPreferenceActivity implements OnSharedPreferenceChangeListener, OnClientChangeListener {
 
   private static final String PREF_CLIENT_ID = "client_id";
   private static final String PREF_CLIENT_NAME = "client_name";

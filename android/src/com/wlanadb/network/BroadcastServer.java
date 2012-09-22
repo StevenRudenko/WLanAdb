@@ -79,7 +79,8 @@ public class BroadcastServer implements Runnable {
 
     mSocket.close();
 
-    mMulticastLock.release();
+    if (mMulticastLock.isHeld())
+      mMulticastLock.release();
     mMulticastLock = null;
   }
 
@@ -146,7 +147,8 @@ public class BroadcastServer implements Runnable {
         // it is normal behavior
         continue;
       } catch (IOException e) {
-        Log.e(TAG, "Fail to recieve packet", e);
+        // this error can be caused by closing socket only
+        // ignoring it
         continue;
       }
 
