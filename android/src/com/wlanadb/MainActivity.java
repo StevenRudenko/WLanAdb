@@ -1,6 +1,7 @@
 package com.wlanadb;
 
 import com.wlanadb.actionbar.ActionBarActivity;
+import com.wlanadb.config.MyConfig;
 import com.wlanadb.service.ConnectionsStatusReciever;
 import com.wlanadb.service.WLanAdbService;
 import com.wlancat.service.WLanServiceApi;
@@ -18,6 +19,7 @@ import android.view.MenuItem;
 
 public class MainActivity extends ActionBarActivity {
   private static final String TAG = MainActivity.class.getSimpleName();
+  private static final boolean DEBUG = MyConfig.DEBUG && true;
 
   private WLanServiceApi mServiceApi;
 
@@ -32,9 +34,8 @@ public class MainActivity extends ActionBarActivity {
   protected void onResume() {
     super.onResume();
 
-    connectionsCountReciever.register(this);
-
-    Log.v(TAG, "Starting service (if it was not started before)...");
+    if (DEBUG)
+      Log.v(TAG, "Starting service (if it was not started before)...");
     final Intent intent = new Intent(WLanAdbService.class.getName());
     // start the service explicitly.
     // otherwise it will only run while the IPC connection is up.
@@ -49,7 +50,8 @@ public class MainActivity extends ActionBarActivity {
     connectionsCountReciever.unregister(this);
 
     unbindService(serviceConnection);
-    Log.v(TAG, "Activity paused");
+    if (DEBUG)
+      Log.v(TAG, "Activity paused");
   }
 
   @Override
@@ -87,7 +89,8 @@ public class MainActivity extends ActionBarActivity {
           log.append("\nConnections count: ");
           log.append(mServiceApi.getConnectionsCount());
         } catch (RemoteException e) {
-          Log.e(TAG, "Fail to call service API", e);
+          if (DEBUG)
+            Log.e(TAG, "Fail to call service API", e);
         }
       }
     });
@@ -96,16 +99,31 @@ public class MainActivity extends ActionBarActivity {
   private ServiceConnection serviceConnection = new ServiceConnection() {
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
-      Log.i(TAG, "Service connection established");
+      if (DEBUG)
+        Log.i(TAG, "Service connection established");
       // that's how we get the client side of the IPC connection
       mServiceApi = WLanServiceApi.Stub.asInterface(service);
 
-      updateInfo();
+      try {
+        if (!mServiceApi.checkTrustedHotspots()) {
+          unbindService(serviceConnection);
+          connectionsCountReciever.unregister(getBaseContext());
+        } else {
+          connectionsCountReciever.register(getBaseContext());
+          updateInfo();
+        }
+      } catch (RemoteException e) {
+        if (DEBUG)
+          Log.e(TAG, "Fail to execute WiFi hotspot check.", e);
+        unbindService(serviceConnection);
+        connectionsCountReciever.unregister(getBaseContext());
+      }
     }
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
-      Log.i(TAG, "Service connection closed");
+      if (DEBUG)
+        Log.i(TAG, "Service connection closed");
     }
   };
 

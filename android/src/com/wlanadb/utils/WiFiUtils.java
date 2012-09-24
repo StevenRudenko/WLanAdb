@@ -90,6 +90,20 @@ public class WiFiUtils {
   }
 
   /**
+   * Returns SSID of Wifi hotspot device connected with.
+   * @param context
+   * @return
+   */
+  public static String getCurrentWifiConnectionSSID(Context context) {
+    final WifiManager wifiManager = (WifiManager) context
+        .getSystemService(Context.WIFI_SERVICE);
+    final WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+    if (wifiInfo == null)
+      return null;
+    return wifiInfo.getSSID();
+  }
+
+  /**
    * Returns true if WiFi connection was established
    * @param context - used to get connectivity manger
    * @return true if WiFi connection established, otherwise - false.

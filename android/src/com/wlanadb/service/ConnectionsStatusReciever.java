@@ -14,13 +14,22 @@ public abstract class ConnectionsStatusReciever extends BroadcastReceiver {
 
   public abstract void onConnectionCountChanged(int connectionsCount);
 
+  private boolean isRegistered = false;
+  
   public void register(Context context) {
+    if (isRegistered)
+      return;
+
     final IntentFilter filter = new IntentFilter(ACTION_CONNECTIONS_COUNT);
     context.registerReceiver(this, filter);
+    isRegistered = true;
   }
 
   public void unregister(Context context) {
-    context.unregisterReceiver(this);
+    if (isRegistered) {
+      context.unregisterReceiver(this);
+      isRegistered = false;
+    }
   }
 
   @Override

@@ -1,6 +1,5 @@
 package com.wlanadb;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -68,12 +67,7 @@ public class TrustedHotspotsActivity extends ActionBarActivity {
     updateToggleSwitch();
 
     final Map<String, ?> values = mTrustedSSIDsPrefs.getAll();
-    final Set<String> trustedSSIDs = new HashSet<String>();
-    for (String key : values.keySet()) {
-      final String value = mTrustedSSIDsPrefs.getString(key, null);
-      trustedSSIDs.add(value);
-    }
-    mFragment.setTrustedSSIDs(trustedSSIDs);
+    mFragment.setTrustedSSIDs(values.keySet());
 
     super.onResume();
   }
@@ -85,11 +79,10 @@ public class TrustedHotspotsActivity extends ActionBarActivity {
     SharedPreferencesHelper.apply(toggleSwitchEditor);
 
     final SharedPreferences.Editor trustedSSIDsEditor = mTrustedSSIDsPrefs.edit();
+    trustedSSIDsEditor.clear();
     final Set<String> trustedSSIDs = mFragment.getTrustedSSIDs();
-    int key = 0;
     for (String value : trustedSSIDs) {
-      trustedSSIDsEditor.putString(Integer.toString(key), value);
-      ++key;
+      trustedSSIDsEditor.putBoolean(value, true);
     }
     SharedPreferencesHelper.apply(trustedSSIDsEditor);
 

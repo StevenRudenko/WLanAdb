@@ -87,12 +87,17 @@ public class TrustedHotspotsAdapter extends BaseAdapter {
       holder = (ViewHolder) convertView.getTag();
     }
 
-    holder.text.setText(item.SSID);
+    final String ssid = formatSSID(item.SSID);
+    holder.text.setText(ssid);
     holder.text.setTypeface(item.status == WifiConfiguration.Status.CURRENT ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
-    holder.check.setSelected(mTrustedSSIDs.contains(item.SSID));
-    holder.ssid = item.SSID;
+    holder.check.setSelected(mTrustedSSIDs.contains(ssid));
+    holder.ssid = ssid;
 
     return convertView;
+  }
+
+  private static String formatSSID(String ssid) {
+    return ssid.replaceAll("\"", "");
   }
 
   private static class ViewHolder {
@@ -125,8 +130,8 @@ public class TrustedHotspotsAdapter extends BaseAdapter {
 
     @Override
     public int compare(WifiConfiguration lhs, WifiConfiguration rhs) {
-      boolean isLhsTrusted = mTrustedSSIDs.contains(lhs.SSID);
-      boolean isRhsTrusted = mTrustedSSIDs.contains(rhs.SSID);
+      boolean isLhsTrusted = mTrustedSSIDs.contains(formatSSID(lhs.SSID));
+      boolean isRhsTrusted = mTrustedSSIDs.contains(formatSSID(rhs.SSID));
 
       if (isLhsTrusted && isRhsTrusted) {
         return compareEqualyTrusted(lhs, rhs);
@@ -147,7 +152,7 @@ public class TrustedHotspotsAdapter extends BaseAdapter {
       else if (rhs.status == WifiConfiguration.Status.CURRENT)
         return 1;
       else
-        return lhs.SSID.compareTo(rhs.SSID);
+        return formatSSID(lhs.SSID).compareTo(formatSSID(rhs.SSID));
     }
   }
 }

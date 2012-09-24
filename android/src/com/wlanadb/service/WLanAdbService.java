@@ -1,6 +1,17 @@
 package com.wlanadb.service;
 
 import java.net.InetAddress;
+import java.util.Map;
+
+import android.app.Service;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.net.wifi.WifiManager;
+import android.os.IBinder;
+import android.os.RemoteException;
+import android.util.Log;
 
 import com.wlanadb.ApkInstallerActivity;
 import com.wlanadb.config.MyConfig;
@@ -10,6 +21,7 @@ import com.wlanadb.logcat.PidsController;
 import com.wlanadb.network.BroadcastServer;
 import com.wlanadb.network.P2PServer;
 import com.wlanadb.network.P2PServer.OnConnectionsCountChanged;
+import com.wlanadb.ui.prefs.Preferences;
 import com.wlanadb.utils.WiFiUtils;
 import com.wlanadb.worker.BaseWorker;
 import com.wlanadb.worker.CommandProcessor;
@@ -17,15 +29,6 @@ import com.wlanadb.worker.InstallWorker;
 import com.wlanadb.worker.LogcatWorker;
 import com.wlanadb.worker.PushWorker;
 import com.wlancat.service.WLanServiceApi;
-
-import android.app.Service;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.net.wifi.WifiManager;
-import android.os.IBinder;
-import android.os.RemoteException;
-import android.util.Log;
 
 public class WLanAdbService extends Service implements OnConnectionsCountChanged, CommandProcessor {
   private static final String TAG = WLanAdbService.class.getSimpleName();
@@ -55,6 +58,13 @@ public class WLanAdbService extends Service implements OnConnectionsCountChanged
     if (!WiFiUtils.isWifiEnabled(this)) {
       if (DEBUG)
         Log.w(TAG, "WARNING! WiFi dissabled.");
+      stopSelf();
+      return;
+    }
+
+    if (!isTrustedHotspotConnected()) {
+      if (DEBUG)
+        Log.w(TAG, "WARNING! Not trusted WiFi hotspot.");
       stopSelf();
       return;
     }
@@ -129,6 +139,30 @@ public class WLanAdbService extends Service implements OnConnectionsCountChanged
     }
 
     stopSelf();
+  }
+
+  private boolean isTrustedHotspotConnected() {
+    final SharedPreferences prefs = getSharedPreferences(Preferences.PREF_SECURITY_TRUSTED_HOTSPOTS_SET, Context.MODE_PRIVATE);
+    final Map<String, ?> values = prefs.getAll();
+    final String ssid = WiFiUtils.getCurrentWifiConnectionSSID(getBaseContext());
+
+    if (DEBUG) {
+      Log.d(TAG, "- checking SSID to be trusted: " + ssid);
+      for (String value : values.keySet()) {
+        Log.d(TAG, "--- " + value);
+      }
+    }
+
+    final boolean isTrusted;
+    if (ssid == null)
+      isTrusted = false;
+    else 
+      isTrusted = values.keySet().contains(ssid);
+
+    if (!isTrusted)
+      stopSelf();
+
+    return isTrusted;
   }
 
   @Override
@@ -223,6 +257,11 @@ public class WLanAdbService extends Service implements OnConnectionsCountChanged
     @Override
     public int getConnectionsCount() throws RemoteException {
       return mP2pServer == null ? 0 : mP2pServer.getActiveConnectionsCount();
+    }
+
+    @Override
+    public boolean checkTrustedHotspots() throws RemoteException {
+      return isTrustedHotspotConnected();
     }
   };
 }
