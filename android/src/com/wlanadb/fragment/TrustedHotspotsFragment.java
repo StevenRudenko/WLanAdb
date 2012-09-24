@@ -1,6 +1,8 @@
 package com.wlanadb.fragment;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import android.net.wifi.WifiConfiguration;
 import android.os.Bundle;
@@ -42,4 +44,11 @@ public class TrustedHotspotsFragment extends Fragment {
     viewContainer.setEnabled(enabled);
   }
 
+  public Set<String> getTrustedSSIDs() {
+    return mAdapter.getTrustedSSIDs();
+  }
+
+  public void setTrustedSSIDs(Collection<String> ssids) {
+    mAdapter.setTrustedSSIDs(ssids);
+  }
 }

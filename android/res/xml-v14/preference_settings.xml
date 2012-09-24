@@ -14,7 +14,7 @@
             android:key="security_pin"
             android:title="@string/pref_security_pin" />
 
-        <com.wlanadb.ui.prefs.CheckBoxPreference
+        <com.wlanadb.ui.prefs.SwitchPreference
             android:key="security_trusted_hotspots_enabled"
             android:title="@string/pref_security_trusted_hotspots" />
     </PreferenceCategory>

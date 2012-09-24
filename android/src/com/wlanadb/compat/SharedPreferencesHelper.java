@@ -4,7 +4,7 @@ import android.annotation.TargetApi;
 import android.content.SharedPreferences;
 import android.os.Build;
 
-public class SharedPreferencesApply {
+public class SharedPreferencesHelper {
 
   public static void apply(SharedPreferences.Editor editor) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD)
