@@ -15,6 +15,7 @@ import com.wlanadb.ApkInstallerActivity;
 import com.wlanadb.config.MyConfig;
 import com.wlanadb.data.Settings;
 import com.wlanadb.data.CommandProto.Command;
+import com.wlanadb.log.MyLog;
 import com.wlanadb.logcat.PidsController;
 import com.wlanadb.network.BroadcastServer;
 import com.wlanadb.network.P2PServer;
@@ -75,7 +76,7 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
     super.onDestroy();
 
     if (DEBUG)
-      Log.d(TAG, "Service stops...");
+      Log.d(TAG, "Stoping service...");
 
     stop();
   }
@@ -101,6 +102,9 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
       stopSelf();
       return;
     }
+
+    MyLog.init(getBaseContext());
+    MyLog.v("Starting service...");
 
     mPidsController = new PidsController(getBaseContext());
 
@@ -133,6 +137,8 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
     if (mSettings != null) {
       mSettings.stopWatch();
     }
+
+    MyLog.v("Stoping service...");
 
     stopSelf();
   }
