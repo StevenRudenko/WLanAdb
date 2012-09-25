@@ -20,7 +20,7 @@ public class LogcatWorker extends BaseWorker implements OnLogMessageListener {
   private static final boolean DEBUG = MyConfig.DEBUG && true;
 
   private static final String PARAM_DUMP = "-d";
-  
+
   private static final String PARAM_APP = "--app=";
   private static final String PARAM_PID = "--pid=";
   private static final String PARAM_TYPE = "--type=";

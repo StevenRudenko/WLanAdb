@@ -2,7 +2,6 @@ package com.wlanadb;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
@@ -14,13 +13,12 @@ import android.preference.PreferenceScreen;
 import com.wlanadb.actionbar.ActionBarPreferenceActivity;
 import com.wlanadb.data.ClientProto.Client;
 import com.wlanadb.data.Settings;
-import com.wlanadb.data.Settings.OnSettingsChangeListener;
 import com.wlanadb.ui.prefs.PasswordPreference;
 import com.wlanadb.ui.prefs.Preferences;
 import com.wlanadb.ui.prefs.SharedPreferencesHelper;
 import com.wlanadb.ui.prefs.SwitchPreference;
 
-public class SettingsActivity extends ActionBarPreferenceActivity implements OnSharedPreferenceChangeListener, OnSettingsChangeListener, Preferences {
+public class SettingsActivity extends ActionBarPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener, Settings.OnSettingsChangeListener, Preferences {
 
   private Settings mSettings;
 

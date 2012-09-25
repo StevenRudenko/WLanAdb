@@ -15,7 +15,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_LOGS" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
 
     <application
         android:icon="@drawable/ic_launcher"
@@ -32,12 +32,12 @@
         </activity>
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/menu_settings"
-            android:configChanges="keyboard|keyboardHidden|orientation" />
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:label="@string/menu_settings" />
         <activity
             android:name=".TrustedHotspotsActivity"
-            android:label="@string/pref_security_trusted_hotspots"
-            android:configChanges="keyboard|keyboardHidden|orientation" />
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:label="@string/pref_security_trusted_hotspots" />
         <activity
             android:name=".ApkInstallerActivity"
             android:configChanges="keyboard|keyboardHidden|orientation" />
@@ -58,6 +58,15 @@
                 <action android:name="android.net.wifi.STATE_CHANGE" />
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
                 <action android:name="android.net.wifi.supplicant.STATE_CHANGE" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Used for install referrer tracking -->
+        <receiver
+            android:name="com.google.android.apps.analytics.AnalyticsReceiver"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
             </intent-filter>
         </receiver>
     </application>
