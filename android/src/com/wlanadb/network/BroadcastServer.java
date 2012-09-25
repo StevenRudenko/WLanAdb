@@ -79,9 +79,10 @@ public class BroadcastServer implements Runnable {
 
     mSocket.close();
 
-    if (mMulticastLock.isHeld())
+    if (mMulticastLock != null && mMulticastLock.isHeld()) {
       mMulticastLock.release();
-    mMulticastLock = null;
+      mMulticastLock = null;
+    }
   }
 
   public void send(final ByteString data, final InetAddress reciever) {

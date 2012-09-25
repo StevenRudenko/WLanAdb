@@ -12,17 +12,17 @@ import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 
 import com.wlanadb.actionbar.ActionBarPreferenceActivity;
-import com.wlanadb.compat.SharedPreferencesHelper;
 import com.wlanadb.data.ClientProto.Client;
-import com.wlanadb.data.ClientSettings;
-import com.wlanadb.data.ClientSettings.OnClientChangeListener;
+import com.wlanadb.data.Settings;
+import com.wlanadb.data.Settings.OnSettingsChangeListener;
 import com.wlanadb.ui.prefs.PasswordPreference;
 import com.wlanadb.ui.prefs.Preferences;
+import com.wlanadb.ui.prefs.SharedPreferencesHelper;
 import com.wlanadb.ui.prefs.SwitchPreference;
 
-public class SettingsActivity extends ActionBarPreferenceActivity implements OnSharedPreferenceChangeListener, OnClientChangeListener, Preferences {
+public class SettingsActivity extends ActionBarPreferenceActivity implements OnSharedPreferenceChangeListener, OnSettingsChangeListener, Preferences {
 
-  private ClientSettings mClientSettings;
+  private Settings mSettings;
 
   private EditTextPreference mClientIdPref;
   private EditTextPreference mClientNamePref;
@@ -42,12 +42,12 @@ public class SettingsActivity extends ActionBarPreferenceActivity implements OnS
     mClientNamePref = (EditTextPreference) screen.findPreference(PREF_CLIENT_NAME);
 
     mSecuityPinPref = (PasswordPreference) screen.findPreference(PREF_SECURITY_PIN);
-    mSecurityTrustedHotspotsPref = screen.findPreference(PREF_SECURITY_TRUSTED_HOTSPOTS_ENABLED);
+    mSecurityTrustedHotspotsPref = screen.findPreference(PREF_SECURITY_TRUSTED_HOTSPOTS);
     final Intent intentTrustedHotspots = new Intent(getBaseContext(), TrustedHotspotsActivity.class);
     mSecurityTrustedHotspotsPref.setIntent(intentTrustedHotspots);
 
-    mClientSettings = new ClientSettings(getBaseContext());
-    mClientSettings.addOnClientChangeListener(this);
+    mSettings = new Settings(getBaseContext());
+    mSettings.addOnClientChangeListener(this);
   }
 
   @Override
@@ -57,8 +57,9 @@ public class SettingsActivity extends ActionBarPreferenceActivity implements OnS
     // clearing preferences to avoid conflicts
     clearPreferences();
     // starting listen for global settings changes
-    mClientSettings.start();
-    onClientChanged(mClientSettings.getClient());
+    mSettings.refresh();
+    mSettings.startWatch();
+    onSettingsChanged();
     // starting listen for preferences changes
     final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
     prefs.registerOnSharedPreferenceChangeListener(this);
@@ -69,7 +70,7 @@ public class SettingsActivity extends ActionBarPreferenceActivity implements OnS
     super.onPause();
 
     // finishing listen for global settings changes
-    mClientSettings.stop();
+    mSettings.stopWatch();
     // finishing listen for preferences changes
     final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
     prefs.unregisterOnSharedPreferenceChangeListener(this);
@@ -80,32 +81,34 @@ public class SettingsActivity extends ActionBarPreferenceActivity implements OnS
   @Override
   public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
     if (PREF_CLIENT_NAME.equals(key)) {
-      mClientSettings.setName(sharedPreferences.getString(PREF_CLIENT_NAME, null)).commit();
+      mSettings.setName(sharedPreferences.getString(PREF_CLIENT_NAME, null)).commit();
     } else if (PREF_SECURITY_PIN.equals(key)) {
       final String pin = sharedPreferences.getString(PREF_SECURITY_PIN, null);
-      mClientSettings.setPin(pin).commit();
+      mSettings.setPin(pin).commit();
+    } else if (PREF_SECURITY_TRUSTED_HOTSPOTS.equals(key)) {
+      mSettings.setTrustedHotspotsEnabled(sharedPreferences.getBoolean(PREF_SECURITY_TRUSTED_HOTSPOTS, false)).commit();
     }
 
-    onClientChanged(mClientSettings.getClient());
+    onSettingsChanged();
   }
 
   @Override
-  public void onClientChanged(final Client client) {
+  public void onSettingsChanged() {
     runOnUiThread(new Runnable() {
       @Override
       public void run() {
+        final Client client = mSettings.getClient();
         mClientIdPref.setSummary(client.getId());
         mClientNamePref.setSummary(client.getName());
         mClientNamePref.setText(client.getName());
         mSecuityPinPref.setSummary(client.getUsePin() ? R.string.pref_security_pin_summary_set : R.string.pref_security_pin_summary_not_set);
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
           final SwitchPreference pref = (SwitchPreference) mSecurityTrustedHotspotsPref;
-          pref.setChecked(prefs.getBoolean(PREF_SECURITY_TRUSTED_HOTSPOTS_ENABLED, false));
+          pref.setChecked(mSettings.isTrustedHotspotsEnabled());
         } else {
           final CheckBoxPreference pref = (CheckBoxPreference) mSecurityTrustedHotspotsPref;
-          pref.setChecked(prefs.getBoolean(PREF_SECURITY_TRUSTED_HOTSPOTS_ENABLED, false));
+          pref.setChecked(mSettings.isTrustedHotspotsEnabled());
         }
       }
     });
@@ -115,7 +118,7 @@ public class SettingsActivity extends ActionBarPreferenceActivity implements OnS
     final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
     final SharedPreferences.Editor prefsEraser = prefs.edit();
     // removing client preferences only
-    prefsEraser.remove(PREF_CLIENT_ID).remove(PREF_CLIENT_NAME).remove(PREF_SECURITY_PIN);
+    prefsEraser.remove(PREF_CLIENT_ID).remove(PREF_CLIENT_NAME).remove(PREF_SECURITY_PIN).remove(PREF_SECURITY_TRUSTED_HOTSPOTS);
     SharedPreferencesHelper.apply(prefsEraser);
   }
 }

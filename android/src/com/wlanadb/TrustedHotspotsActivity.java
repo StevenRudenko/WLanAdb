@@ -1,13 +1,9 @@
 package com.wlanadb;
 
-import java.util.Map;
 import java.util.Set;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,15 +13,14 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 
 import com.wlanadb.actionbar.ActionBarActivity;
-import com.wlanadb.compat.SharedPreferencesHelper;
+import com.wlanadb.data.Settings;
 import com.wlanadb.fragment.TrustedHotspotsFragment;
-import com.wlanadb.ui.prefs.Preferences;
 
 public class TrustedHotspotsActivity extends ActionBarActivity {
 
+  private Settings mSettings;
+
   private TrustedHotspotsFragment mFragment;
-  private SharedPreferences mPrefs;
-  private SharedPreferences mTrustedSSIDsPrefs;
 
   private CompoundButton viewToggleSwitch;
 
@@ -34,9 +29,9 @@ public class TrustedHotspotsActivity extends ActionBarActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_trusted_hotspots);
 
-    mPrefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-    mTrustedSSIDsPrefs = getSharedPreferences(Preferences.PREF_SECURITY_TRUSTED_HOTSPOTS_SET, Context.MODE_PRIVATE);
     mFragment = (TrustedHotspotsFragment) getSupportFragmentManager().findFragmentById(R.id.content);
+
+    mSettings = new Settings(getBaseContext());
   }
 
   @Override
@@ -46,7 +41,7 @@ public class TrustedHotspotsActivity extends ActionBarActivity {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
       viewToggleSwitch = inflateToggleSwitcher();
       getActionBarHelper().setCustomView(viewToggleSwitch);
-      updateToggleSwitch();
+      initToggleSwitch();
     }
   }
 
@@ -57,41 +52,30 @@ public class TrustedHotspotsActivity extends ActionBarActivity {
       inflater.inflate(R.menu.menu_trusted_hotspots, menu);
       viewToggleSwitch = inflateToggleSwitcher();
       menu.findItem(R.id.menu_apply).setActionView(viewToggleSwitch);
-      updateToggleSwitch();
+      initToggleSwitch();
     }
     return true;
   }
 
   @Override
   protected void onResume() {
-    updateToggleSwitch();
+    initToggleSwitch();
 
-    final Map<String, ?> values = mTrustedSSIDsPrefs.getAll();
-    mFragment.setTrustedSSIDs(values.keySet());
+    mFragment.setTrustedSSIDs(mSettings.getTrustedHotspots());
 
     super.onResume();
   }
 
   @Override
   protected void onPause() {
-    final SharedPreferences.Editor toggleSwitchEditor = mPrefs.edit();
-    toggleSwitchEditor.putBoolean(Preferences.PREF_SECURITY_TRUSTED_HOTSPOTS_ENABLED, viewToggleSwitch.isChecked());
-    SharedPreferencesHelper.apply(toggleSwitchEditor);
-
-    final SharedPreferences.Editor trustedSSIDsEditor = mTrustedSSIDsPrefs.edit();
-    trustedSSIDsEditor.clear();
     final Set<String> trustedSSIDs = mFragment.getTrustedSSIDs();
-    for (String value : trustedSSIDs) {
-      trustedSSIDsEditor.putBoolean(value, true);
-    }
-    SharedPreferencesHelper.apply(trustedSSIDsEditor);
+    mSettings.setTrustedHotspots(trustedSSIDs).setTrustedHotspotsEnabled(viewToggleSwitch.isChecked()).commit();
 
     super.onPause();
   }
 
-  private void updateToggleSwitch() {
-    final boolean checked = mPrefs.getBoolean(Preferences.PREF_SECURITY_TRUSTED_HOTSPOTS_ENABLED, false);
-    onToggleSwitcherChanged(checked);
+  private void initToggleSwitch() {
+    onToggleSwitcherChanged(mSettings.isTrustedHotspotsEnabled());
   }
 
   private void onToggleSwitcherChanged(boolean isChecked) {

@@ -104,20 +104,8 @@ public class MainActivity extends ActionBarActivity {
       // that's how we get the client side of the IPC connection
       mServiceApi = WLanServiceApi.Stub.asInterface(service);
 
-      try {
-        if (!mServiceApi.checkTrustedHotspots()) {
-          unbindService(serviceConnection);
-          connectionsCountReciever.unregister(getBaseContext());
-        } else {
-          connectionsCountReciever.register(getBaseContext());
-          updateInfo();
-        }
-      } catch (RemoteException e) {
-        if (DEBUG)
-          Log.e(TAG, "Fail to execute WiFi hotspot check.", e);
-        unbindService(serviceConnection);
-        connectionsCountReciever.unregister(getBaseContext());
-      }
+      connectionsCountReciever.register(getBaseContext());
+      updateInfo();
     }
 
     @Override

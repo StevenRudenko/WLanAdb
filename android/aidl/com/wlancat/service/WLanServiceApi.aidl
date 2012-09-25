@@ -7,7 +7,4 @@ interface WLanServiceApi {
   String getAddress();
   /** Returns count of connections established right now. */
   int getConnectionsCount();
-
-  /** Requires check of trusted hotspots. */
-  boolean checkTrustedHotspots();
 }

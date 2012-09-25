@@ -5,16 +5,18 @@ import android.util.Log;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.wlanadb.data.ClientProto.Client;
-import com.wlanadb.data.ClientSettings.OnClientChangeListener;
 import com.wlanadb.data.MessageProto.Message;
 import com.wlanadb.network.BroadcastServer.BroadcastMessageHandler;
 
-public class UdpMessager implements OnClientChangeListener, BroadcastMessageHandler {
+public class UdpMessager implements BroadcastMessageHandler {
   private static final String TAG = UdpMessager.class.getSimpleName();
 
   private Client mLocalClient;
 
-  @Override
+  public UdpMessager(Client client) {
+    mLocalClient = client;
+  }
+
   public void onClientChanged(Client client) {
     synchronized (this) {
       mLocalClient = client;

@@ -15,7 +15,7 @@
             android:title="@string/pref_security_pin" />
 
         <com.wlanadb.ui.prefs.SwitchPreference
-            android:key="security_trusted_hotspots_enabled"
+            android:key="security_trusted_hotspots"
             android:title="@string/pref_security_trusted_hotspots" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_about_settings" >

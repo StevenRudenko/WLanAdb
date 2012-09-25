@@ -8,93 +8,69 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.wlanadb.config.MyConfig;
 import com.wlanadb.data.ClientProto.Client;
 import com.wlanadb.utils.AndroidUtils;
+import com.wlanadb.utils.FileWatchdog;
 import com.wlanadb.utils.IOUtilities;
 import com.wlanadb.utils.WeakHashSet;
 
 import android.content.Context;
 import android.os.Build;
-import android.os.FileObserver;
 import android.text.TextUtils;
 import android.util.Log;
 
-public class ClientSettings {
-  private static final String TAG = ClientSettings.class.getSimpleName();
+public class Settings extends FileWatchdog {
+  private static final String TAG = Settings.class.getSimpleName();
   private static final boolean DEBUG = MyConfig.DEBUG && true;
 
-  public interface OnClientChangeListener {
-    public void onClientChanged(Client client);
+  public interface OnSettingsChangeListener {
+    public void onSettingsChanged();
   }
 
-  private static final String FILENAME = "ClientSettings.bin";
+  private static final String FILENAME = "settings.bin";
 
-  private final File mSettingsFile;
   private final String mDeviceId;
-
-  /**
-   * The count of how many known (handled by SettingsProvider) 
-   * database mutations are currently being handled.  Used by
-   * mObserverInstance to not reload the data when it's ourselves
-   * modifying it.
-   */
-  private final AtomicInteger mKnownMutationsInFlight = new AtomicInteger(0);
-  private final SettingsFileObserver mObserverInstance;
 
   private Client mClient;
   private String mPin;
 
-  private Set<OnClientChangeListener> mListeners = new WeakHashSet<OnClientChangeListener>();
+  private boolean isTrustedHotspotsEnabled = false;
+  private Set<String> mTrustedHotspots = new HashSet<String>();
 
-  public ClientSettings(Context context) {
+  private Set<OnSettingsChangeListener> mListeners = new WeakHashSet<OnSettingsChangeListener>();
+
+  public Settings(Context context) {
+    super(context.getFileStreamPath(FILENAME));
+
     mDeviceId = generateSerial(context);
-    mSettingsFile = context.getFileStreamPath(FILENAME);
-
     refresh();
-
-    mObserverInstance = new SettingsFileObserver(mSettingsFile.getAbsolutePath());
   }
 
-  public void addOnClientChangeListener(OnClientChangeListener listener) {
+  public void addOnClientChangeListener(OnSettingsChangeListener listener) {
     synchronized (mListeners) {
       mListeners.add(listener);
       if (mClient != null)
-        listener.onClientChanged(mClient);
+        listener.onSettingsChanged();
     }
   }
 
-  public void removeOnClientChangeListener(OnClientChangeListener listener) {
+  public void removeOnClientChangeListener(OnSettingsChangeListener listener) {
     synchronized (mListeners) {
       mListeners.remove(listener);
     }
   }
 
-  public void onClientChanged(Client client) {
+  public void onSettingsChanged() {
     synchronized (mListeners) {
-      for (OnClientChangeListener listener : mListeners) {
-        listener.onClientChanged(client);
+      for (OnSettingsChangeListener listener : mListeners) {
+        listener.onSettingsChanged();
       }
     }
-  }
-
-  public void start() {
-    if (DEBUG)
-      Log.v(TAG, "starting...");
-
-    mObserverInstance.startWatching();
-  }
-
-  public void stop() {
-    if (DEBUG)
-      Log.v(TAG, "stopping...");
-
-    mObserverInstance.stopWatching();
   }
 
   public Client getClient() {
@@ -105,7 +81,19 @@ public class ClientSettings {
     return mPin;
   }
 
-  public ClientSettings setPin(String pin) {
+  public boolean isTrustedHotspotsEnabled() {
+    return isTrustedHotspotsEnabled;
+  }
+
+  public boolean isThustedHotspot(String ssid) {
+    return mTrustedHotspots.contains(ssid);
+  }
+
+  public Set<String> getTrustedHotspots() {
+    return mTrustedHotspots;
+  }
+
+  public Settings setPin(String pin) {
     if (DEBUG)
       Log.v(TAG, "setPin: " + pin);
 
@@ -132,7 +120,7 @@ public class ClientSettings {
     return mPin.equals(pin);
   }
 
-  public ClientSettings setIp(InetAddress address) {
+  public Settings setIp(InetAddress address) {
     if (DEBUG)
       Log.v(TAG, "setIp: " + address.getHostAddress());
 
@@ -140,7 +128,7 @@ public class ClientSettings {
     return this;
   }
 
-  public ClientSettings setPort(int port) {
+  public Settings setPort(int port) {
     if (DEBUG)
       Log.v(TAG, "setPort: " + port);
 
@@ -148,7 +136,7 @@ public class ClientSettings {
     return this;
   }
 
-  public ClientSettings setName(String name) {
+  public Settings setName(String name) {
     if (DEBUG)
       Log.v(TAG, "setName: " + name);
 
@@ -158,14 +146,31 @@ public class ClientSettings {
     return this;
   }
 
-  public ClientSettings commit() {
+  public Settings setTrustedHotspotsEnabled(boolean enabled) {
+    isTrustedHotspotsEnabled = enabled;
+    return this;
+  }
+
+  public Settings setTrustedHotspots(Set<String> hotspots) {
+    mTrustedHotspots.clear();
+    mTrustedHotspots.addAll(hotspots);
+    return this;
+  }
+
+  public Settings commit() {
     saveToFile();
     return this;
   }
 
-  public ClientSettings refresh() {
+  public Settings refresh() {
     readFromFile();
     return this;
+  }
+
+  @Override
+  public boolean onFileChanged() {
+    readFromFile();
+    return true;
   }
 
   private String generateSerial(Context context) {
@@ -183,7 +188,7 @@ public class ClientSettings {
   }
 
   private void readFromFile() {
-    if (!mSettingsFile.exists()) {
+    if (!getFile().exists()) {
       mClient = Client.newBuilder()
           .setId(mDeviceId)
           .setName(Build.MODEL)
@@ -199,12 +204,23 @@ public class ClientSettings {
 
     ObjectInputStream in = null;
     try {
-      in = new ObjectInputStream(new FileInputStream(mSettingsFile));
+      in = new ObjectInputStream(new FileInputStream(getFile()));
       final int clientSize = in.readInt();
       final byte[] clientBytes = new byte[clientSize];
       in.read(clientBytes, 0, clientSize);
       final String pin = (String) in.readObject();
       final boolean hasPin = !TextUtils.isEmpty(pin);
+
+      final boolean trustedHotspotsEnabled = in.readBoolean();
+      final int trustedHotspotsCount = in.readInt();
+      final Set<String> trustedHotspots = new HashSet<String>();
+      for (int i=0; i<trustedHotspotsCount; ++i) {
+        trustedHotspots.add((String) in.readObject());
+      }
+
+      isTrustedHotspotsEnabled = trustedHotspotsEnabled;
+      mTrustedHotspots.clear();
+      mTrustedHotspots.addAll(trustedHotspots);
 
       mPin = hasPin ? pin : null;
       mClient = Client.newBuilder()
@@ -212,7 +228,7 @@ public class ClientSettings {
           .setUsePin(hasPin)
           .build();
 
-      onClientChanged(mClient);
+      onSettingsChanged();
     } catch (FileNotFoundException e) {
       if (DEBUG)
         Log.e(TAG, "Settings file not found", e);
@@ -228,22 +244,28 @@ public class ClientSettings {
   }
 
   private void saveToFile() {
-    if (!mSettingsFile.exists()) {
-      mSettingsFile.getParentFile().mkdirs();
+    final File file = getFile();
+    if (!file.exists()) {
+      file.getParentFile().mkdirs();
     }
 
     if (DEBUG)
       Log.d(TAG, "Writing client data to file...");
 
-    mKnownMutationsInFlight.incrementAndGet();
+    lockFile();
     ObjectOutputStream out = null;
     try {
-      out = new ObjectOutputStream(new FileOutputStream(mSettingsFile, false));
+      out = new ObjectOutputStream(new FileOutputStream(file, false));
       final byte[] clientBytes = mClient.toByteArray();
       final int clientSize = clientBytes.length;
       out.writeInt(clientSize);
       out.write(clientBytes);
       out.writeObject(mPin);
+      out.writeBoolean(isTrustedHotspotsEnabled);
+      out.writeInt(mTrustedHotspots.size());
+      for (String hotspot : mTrustedHotspots) {
+        out.writeObject(hotspot);
+      }
     } catch (FileNotFoundException e) {
       if (DEBUG)
         Log.e(TAG, "Settings file not found", e);
@@ -252,40 +274,7 @@ public class ClientSettings {
         Log.e(TAG, "Fail to read settings file", e);
     } finally {
       IOUtilities.closeStream(out);
-      mKnownMutationsInFlight.decrementAndGet();
-    }
-  }
-
-  private class SettingsFileObserver extends FileObserver {
-    private final AtomicBoolean mIsDirty = new AtomicBoolean(false);
-    private final String mPath;
-
-    public SettingsFileObserver(String path) {
-      super(path, FileObserver.CLOSE_WRITE);
-      mPath = path;
-    }
-
-    public void onEvent(int event, String path) {
-      int modsInFlight = mKnownMutationsInFlight.get();
-      if (modsInFlight > 0) {
-        // our own modification.
-        return;
-      }
-
-      if (DEBUG)
-        Log.d(TAG, "external modification to " + mPath + "; event=" + event);
-
-      if (!mIsDirty.compareAndSet(false, true)) {
-        // already handled. (we get a few update events
-        // during an data write)
-        return;
-      }
-
-      if (DEBUG)
-        Log.d(TAG, "updating our caches for " + mPath);
-
-      readFromFile();
-      mIsDirty.set(false);
+      unlockFile();
     }
   }
 }
