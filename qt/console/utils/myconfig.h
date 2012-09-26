@@ -1,7 +1,10 @@
 #ifndef MYCONFIG_H
 #define MYCONFIG_H
 
-const static int BROADCAST_PORT = 44533;
-const static int MAX_CLIENT_SEARCH_TRIES = 2;
+static const int BROADCAST_PORT = 44533;
+static const int MAX_CLIENT_SEARCH_TRIES = 2;
+
+extern bool SILENT_MODE;
+extern bool CLEAR_STYLE;
 
 #endif // MYCONFIG_H

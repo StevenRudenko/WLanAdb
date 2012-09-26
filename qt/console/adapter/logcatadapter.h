@@ -15,8 +15,6 @@ class LogcatAdapter : public Adapter
 public:
     explicit LogcatAdapter(QObject *parent = 0);
     virtual ~LogcatAdapter();
-
-signals:
     
 public slots:
     void onLogLine(const QString& str);

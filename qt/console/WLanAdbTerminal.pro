@@ -20,7 +20,8 @@ SOURCES += main.cpp \
     adapter/logcatadapter.cpp \
     adapter/pushadapter.cpp \
     utils/io_compatibility.cpp \
-    wlanadbterminal.cpp
+    wlanadbterminal.cpp \
+    utils/myconfig.cpp
 
 HEADERS += \
     adapter/adapter.h \

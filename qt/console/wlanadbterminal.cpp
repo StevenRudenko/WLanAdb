@@ -14,7 +14,9 @@ using namespace std;
 namespace {
 const QString HELP("help");
 const QString VERSION("version");
-const QString SERIAL_NUMBER("-s");
+const QString PARAM_SERIAL_NUMBER("-s");
+const QString PARAM_CLEAR_STYLE("--no-style");
+const QString PARAM_SILENT_MODE("--silent");
 
 int shiftArray(int argc, char* argv[], int pos) {
     for (int i=pos; i<argc; ++i) {
@@ -50,14 +52,14 @@ WLanAdbTerminal::WLanAdbTerminal(int argc, char *argv[]) :
     int newArgc = argc;
     for (int i=1; i<newArgc; ++i) {
         QString arg(argv[i]);
-        if (arg.startsWith(SERIAL_NUMBER)) {
+        if (arg.startsWith(PARAM_SERIAL_NUMBER)) {
             newArgc = shiftArray(newArgc, argv, i);
             --i;
 
-            clientSerialNumber = arg.remove(0, SERIAL_NUMBER.length());
+            clientSerialNumber = arg.remove(0, PARAM_SERIAL_NUMBER.length());
             if (clientSerialNumber.isEmpty()) {
                 if (i == newArgc-1) {
-                    qout << tr("Fail to parse %1 parameter!").arg(SERIAL_NUMBER) << endl;
+                    qout << tr("Fail to parse %1 parameter!").arg(PARAM_SERIAL_NUMBER) << endl;
                     exit(0);
                     return;
                 }
@@ -66,6 +68,14 @@ WLanAdbTerminal::WLanAdbTerminal(int argc, char *argv[]) :
                 newArgc = shiftArray(newArgc, argv, i+1);
             }
             qout << tr("Looking for device with serial number: %1").arg(clientSerialNumber) << endl;
+        } else if (0 == arg.compare(PARAM_CLEAR_STYLE)) {
+            CLEAR_STYLE = true;
+            newArgc = shiftArray(newArgc, argv, i);
+            --i;
+        } else if (0 == arg.compare(PARAM_SILENT_MODE)) {
+            SILENT_MODE = true;
+            newArgc = shiftArray(newArgc, argv, i);
+            --i;
         }
     }
 
@@ -193,8 +203,11 @@ void WLanAdbTerminal::onDisconnectedFromClient()
 void WLanAdbTerminal::printHelp()
 {
     printVersion();
-    qout << tr("Usage: WLanAdbUI [-s] <command> [command params]") << endl;
+    qout << tr("Usage: WLanAdbUI [--no-style] [--silent] [-s] <command> [command params]") << endl;
     qout << tr("-s <serial number>            - directs command to the with the given serial number") << endl;
+    qout << tr("--no-style                    - prevent formating output for some commands") << endl;
+    qout << tr("--silent                      - prevent output of some texts (not implemented for") << endl;
+    qout << tr("                                the moment)") << endl;
     qout << endl;
     qout << tr("commands:") << endl;
     qout << tr("  devices                     - list all devices online") << endl;

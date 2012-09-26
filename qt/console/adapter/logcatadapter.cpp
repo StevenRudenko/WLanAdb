@@ -54,6 +54,11 @@ void LogcatAdapter::onLogLine(const QString& str)
         return;
     }
 
+    if (CLEAR_STYLE) {
+        qout << str << endl;
+        return;
+    }
+
     printProcess(logRegEx.cap(3));
     io_compatibility::setTextColor(qout, io_compatibility::RESET, io_compatibility::RESET);
     qout << " ";
