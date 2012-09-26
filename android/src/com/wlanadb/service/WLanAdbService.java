@@ -48,8 +48,8 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
 
     mTracker = GoogleAnalyticsTracker.getInstance();
     mTracker.startNewSession(MyConfig.GOOGLE_ANALITYCS_TRACKING_ID, getBaseContext());
-    mTracker.setDispatchPeriod(0);
-    mTracker.setDebug(MyConfig.DEBUG);
+    mTracker.setDispatchPeriod(30);
+    //mTracker.setDebug(MyConfig.DEBUG);
 
     if (DEBUG)
       Log.d(TAG, "Starting service...");
@@ -227,15 +227,19 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
     final String comm = command.getCommand();
     if (comm.equals("logcat")) {
       mTracker.trackEvent(CAT_INFO, ACTION_COMMAND, LABEL_LOGCAT, 0);
+      MyLog.w("Command: " + comm);
 
       final LogcatWorker logcatWorker = new LogcatWorker(command);
       logcatWorker.setPidsController(mPidsController);
       return logcatWorker;
     } else if (comm.equals("push")) {
+      MyLog.w("Command: " + comm);
       mTracker.trackEvent(CAT_INFO, ACTION_COMMAND, LABEL_PUSH, 0);
 
       return new PushWorker(command);
     } else if (comm.equals("install")) {
+      MyLog.w("Command: " + comm);
+
       mTracker.trackEvent(CAT_INFO, ACTION_COMMAND, LABEL_INSTALL, 0);
 
       final InstallWorker installWorker = new InstallWorker(command);
@@ -265,6 +269,7 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
       });
       return installWorker;
     } else {
+      MyLog.w("Command: UNKNOWN");
       mTracker.trackEvent(CAT_INFO, ACTION_COMMAND, LABEL_UNKNOWN, 0);
       // we can't perform any action without specifying command.
       return null;
