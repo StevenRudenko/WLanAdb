@@ -17,7 +17,6 @@ import com.wlanadb.config.MyConfig;
 import com.wlanadb.data.Settings;
 import com.wlanadb.data.CommandProto.Command;
 import com.wlanadb.log.AnalyticsEvents;
-import com.wlanadb.log.MyLog;
 import com.wlanadb.logcat.PidsController;
 import com.wlanadb.network.BroadcastServer;
 import com.wlanadb.network.P2PServer;
@@ -55,7 +54,7 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
       Log.d(TAG, "Starting service...");
 
     if (!WiFiUtils.isWifiAvailable(this)) {
-      mTracker.trackEvent(CAT_WARNING, ACTION_STOP_SERVICE, LABEL_NO_WIFI, 0);
+      mTracker.trackEvent(CAT_SERVICE, ACTION_STOP_SERVICE, LABEL_NO_WIFI, 0);
       if (DEBUG)
         Log.w(TAG, "WARNING! No WiFi available on device.");
       stopSelf();
@@ -63,7 +62,7 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
     }
 
     if (!WiFiUtils.isWifiEnabled(this)) {
-      mTracker.trackEvent(CAT_WARNING, ACTION_STOP_SERVICE, LABEL_WIFI_DISABLED, 0);
+      mTracker.trackEvent(CAT_SERVICE, ACTION_STOP_SERVICE, LABEL_WIFI_DISABLED, 0);
       if (DEBUG)
         Log.w(TAG, "WARNING! WiFi dissabled.");
       stopSelf();
@@ -73,7 +72,7 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
     mSettings = new Settings(getBaseContext());
 
     if (!isTrustedHotspotConnected()) {
-      mTracker.trackEvent(CAT_WARNING, ACTION_STOP_SERVICE, LABEL_NOT_TRUSTED_HOTSPOT, 0);
+      mTracker.trackEvent(CAT_SERVICE, ACTION_STOP_SERVICE, LABEL_NOT_TRUSTED_HOTSPOT, 0);
       if (DEBUG)
         Log.w(TAG, "WARNING! Not trusted WiFi hotspot.");
       stopSelf();
@@ -111,17 +110,14 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
     final InetAddress localAddress = WiFiUtils.getLocalAddress(this);
 
     if (localAddress == null) {
-      mTracker.trackEvent(CAT_WARNING, ACTION_STOP_SERVICE, LABEL_NO_LOCAL_ADDRESS, 0);
+      mTracker.trackEvent(CAT_SERVICE, ACTION_STOP_SERVICE, LABEL_NO_LOCAL_ADDRESS, 0);
       if (DEBUG)
         Log.w(TAG, "Local address is NULL");
       stopSelf();
       return;
     }
 
-    mTracker.trackEvent(CAT_WARNING, ACTION_START_SERVICE, LABEL_OK, 0);
-
-    MyLog.init(getBaseContext());
-    MyLog.v("Starting service...");
+    mTracker.trackEvent(CAT_SERVICE, ACTION_START_SERVICE, LABEL_OK, 0);
 
     mPidsController = new PidsController(getBaseContext());
 
@@ -154,8 +150,6 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
     if (mSettings != null) {
       mSettings.stopWatch();
     }
-
-    MyLog.v("Stoping service...");
 
     stopSelf();
   }
@@ -226,21 +220,17 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
 
     final String comm = command.getCommand();
     if (comm.equals("logcat")) {
-      mTracker.trackEvent(CAT_INFO, ACTION_COMMAND, LABEL_LOGCAT, 0);
-      MyLog.w("Command: " + comm);
+      mTracker.trackEvent(CAT_COMMAND, ACTION_COMMAND, LABEL_LOGCAT, 0);
 
       final LogcatWorker logcatWorker = new LogcatWorker(command);
       logcatWorker.setPidsController(mPidsController);
       return logcatWorker;
     } else if (comm.equals("push")) {
-      MyLog.w("Command: " + comm);
-      mTracker.trackEvent(CAT_INFO, ACTION_COMMAND, LABEL_PUSH, 0);
+      mTracker.trackEvent(CAT_COMMAND, ACTION_COMMAND, LABEL_PUSH, 0);
 
       return new PushWorker(command);
     } else if (comm.equals("install")) {
-      MyLog.w("Command: " + comm);
-
-      mTracker.trackEvent(CAT_INFO, ACTION_COMMAND, LABEL_INSTALL, 0);
+      mTracker.trackEvent(CAT_COMMAND, ACTION_COMMAND, LABEL_INSTALL, 0);
 
       final InstallWorker installWorker = new InstallWorker(command);
 
@@ -269,8 +259,7 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
       });
       return installWorker;
     } else {
-      MyLog.w("Command: UNKNOWN");
-      mTracker.trackEvent(CAT_INFO, ACTION_COMMAND, LABEL_UNKNOWN, 0);
+      mTracker.trackEvent(CAT_COMMAND, ACTION_COMMAND, LABEL_UNKNOWN, 0);
       // we can't perform any action without specifying command.
       return null;
     }

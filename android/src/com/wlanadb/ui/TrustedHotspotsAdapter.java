@@ -13,13 +13,18 @@ import android.net.wifi.WifiConfiguration;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.wlanadb.R;
 
-public class TrustedHotspotsAdapter extends BaseAdapter {
+public class TrustedHotspotsAdapter extends BaseExpandableListAdapter {
+
+  private static final int GROUP_TRUSTED = 0;
+  @SuppressWarnings("unused")
+  private static final int GROUP_UNTRUSTED = 1;
+  private static final int GROUPS_COUNT = 2;
 
   private final LayoutInflater mInflater;
 
@@ -55,56 +60,127 @@ public class TrustedHotspotsAdapter extends BaseAdapter {
     super.notifyDataSetChanged();
   }
 
-  @Override
   public int getCount() {
     return mHotspots.size();
   }
 
   @Override
-  public WifiConfiguration getItem(int position) {
-    return mHotspots.get(position);
+  public WifiConfiguration getChild(int groupPosition, int childPosition) {
+    return mHotspots.get(mTrustedSSIDs.size() * groupPosition + childPosition);
   }
 
   @Override
-  public long getItemId(int position) {
-    return position;
+  public long getChildId(int groupPosition, int childPosition) {
+    return groupPosition * mTrustedSSIDs.size() + childPosition;
   }
 
   @Override
-  public View getView(int position, View convertView, ViewGroup parent) {
-    final WifiConfiguration item = getItem(position);
-    final ViewHolder holder;
+  public View getChildView(int groupPosition, int childPosition,
+      boolean isLastChild, View convertView, ViewGroup parent) {
+    final WifiConfiguration item = getChild(groupPosition, childPosition);
+    final ChildViewHolder holder;
     if (convertView == null) {
-      holder = new ViewHolder();
+      holder = new ChildViewHolder();
       convertView = mInflater.inflate(R.layout.list_item_trusted_hotspot, parent, false);
       holder.text = (TextView) convertView.findViewById(android.R.id.text1);
       holder.check = (CheckBox) convertView.findViewById(android.R.id.checkbox);
+      holder.divider = convertView.findViewById(R.id.divider);
 
       convertView.setOnClickListener(mOnClickListener);
 
       convertView.setTag(holder);
     } else {
-      holder = (ViewHolder) convertView.getTag();
+      holder = (ChildViewHolder) convertView.getTag();
     }
 
     final String ssid = formatSSID(item.SSID);
     holder.text.setText(ssid);
     holder.text.setTypeface(item.status == WifiConfiguration.Status.CURRENT ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
-    holder.check.setSelected(mTrustedSSIDs.contains(ssid));
+    final boolean isChecked = mTrustedSSIDs.contains(ssid);
+    holder.check.setSelected(isChecked);
+    convertView.setBackgroundResource(isChecked ? R.drawable.list_item_trusted_hotspots_checked : R.drawable.list_item_trusted_hotspots_unchecked);
     holder.ssid = ssid;
 
+    if (groupPosition == GROUP_TRUSTED && isLastChild) {
+      holder.divider.setVisibility(View.GONE);
+    } else {
+      holder.divider.setVisibility(View.VISIBLE);
+    }
+
     return convertView;
+  }
+
+  @Override
+  public int getChildrenCount(int groupPosition) {
+    if (groupPosition == GROUP_TRUSTED)
+      return mTrustedSSIDs.size();
+
+    return mHotspots.size() - mTrustedSSIDs.size();
+  }
+
+  @Override
+  public Object getGroup(int groupPosition) {
+    return groupPosition;
+  }
+
+  @Override
+  public int getGroupCount() {
+    return GROUPS_COUNT;
+  }
+
+  @Override
+  public long getGroupId(int groupPosition) {
+    return groupPosition;
+  }
+
+  @Override
+  public View getGroupView(int groupPosition, boolean isExpanded,
+      View convertView, ViewGroup parent) {
+    final GroupViewHolder holder;
+    if (convertView == null) {
+      convertView = mInflater.inflate(R.layout.list_item_trusted_hotspot_group, parent, false);
+      holder = new GroupViewHolder();
+      holder.title = (TextView) convertView.findViewById(R.id.groupTitle);
+      holder.shadow = convertView.findViewById(R.id.shadow);
+      convertView.setTag(holder);
+    } else {
+      holder = (GroupViewHolder) convertView.getTag();
+    }
+
+    final boolean isTrusted = groupPosition == GROUP_TRUSTED;
+    holder.title.setText(isTrusted ? R.string.pref_security_trusted_hotspots : R.string.pref_security_untrusted_hotspots);
+    holder.shadow.setVisibility(!isTrusted ? View.VISIBLE : View.GONE);
+    convertView.setBackgroundResource(isTrusted ? R.color.list_item_trusted_hotspot_checked : R.color.list_item_trusted_hotspot_unchecked);
+
+    return convertView;
+  }
+
+  @Override
+  public boolean hasStableIds() {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  @Override
+  public boolean isChildSelectable(int groupPosition, int childPosition) {
+    return true;
   }
 
   private static String formatSSID(String ssid) {
     return ssid.replaceAll("\"", "");
   }
 
-  private static class ViewHolder {
+  private static class ChildViewHolder {
     private TextView text;
     private CheckBox check;
+    private View divider;
 
     private String ssid;
+  }
+
+  private static class GroupViewHolder {
+    private TextView title;
+    private View shadow;
   }
 
   private class HotspotClickListener implements View.OnClickListener {
@@ -115,8 +191,8 @@ public class TrustedHotspotsAdapter extends BaseAdapter {
       if (tag == null)
         return;
 
-      if (tag instanceof ViewHolder) {
-        final ViewHolder holder = (ViewHolder) tag;
+      if (tag instanceof ChildViewHolder) {
+        final ChildViewHolder holder = (ChildViewHolder) tag;
         if (mTrustedSSIDs.contains(holder.ssid))
           mTrustedSSIDs.remove(holder.ssid);
         else

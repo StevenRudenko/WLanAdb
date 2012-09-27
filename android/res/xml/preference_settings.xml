@@ -24,7 +24,7 @@
             android:title="@string/pref_about_credits" />
 
         <com.wlanadb.ui.prefs.VersionPreference
-            android:defaultValue="@string/pref_about_version"
+            android:title="@string/pref_about_version"
             android:key="about_version" />
     </PreferenceCategory>
 
