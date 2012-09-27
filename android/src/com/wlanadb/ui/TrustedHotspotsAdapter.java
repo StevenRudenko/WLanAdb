@@ -148,7 +148,7 @@ public class TrustedHotspotsAdapter extends BaseExpandableListAdapter {
     }
 
     final boolean isTrusted = groupPosition == GROUP_TRUSTED;
-    holder.title.setText(isTrusted ? R.string.pref_security_trusted_hotspots : R.string.pref_security_untrusted_hotspots);
+    holder.title.setText(isTrusted ? R.string.pref_security_trusted_hotspots_title : R.string.pref_security_untrusted_hotspots_title);
     holder.shadow.setVisibility(!isTrusted ? View.VISIBLE : View.GONE);
     convertView.setBackgroundResource(isTrusted ? R.color.list_item_trusted_hotspot_checked : R.color.list_item_trusted_hotspot_unchecked);
 

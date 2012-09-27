@@ -13,12 +13,19 @@ import android.preference.PreferenceScreen;
 import com.wlanadb.actionbar.ActionBarPreferenceActivity;
 import com.wlanadb.data.ClientProto.Client;
 import com.wlanadb.data.Settings;
+import com.wlanadb.fragment.LicensesDialogFragment;
 import com.wlanadb.ui.prefs.PasswordPreference;
-import com.wlanadb.ui.prefs.Preferences;
 import com.wlanadb.ui.prefs.SharedPreferencesHelper;
 import com.wlanadb.ui.prefs.SwitchPreference;
 
-public class SettingsActivity extends ActionBarPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener, Settings.OnSettingsChangeListener, Preferences {
+public class SettingsActivity extends ActionBarPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener, Settings.OnSettingsChangeListener {
+
+  private String PREF_CLIENT_ID;
+  private String PREF_CLIENT_NAME;
+  private String PREF_SECURITY_PIN;
+  private String PREF_SECURITY_TRUSTED_HOTSPOTS;
+  private String PREF_ABOUT_CREDITS;
+  private String PREF_ABOUT_LICENSE;
 
   private Settings mSettings;
 
@@ -33,6 +40,13 @@ public class SettingsActivity extends ActionBarPreferenceActivity implements Sha
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
+    PREF_CLIENT_ID = getString(R.string.pref_client_id);
+    PREF_CLIENT_NAME = getString(R.string.pref_client_name);
+    PREF_SECURITY_PIN = getString(R.string.pref_security_pin);
+    PREF_SECURITY_TRUSTED_HOTSPOTS = getString(R.string.pref_security_trusted_hotspots);
+    PREF_ABOUT_CREDITS = getString(R.string.pref_about_credits);
+    PREF_ABOUT_LICENSE = getString(R.string.pref_about_license);
+
     addPreferencesFromResource(R.xml.preference_settings);
 
     final PreferenceScreen screen = getPreferenceScreen();
@@ -43,6 +57,24 @@ public class SettingsActivity extends ActionBarPreferenceActivity implements Sha
     mSecurityTrustedHotspotsPref = screen.findPreference(PREF_SECURITY_TRUSTED_HOTSPOTS);
     final Intent intentTrustedHotspots = new Intent(getBaseContext(), TrustedHotspotsActivity.class);
     mSecurityTrustedHotspotsPref.setIntent(intentTrustedHotspots);
+
+    final Preference prefLicense = screen.findPreference(PREF_ABOUT_LICENSE);
+    prefLicense.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+      @Override
+      public boolean onPreferenceClick(Preference preference) {
+        LicensesDialogFragment.createDialog(SettingsActivity.this).show();
+        return true;
+      }
+    });
+
+    final Preference prefCredits = screen.findPreference(PREF_ABOUT_CREDITS);
+    prefCredits.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+      @Override
+      public boolean onPreferenceClick(Preference preference) {
+        //TODO
+        return true;
+      }
+    });
 
     mSettings = new Settings(getBaseContext());
     mSettings.addOnClientChangeListener(this);

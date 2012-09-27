@@ -3,29 +3,31 @@
     <PreferenceCategory android:title="@string/pref_client_settings" >
         <EditTextPreference
             android:enabled="false"
-            android:key="client_id"
-            android:title="@string/pref_client_id" />
+            android:key="@string/pref_client_id"
+            android:title="@string/pref_client_id_title" />
         <EditTextPreference
-            android:key="client_name"
-            android:title="@string/pref_client_name" />
+            android:key="@string/pref_client_name"
+            android:title="@string/pref_client_name_title" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_security_settings" >
         <com.wlanadb.ui.prefs.PasswordPreference
-            android:key="security_pin"
-            android:title="@string/pref_security_pin" />
+            android:key="@string/pref_security_pin"
+            android:title="@string/pref_security_pin_title" />
 
         <com.wlanadb.ui.prefs.CheckBoxPreference
-            android:key="security_trusted_hotspots"
-            android:title="@string/pref_security_trusted_hotspots" />
+            android:key="@string/pref_security_trusted_hotspots"
+            android:title="@string/pref_security_trusted_hotspots_title" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_about_settings" >
         <Preference
-            android:key="about_credits"
-            android:title="@string/pref_about_credits" />
+            android:key="@string/pref_about_credits"
+            android:title="@string/pref_about_credits_title" />
+        <Preference
+            android:key="@string/pref_about_license"
+            android:summary="@string/pref_about_license_summary"
+            android:title="@string/pref_about_license_title" />
 
-        <com.wlanadb.ui.prefs.VersionPreference
-            android:title="@string/pref_about_version"
-            android:key="about_version" />
+        <com.wlanadb.ui.prefs.VersionPreference android:title="@string/pref_about_version" />
     </PreferenceCategory>
 
 </PreferenceScreen>
