@@ -19,7 +19,6 @@ public class LicensesDialogFragment extends DialogFragment {
     final AlertDialog.Builder builder = new AlertDialog.Builder(context);
     builder.setTitle(R.string.pref_about_license_title);
     builder.setView(v);
-    builder.setPositiveButton(R.string.ok, null);
     return builder.create();
   }
 

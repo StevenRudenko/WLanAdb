@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
@@ -92,10 +91,10 @@ public class TrustedHotspotsActivity extends ActionBarActivity {
     final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
     viewToggle.setLayoutParams(layoutParams);
-    viewToggle.setOnClickListener(new View.OnClickListener() {
+    viewToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
       @Override
-      public void onClick(View v) {
-        onToggleSwitcherChanged(viewToggle.isChecked());
+      public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        onToggleSwitcherChanged(isChecked);
       }
     });
     return viewToggle;

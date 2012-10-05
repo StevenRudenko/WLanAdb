@@ -56,7 +56,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:background="#300a24"
+            android:background="#444444"
             android:padding="16dp"
             android:text="@string/help_main_terminal_1"
             android:textColor="@android:color/white" />

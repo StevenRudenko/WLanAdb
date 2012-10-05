@@ -24,6 +24,7 @@
             android:background="@color/divider"
             android:text="@string/license_protobuf_text"
             android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@android:color/black"
             android:typeface="monospace"
             android:textSize="12sp" />
     </LinearLayout>

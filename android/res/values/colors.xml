@@ -18,7 +18,7 @@
 
     <color name="divider">#ffcccccc</color>
     <color name="actionbar_title_color">#ffffff</color>
-    <color name="list_item_trusted_hotspot_checked">@android:color/transparent</color>
-    <color name="list_item_trusted_hotspot_unchecked">#ffdddddd</color>
+    <color name="list_item_trusted_hotspot_checked">#ff222222</color>
+    <color name="list_item_trusted_hotspot_unchecked">@android:color/transparent</color>
 
 </resources>
