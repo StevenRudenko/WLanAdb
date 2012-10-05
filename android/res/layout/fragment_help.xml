@@ -72,6 +72,28 @@
                 android:text="@string/help_main_3_fail" />
         </TableRow>
 
+        <TableRow style="@style/StartingStepRow" >
+
+            <TextView
+                style="@style/StartingStepPointer"
+                android:text="4" />
+
+            <TextView
+                style="@style/StartingStepText"
+                android:text="@string/help_main_4" />
+        </TableRow>
+
+        <TableRow style="@style/StartingStepRow" >
+
+            <TextView
+                style="@style/StartingStepPointer"
+                android:text="!" />
+
+            <TextView
+                style="@style/StartingStepText"
+                android:text="@string/help_main_4_note" />
+        </TableRow>
+
         <TextView
             style="@style/StartingStepSection"
             android:text="@string/help_section_security" />

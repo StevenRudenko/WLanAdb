@@ -29,11 +29,13 @@
     <string name="pref_about_version">Version 0.1b</string>
     <!-- Starting steps -->
     <string name="help_introduce"><b>WLanAdb</b> allows to use standard ADB commands without connecting Android device to desktop by USB cable or rooting.</string>
-    <string name="help_section_main">How to start</string>
+    <string name="help_section_main">How to start using WLanAdb</string>
     <string name="help_main_1">Install desktop client: http://wlanadb.com/downloads/</string>
     <string name="help_main_2">Check that desktop client and mobile device are at one sub-network</string>
     <string name="help_main_3">Launch <i>WLanAdbTerminal devices</i> from command line and check output</string>
     <string name="help_main_3_fail">If you don\'t see device at the list check that it is connected to sub-network used by desktop</string>
+    <string name="help_main_4">If there is device in list you are ready to use such ADB commands: <i>logcat</i>, <i>push</i>, <i>install</i></string>
+    <string name="help_main_4_note">Try <i>WLanAdbTerminal help</i> from command line to find more details</string>
     <string name="help_section_security">Security</string>
     <string name="help_security_1"><i>PIN</i>: allows to set keyword used to connect with device.</string>
     <string name="help_security_2"><i>Trusted Hostpots</i>: it is a list of trusted hotspots where WLanAdb service will work. All other hotspots will be ignored. This allows to enable WLanAdb for home and work networks without permission to use it with public hotspots.</string>
