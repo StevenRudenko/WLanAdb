@@ -12,7 +12,7 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
-  -->
+-->
 
 <resources>
 
@@ -33,6 +33,7 @@
     </style>
 
     <style name="ActionBarCompatItemBase">
+
         <!-- layout_width/height must be set in code -->
         <item name="android:scaleType">center</item>
         <item name="android:background">@drawable/actionbar_compat_item</item>
@@ -57,10 +58,40 @@
         <item name="android:textColor">@color/actionbar_title_color</item>
     </style>
 
-    <style name="ActionBarCompatItem" parent="style/ActionBarCompatItemBase">
+    <style name="ActionBarCompatItem" parent="style/ActionBarCompatItemBase" />
+
+    <style name="ActionBarCompatHomeItem" parent="style/ActionBarCompatItemBase" />
+
+    <style name="StartingStepSection" parent="android:style/Widget.TextView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_marginTop">16dp</item>
     </style>
 
-    <style name="ActionBarCompatHomeItem" parent="style/ActionBarCompatItemBase">
+    <style name="StartingStepPointer" parent="android:style/Widget.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/bg_starting_step</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:layout_marginRight">8dp</item>
+    </style>
+
+    <style name="StartingStepText" parent="android:style/Widget.TextView">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical</item>
+    </style>
+
+    <style name="StartingStepRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:orientation">horizontal</item>
     </style>
 
 </resources>

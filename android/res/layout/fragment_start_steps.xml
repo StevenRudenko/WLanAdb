@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:orientation="vertical"
+        android:padding="16dip" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/help_introduce" />
+
+        <TextView
+            style="@style/StartingStepSection"
+            android:text="@string/help_section_main" />
+
+        <TableRow style="@style/StartingStepRow" >
+
+            <TextView
+                style="@style/StartingStepPointer"
+                android:text="1" />
+
+            <TextView
+                style="@style/StartingStepText"
+                android:text="@string/help_main_1" />
+        </TableRow>
+
+        <TableRow style="@style/StartingStepRow" >
+
+            <TextView
+                style="@style/StartingStepPointer"
+                android:text="2" />
+
+            <TextView
+                style="@style/StartingStepText"
+                android:text="@string/help_main_2" />
+        </TableRow>
+
+        <TableRow style="@style/StartingStepRow" >
+
+            <TextView
+                style="@style/StartingStepPointer"
+                android:text="3" />
+
+            <TextView
+                style="@style/StartingStepText"
+                android:text="@string/help_main_3" />
+        </TableRow>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="#300a24"
+            android:padding="16dp"
+            android:text="@string/help_main_terminal_1"
+            android:textColor="@android:color/white" />
+
+        <TableRow style="@style/StartingStepRow" >
+
+            <TextView
+                style="@style/StartingStepPointer"
+                android:text="!" />
+
+            <TextView
+                style="@style/StartingStepText"
+                android:text="@string/help_main_3_fail" />
+        </TableRow>
+
+        <TextView
+            style="@style/StartingStepSection"
+            android:text="@string/help_section_security" />
+
+        <TableRow style="@style/StartingStepRow" >
+
+            <TextView
+                style="@style/StartingStepPointer"
+                android:text="1" />
+
+            <TextView
+                style="@style/StartingStepText"
+                android:text="@string/help_security_1" />
+        </TableRow>
+
+        <TableRow style="@style/StartingStepRow" >
+
+            <TextView
+                style="@style/StartingStepPointer"
+                android:text="2" />
+
+            <TextView
+                style="@style/StartingStepText"
+                android:text="@string/help_security_2" />
+        </TableRow>
+    </TableLayout>
+
+</ScrollView>
