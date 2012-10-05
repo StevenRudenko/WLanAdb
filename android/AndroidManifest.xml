@@ -37,7 +37,7 @@
         <activity
             android:name=".TrustedHotspotsActivity"
             android:configChanges="keyboard|keyboardHidden|orientation"
-            android:label="@string/pref_security_trusted_hotspots" />
+            android:label="@string/pref_security_trusted_hotspots_title" />
         <activity
             android:name=".ApkInstallerActivity"
             android:configChanges="keyboard|keyboardHidden|orientation" />
