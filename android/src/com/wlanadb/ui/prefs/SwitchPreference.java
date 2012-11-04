@@ -1,7 +1,6 @@
 package com.wlanadb.ui.prefs;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.AttributeSet;
 
 public class SwitchPreference extends android.preference.SwitchPreference {
@@ -20,11 +19,6 @@ public class SwitchPreference extends android.preference.SwitchPreference {
 
   @Override
   protected void onClick() {
-    final Intent i = getIntent();
-    if (i == null) {
-      super.onClick();
-      return;
-    }
   }
 
 }

@@ -13,10 +13,12 @@ import android.preference.PreferenceScreen;
 import com.wlanadb.actionbar.ActionBarPreferenceActivity;
 import com.wlanadb.data.ClientProto.Client;
 import com.wlanadb.data.Settings;
+import com.wlanadb.fragment.EnableWifiDialogFragment;
 import com.wlanadb.fragment.LicensesDialogFragment;
 import com.wlanadb.ui.prefs.PasswordPreference;
 import com.wlanadb.ui.prefs.SharedPreferencesHelper;
 import com.wlanadb.ui.prefs.SwitchPreference;
+import com.wlanadb.utils.WiFiUtils;
 
 public class SettingsActivity extends ActionBarPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener, Settings.OnSettingsChangeListener {
 
@@ -24,6 +26,7 @@ public class SettingsActivity extends ActionBarPreferenceActivity implements Sha
   private String PREF_CLIENT_NAME;
   private String PREF_SECURITY_PIN;
   private String PREF_SECURITY_TRUSTED_HOTSPOTS;
+  @SuppressWarnings("unused")
   private String PREF_ABOUT_CREDITS;
   private String PREF_ABOUT_LICENSE;
 
@@ -55,23 +58,12 @@ public class SettingsActivity extends ActionBarPreferenceActivity implements Sha
 
     mSecuityPinPref = (PasswordPreference) screen.findPreference(PREF_SECURITY_PIN);
     mSecurityTrustedHotspotsPref = screen.findPreference(PREF_SECURITY_TRUSTED_HOTSPOTS);
-    final Intent intentTrustedHotspots = new Intent(getBaseContext(), TrustedHotspotsActivity.class);
-    mSecurityTrustedHotspotsPref.setIntent(intentTrustedHotspots);
 
     final Preference prefLicense = screen.findPreference(PREF_ABOUT_LICENSE);
     prefLicense.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
       @Override
       public boolean onPreferenceClick(Preference preference) {
         LicensesDialogFragment.createDialog(SettingsActivity.this).show();
-        return true;
-      }
-    });
-
-    final Preference prefCredits = screen.findPreference(PREF_ABOUT_CREDITS);
-    prefCredits.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-      @Override
-      public boolean onPreferenceClick(Preference preference) {
-        //TODO
         return true;
       }
     });
@@ -83,6 +75,23 @@ public class SettingsActivity extends ActionBarPreferenceActivity implements Sha
   @Override
   protected void onResume() {
     super.onResume();
+
+    // if WiFi is not enabled we will get null instead of list of hotspots
+    // it doesn't make sense to show trusted hotspots list activity
+    if (!WiFiUtils.isWifiEnabled(getBaseContext())) {
+      mSecurityTrustedHotspotsPref.setIntent(null);
+      mSecurityTrustedHotspotsPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        @Override
+        public boolean onPreferenceClick(Preference preference) {
+          EnableWifiDialogFragment.createDialog(SettingsActivity.this, EnableWifiDialogFragment.MSG_TRUSTED_HOTSPOTS).show();
+          return true;
+        }
+      });
+    } else {
+      final Intent intentTrustedHotspots = new Intent(getBaseContext(), TrustedHotspotsActivity.class);
+      mSecurityTrustedHotspotsPref.setIntent(intentTrustedHotspots);
+      mSecurityTrustedHotspotsPref.setOnPreferenceClickListener(null);
+    }
 
     // clearing preferences to avoid conflicts
     clearPreferences();

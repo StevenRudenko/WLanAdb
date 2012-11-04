@@ -1,5 +1,6 @@
 package com.wlanadb.ui.prefs;
 
+import com.wlanadb.R;
 import com.wlanadb.config.MyConfig;
 
 import android.content.Context;
@@ -37,12 +38,7 @@ public class VersionPreference extends Preference {
     textView.setMaxLines(2);
     textView.setTextAppearance(getContext(), android.R.style.TextAppearance_Small);
 
-    final StringBuilder versionBuilder = new StringBuilder();
-    versionBuilder.append("Version ")
-        .append(MyConfig.VERSION)
-        .append(" (")
-        .append(MyConfig.REVISION)
-        .append(")\nThank you for downloading. Enjoy!");
-    textView.setText(versionBuilder.toString());
+    final String version = getContext().getString(R.string.pref_about_version, MyConfig.VERSION, MyConfig.REVISION);
+    textView.setText(version);
   }
 }

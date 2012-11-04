@@ -40,7 +40,8 @@ public class TrustedHotspotsAdapter extends BaseExpandableListAdapter {
 
   public void setHotspots(Collection<WifiConfiguration> items) {
     mHotspots.clear();
-    mHotspots.addAll(items);
+    if (items != null)
+      mHotspots.addAll(items);
     notifyDataSetChanged();
   }
 

@@ -26,7 +26,12 @@
     <string name="pref_about_credits_title">Credits</string>
     <string name="pref_about_license_title">Open source licenses</string>
     <string name="pref_about_license_summary">License details for open source software</string>
-    <string name="pref_about_version">Version 0.1b</string>
+    <string name="pref_about_version" formatted="false">Version %s (%s)\nThank you for using. Enjoy!</string>
+    <!-- Dialogs strings -->
+    <string name="dialog_enable_wifi_title">Turn WiFi on</string>
+    <string name="dialog_enable_wifi_summary">It is needed to have WiFi enabled to use this application.</string>
+    <string name="dialog_enable_wifi_trusted_list_summary">It is needed to have WiFi enabled to see list of WiFi hotspots.</string>
+    <string name="dialog_enable_goto_wifi_settings">WiFi settings</string>
     <!-- Starting steps -->
     <string name="help_introduce"><b>WLanAdb</b> allows to use standard ADB commands without connecting Android device to desktop by USB cable or rooting.</string>
     <string name="help_section_main">How to start using WLanAdb</string>

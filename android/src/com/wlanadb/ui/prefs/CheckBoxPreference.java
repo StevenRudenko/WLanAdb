@@ -1,7 +1,6 @@
 package com.wlanadb.ui.prefs;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,10 +37,5 @@ public class CheckBoxPreference extends android.preference.CheckBoxPreference {
 
   @Override
   protected void onClick() {
-    final Intent i = getIntent();
-    if (i == null) {
-      super.onClick();
-      return;
-    }
   }
 }

@@ -2,8 +2,10 @@ package com.wlanadb;
 
 import com.wlanadb.actionbar.ActionBarActivity;
 import com.wlanadb.config.MyConfig;
+import com.wlanadb.fragment.EnableWifiDialogFragment;
 import com.wlanadb.service.ConnectionsStatusReciever;
 import com.wlanadb.service.WLanAdbService;
+import com.wlanadb.utils.WiFiUtils;
 import com.wlancat.service.WLanServiceApi;
 
 import android.content.ComponentName;
@@ -28,6 +30,10 @@ public class MainActivity extends ActionBarActivity {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+
+    if (!WiFiUtils.isWifiEnabled(getBaseContext())) {
+      EnableWifiDialogFragment.createDialog(this, EnableWifiDialogFragment.MSG_APP).show();
+    }
   }
 
   @Override
@@ -76,6 +82,7 @@ public class MainActivity extends ActionBarActivity {
     return super.onOptionsItemSelected(item);
   }
 
+  @Deprecated
   private void updateInfo() {
     runOnUiThread(new Runnable() {
       @Override
