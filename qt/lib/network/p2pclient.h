@@ -39,8 +39,9 @@ private slots:
 
 private:
     QTcpSocket* tcpSocket;
-
     QFile* readFile;
+
+    QString notFinishedLine;
 };
 
 #endif // P2PCLIENT_H

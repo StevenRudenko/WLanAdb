@@ -95,14 +95,22 @@ void P2PClient::sendNextPartOfFile() {
 void P2PClient::read()
 {
     // read fully
-    QString readData;
+    QString readData(notFinishedLine);
+    notFinishedLine.clear();
     while (tcpSocket->bytesAvailable()) {
         readData.append(tcpSocket->readAll());
     }
+    bool fullyRead = readData.endsWith("\n");
     QStringList lines = readData.split( "\n", QString::SkipEmptyParts );
     readData.clear();
     // output line by line
-    foreach( QString line, lines ) {
+    int count = lines.size();
+    for (int i=0; i<count; ++i) {
+        QString line = lines.at(i);
+        if (i == count - 1 && !fullyRead) {
+            notFinishedLine.append(line);
+            break;
+        }
         onDataRecieved(line);
     }
 }
