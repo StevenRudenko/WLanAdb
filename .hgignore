@@ -6,3 +6,4 @@ android/local.properties
 android/.apt_generated/*
 WLanCat-build-desktop
 qt/WLanCat.pro.user
+.metadata

@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		<title>Downloads</title>
+
+		<link href="css/main.css" rel="stylesheet">
+
+		<script>
+			function onDownload(link) {
+				var _gaq = _gaq || [];
+				_gaq.push(['_setAccount', 'UA-35419273-2']);
+				_gaq.push(['_trackEvent', 'Downloads', 'Download desktop client', 'Link <' + text($(link).html()) + '>']);
+			}
+		</script>
+	</head>
+	<body style="padding: 8px;">
+		<b>Get desktop client</b>
+		<br/>
+		The desktop client provides ability to use WLanAdb from command line and GUI. It helps execute ADB commands remotely without connecting Android device by wire.
+		<br/>
+		<br/>
+		Choose the package for your OS from the table below.
+		<table width="100%" style="margin-top: 16px" class="downloads" >
+			<tbody>
+				<tr>
+					<th class="downloads">Platform</th>
+					<th class="downloads">Package</th>
+					<th class="downloads">Size</th>
+					<th class="downloads">MD5 Checksum</th>
+				</tr>
+				<tr>
+					<td class="downloads">Windows</td>
+					<td class="downloads"><a onclick="onDownload(this)" href="http://dl.google.co/r20.0.3-windows.zip">wlanadb_r0.1b-windows.zip</a></td>
+					<td class="downloads">90379469 bytes</td>
+					<td class="downloads">cd895c79201f7f02507eb3c3868a1c5e</td>
+				</tr>
+				<tr>
+					<td class="downloads">Linux</td>
+					<td class="downloads"><a onclick="onDownload(this)" href="http://dl.google.co/ndroid-sdk_r20.0.3-linux.tgz">wlanadb_r0.1b-linux.tgz</a></td>
+					<td class="downloads">82616305 bytes</td>
+					<td class="downloads">0d53c2c31d6b5d0cf7385bccd0b06c27</td>
+				</tr>
+				<tr>
+					<td class="downloads">Mac OS X</td>
+					<td class="downloads">Coming soon...</td>
+					<td class="downloads">&nbsp;</td>
+					<td class="downloads">&nbsp;</td>
+				</tr>
+			</tbody>
+		</table>
+	</body>
+	<br/>
+	<b>Get Andriod client</b>
+	<br/>
+	Install client to any Android device with Android 2.2 Froyo or later from Google Play.
+	<div align="center" style="margin-top: 16px" >
+		<a href="https://play.google.com/store/apps/details?id=com.wlanadb&referrer=utm_source%3Dsite%26utm_medium%3Dlink%26utm_content%3Dbanner%26utm_campaign%3Dwlanadb" target="_blank"> <img alt="Android app on Google Play"
+		src="http://developer.android.com/images/brand/en_generic_rgb_wo_45.png" /></a>
+	</div>
+
+</html>
