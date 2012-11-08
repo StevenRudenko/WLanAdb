@@ -15,6 +15,8 @@ public class LogReader {
   private static final String TAG = LogReader.class.getSimpleName();
   private static final boolean DEBUG = MyConfig.DEBUG && true;
 
+  public static final int LOGCAT_BUFFER_SIZE = 16 * 1024;
+
   public interface OnLogMessageListener {
     /**
      * Event to be invoked on new log message read.
@@ -90,7 +92,7 @@ public class LogReader {
 
       reader = new DataInputStream(logcatProc.getInputStream());
 
-      final byte[] b = new byte[16 * 1024];
+      final byte[] b = new byte[LOGCAT_BUFFER_SIZE];
       int read;
       String previousPart = "";
       while (isRunning && ((read = reader.read(b)) > 0)) {
