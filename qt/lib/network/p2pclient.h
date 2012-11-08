@@ -38,7 +38,6 @@ private slots:
     void error();
 
 private:
-    QTextStream* in;
     QTcpSocket* tcpSocket;
 
     QFile* readFile;

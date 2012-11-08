@@ -1,18 +1,18 @@
 #include "p2pclient.h"
 
+#include <QStringList>
+
 namespace {
 const int FILE_BUFFER = 32 * 1024;
-const int READ_BUFFER = 8 * 1024;
 }
 
 P2PClient::P2PClient(QObject *parent) :
-    QObject(parent), in(NULL), readFile(NULL)
+    QObject(parent), readFile(NULL)
 {
 
     tcpSocket = new QTcpSocket();
     tcpSocket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
     tcpSocket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
-    tcpSocket->setReadBufferSize(READ_BUFFER);
 
     connect(tcpSocket, SIGNAL(connected()), this, SIGNAL(connected()));
     connect(tcpSocket, SIGNAL(disconnected()), this, SLOT(connectionClosedByServer()));
@@ -38,11 +38,6 @@ void P2PClient::connectToServer(const QString& server, int port)
 
 void P2PClient::disconnectFromServer()
 {
-    if (in != NULL) {
-        delete in;
-        in = NULL;
-    }
-
     if (readFile != NULL) {
         delete readFile;
         readFile = NULL;
@@ -99,19 +94,15 @@ void P2PClient::sendNextPartOfFile() {
 
 void P2PClient::read()
 {
-    if (NULL == in) {
-        in = new QTextStream(tcpSocket);
+    // read fully
+    QString readData;
+    while (tcpSocket->bytesAvailable()) {
+        readData.append(tcpSocket->readAll());
     }
-
-    while (true) {
-        if (!tcpSocket->canReadLine()) {
-            break;
-        }
-
-        QString line = in->readLine();
-        if (line.isEmpty())
-            break;
-
+    QStringList lines = readData.split( "\n", QString::SkipEmptyParts );
+    readData.clear();
+    // output line by line
+    foreach( QString line, lines ) {
         onDataRecieved(line);
     }
 }

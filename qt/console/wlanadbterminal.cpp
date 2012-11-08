@@ -125,7 +125,7 @@ void WLanAdbTerminal::selectClient(const QList<Client> &clients)
         return;
     }
 
-    qout << tr("\rThere are %1 devices found:").arg(size) << endl;
+    qout << tr("\r%1 device(s) found:").arg(size) << endl;
     for (int i=0; i<size; ++i) {
         Client client = clients.at(i);
         const QString& clientId = QString::fromStdString(client.id());
@@ -206,19 +206,17 @@ void WLanAdbTerminal::printHelp()
     qout << tr("Usage: WLanAdbTerminal [--no-style] [--silent] [-s] <command> [command params]") << endl;
     qout << tr("-s <serial number>            - directs command to the with the given serial number") << endl;
     qout << tr("--no-style                    - prevent formating output for some commands") << endl;
-    qout << tr("--silent                      - prevent output of some texts (not implemented for") << endl;
-    qout << tr("                                the moment)") << endl;
+    qout << tr("--silent                      - prevent output of some texts (not implemented for the moment)") << endl;
     qout << endl;
     qout << tr("Commands:") << endl;
     qout << tr("  devices                     - list all devices online") << endl;
-    qout << tr("  push <local>                - copy file to device") << endl;
     qout << tr("  logcat [ <filter-spec> ]    - view device log") << endl;
     qout << tr("                                    '--app=<package name>' show logs for specified package only") << endl;
     qout << tr("                                       Note: can be used multiple times.") << endl;
     qout << tr("                                    '--pid=<proces id>' show logs for selected PID.") << endl;
     qout << tr("                                       Note: can be used multiple times.") << endl;
     qout << tr("                                    '--type=[VDIWE]' show logs of selected types only") << endl;
-    qout << tr("  push <local>                - copy file to device") << endl;
+    qout << tr("  push <file>                 - copy file to device") << endl;
     qout << tr("  install <file> [-l]         - push this package file to the device and install it") << endl;
     qout << tr("                                    '-l' means auto-launch app after install") << endl;
     qout << tr("  help                        - show this help message") << endl;

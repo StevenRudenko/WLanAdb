@@ -44,8 +44,7 @@
 
         <service
             android:name=".service.WLanAdbService"
-            android:exported="false"
-            android:process=":remote" >
+            android:exported="false" >
             <intent-filter>
                 <action android:name="com.wlanadb.service.WLanAdbService" />
             </intent-filter>

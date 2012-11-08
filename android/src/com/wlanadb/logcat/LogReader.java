@@ -1,9 +1,7 @@
 package com.wlanadb.logcat;
 
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 import com.wlanadb.config.MyConfig;
 import com.wlanadb.utils.IOUtilities;
@@ -78,7 +76,7 @@ public class LogReader {
   public void start() {
     isRunning = true;
 
-    BufferedReader reader = null;
+    DataInputStream reader = null;
     Process logcatProc = null;
     try {
       final StringBuilder paramsString = new StringBuilder();
@@ -90,16 +88,33 @@ public class LogReader {
       }
       logcatProc = Runtime.getRuntime().exec(LOGCAT_CMD + paramsString.toString());
 
-      reader = new BufferedReader(new InputStreamReader(new DataInputStream(logcatProc.getInputStream())));
+      reader = new DataInputStream(logcatProc.getInputStream());
 
-      String line;
-      while (isRunning && (line = reader.readLine()) != null) {
-        if (mReadLogThread != null) {
-          final android.os.Message msg = mReadLogsHandler.obtainMessage(MSG_LOG_MESSAGE, line);
-          mReadLogsHandler.sendMessage(msg);
-        } else {
-          listener.onLogMessage(line);
+      final byte[] b = new byte[16 * 1024];
+      int read;
+      String previousPart = "";
+      while (isRunning && ((read = reader.read(b)) > 0)) {
+        final String data = previousPart + new String(b, 0, read);
+        previousPart = "";
+
+        final boolean fullyRead = data.endsWith("\n");
+        final String[] lines = data.split("\n");
+        final int count = lines.length;
+        for (int i=0; i<count; ++i) {
+          final String line = lines[i];
+          if (i == count - 1 && !fullyRead) {
+            previousPart = line;
+            break;
+          }
+
+          if (mReadLogThread != null) {
+            final android.os.Message msg = mReadLogsHandler.obtainMessage(MSG_LOG_MESSAGE, line);
+            mReadLogsHandler.sendMessage(msg);
+          } else {
+            listener.onLogMessage(line);
+          }
         }
+
       }
       if (DEBUG)
         Log.d(TAG, "LogCat reading finished!");

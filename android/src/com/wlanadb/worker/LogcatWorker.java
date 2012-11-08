@@ -1,6 +1,5 @@
 package com.wlanadb.worker;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -20,6 +19,7 @@ public class LogcatWorker extends BaseWorker implements OnLogMessageListener {
   private static final boolean DEBUG = MyConfig.DEBUG && true;
 
   private static final String PARAM_DUMP = "-d";
+  private static final String PARAM_CLEAR = "-c";
 
   private static final String PARAM_APP = "--app=";
   private static final String PARAM_PID = "--pid=";
@@ -28,7 +28,7 @@ public class LogcatWorker extends BaseWorker implements OnLogMessageListener {
   private final LogFilter mLogFilter;
   private final LogReader mLogReader;
 
-  private BufferedWriter mOutputStream;
+  private OutputStreamWriter mOutputStream;
   private PidsController mPidsController;
 
   private ArrayList<String> mLogcatParams = new ArrayList<String>();
@@ -68,7 +68,7 @@ public class LogcatWorker extends BaseWorker implements OnLogMessageListener {
   @Override
   public void setOutputStream(OutputStream out) {
     super.setOutputStream(out);
-    mOutputStream = new BufferedWriter(new OutputStreamWriter(out));
+    mOutputStream = new OutputStreamWriter(out);
   }
 
   public void setPidsController(PidsController pidsController) {
@@ -82,7 +82,7 @@ public class LogcatWorker extends BaseWorker implements OnLogMessageListener {
 
     try {
       mOutputStream.write(message);
-      mOutputStream.newLine();
+      mOutputStream.write("\n");
       mOutputStream.flush();
     } catch (IOException e) {
       if (DEBUG)
@@ -120,6 +120,8 @@ public class LogcatWorker extends BaseWorker implements OnLogMessageListener {
 
   private void parseFilterParameter(String param) {
     if (param.equals(PARAM_DUMP)) {
+      mLogcatParams.add(param);
+    } else if (param.equals(PARAM_CLEAR)) {
       mLogcatParams.add(param);
     } else if (param.startsWith(PARAM_APP)) {
       mLogFilter.setApp(param.replaceFirst(PARAM_APP, ""), true);
