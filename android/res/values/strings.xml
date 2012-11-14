@@ -33,7 +33,7 @@
     <string name="dialog_enable_wifi_trusted_list_summary">It is needed to have WiFi enabled to see list of WiFi hotspots.</string>
     <string name="dialog_enable_goto_wifi_settings">WiFi settings</string>
     <!-- Starting steps -->
-    <string name="help_introduce"><b>WLanAdb</b> allows to use standard ADB commands without connecting Android device to desktop by USB cable or without need to root it.</string>
+    <string name="help_introduce"><b>WLanAdb</b> allows to use standard ADB commands without connecting Android device to desktop by USB cable and without need to root it.</string>
     <string name="help_section_main">How to start using WLanAdb</string>
     <string name="help_main_1">Install desktop client from Downloads section of http://wlanadb.com/</string>
     <string name="help_main_2">Check that desktop client and mobile device belong to one subnetwork.</string>
