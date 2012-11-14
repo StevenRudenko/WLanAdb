@@ -27,6 +27,7 @@
 
             <TextView
                 style="@style/StartingStepText"
+                android:autoLink="web"
                 android:text="@string/help_main_1" />
         </TableRow>
 
