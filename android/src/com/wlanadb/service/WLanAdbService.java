@@ -55,7 +55,7 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
       Log.d(TAG, "Starting service...");
 
     if (!WiFiUtils.isWifiAvailable(this)) {
-      mTracker.constructEvent(CAT_SERVICE, ACTION_STOP_SERVICE, LABEL_NO_WIFI, 0L);
+      mTracker.trackEvent(CAT_SERVICE, ACTION_STOP_SERVICE, LABEL_NO_WIFI, 0L);
       if (DEBUG)
         Log.w(TAG, "WARNING! No WiFi available on device.");
       stopSelf();
@@ -63,7 +63,7 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
     }
 
     if (!WiFiUtils.isWifiEnabled(this)) {
-      mTracker.constructEvent(CAT_SERVICE, ACTION_STOP_SERVICE, LABEL_WIFI_DISABLED, 0L);
+      mTracker.trackEvent(CAT_SERVICE, ACTION_STOP_SERVICE, LABEL_WIFI_DISABLED, 0L);
       if (DEBUG)
         Log.w(TAG, "WARNING! WiFi dissabled.");
       stopSelf();
@@ -73,7 +73,7 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
     mSettings = new Settings(getBaseContext());
 
     if (!isTrustedHotspotConnected()) {
-      mTracker.constructEvent(CAT_SERVICE, ACTION_STOP_SERVICE, LABEL_NOT_TRUSTED_HOTSPOT, 0L);
+      mTracker.trackEvent(CAT_SERVICE, ACTION_STOP_SERVICE, LABEL_NOT_TRUSTED_HOTSPOT, 0L);
       if (DEBUG)
         Log.w(TAG, "WARNING! Not trusted WiFi hotspot.");
       stopSelf();
@@ -111,14 +111,14 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
     final InetAddress localAddress = WiFiUtils.getLocalAddress(this);
 
     if (localAddress == null) {
-      mTracker.constructEvent(CAT_SERVICE, ACTION_STOP_SERVICE, LABEL_NO_LOCAL_ADDRESS, 0L);
+      mTracker.trackEvent(CAT_SERVICE, ACTION_STOP_SERVICE, LABEL_NO_LOCAL_ADDRESS, 0L);
       if (DEBUG)
         Log.w(TAG, "Local address is NULL");
       stopSelf();
       return;
     }
 
-    mTracker.constructEvent(CAT_SERVICE, ACTION_START_SERVICE, LABEL_OK, 0L);
+    mTracker.trackEvent(CAT_SERVICE, ACTION_START_SERVICE, LABEL_OK, 0L);
 
     mPidsController = new PidsController(getBaseContext());
 
@@ -223,17 +223,17 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
 
     final String comm = command.getCommand();
     if (comm.equals("logcat")) {
-      mTracker.constructEvent(CAT_COMMAND, ACTION_COMMAND, LABEL_LOGCAT, 0L);
+      mTracker.trackEvent(CAT_COMMAND, ACTION_COMMAND, LABEL_LOGCAT, 0L);
 
       final LogcatWorker logcatWorker = new LogcatWorker(command);
       logcatWorker.setPidsController(mPidsController);
       return logcatWorker;
     } else if (comm.equals("push")) {
-      mTracker.constructEvent(CAT_COMMAND, ACTION_COMMAND, LABEL_PUSH, 0L);
+      mTracker.trackEvent(CAT_COMMAND, ACTION_COMMAND, LABEL_PUSH, 0L);
 
       return new PushWorker(command);
     } else if (comm.equals("install")) {
-      mTracker.constructEvent(CAT_COMMAND, ACTION_COMMAND, LABEL_INSTALL, 0L);
+      mTracker.trackEvent(CAT_COMMAND, ACTION_COMMAND, LABEL_INSTALL, 0L);
 
       final InstallWorker installWorker = new InstallWorker(command);
 
@@ -262,7 +262,7 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
       });
       return installWorker;
     } else {
-      mTracker.constructEvent(CAT_COMMAND, ACTION_COMMAND, LABEL_UNKNOWN, 0L);
+      mTracker.trackEvent(CAT_COMMAND, ACTION_COMMAND, LABEL_UNKNOWN, 0L);
       // we can't perform any action without specifying command.
       return null;
     }
