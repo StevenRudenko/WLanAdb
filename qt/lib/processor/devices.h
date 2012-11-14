@@ -5,9 +5,8 @@
 
 #include "adbprocessor.h"
 
-#include "./network/broadcastserver.h"
-
-#include "./data/client.pb.h"
+#include "network/broadcastserver.h"
+#include "data/client.pb.h"
 
 using namespace com::wlanadb::data;
 

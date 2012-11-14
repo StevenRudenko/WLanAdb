@@ -2,12 +2,12 @@
 
 #include <commands.h>
 
-#include "./utils/io_compatibility.h"
-#include "./utils/myconfig.h"
+#include "utils/io_compatibility.h"
+#include "utils/myconfig.h"
 
-#include "./adapter/pushadapter.h"
-#include "./adapter/logcatadapter.h"
-#include "./adapter/installadapter.h"
+#include "adapter/pushadapter.h"
+#include "adapter/logcatadapter.h"
+#include "adapter/installadapter.h"
 
 using namespace std;
 
@@ -69,11 +69,11 @@ WLanAdbTerminal::WLanAdbTerminal(int argc, char *argv[]) :
             }
             qout << tr("Looking for device with serial number: %1").arg(clientSerialNumber) << endl;
         } else if (0 == arg.compare(PARAM_CLEAR_STYLE)) {
-            CLEAR_STYLE = true;
+            MyConfig::CLEAR_STYLE = true;
             newArgc = shiftArray(newArgc, argv, i);
             --i;
         } else if (0 == arg.compare(PARAM_SILENT_MODE)) {
-            SILENT_MODE = true;
+            MyConfig::SILENT_MODE = true;
             newArgc = shiftArray(newArgc, argv, i);
             --i;
         }
@@ -91,7 +91,7 @@ WLanAdbTerminal::WLanAdbTerminal(int argc, char *argv[]) :
     connect(&wlanadb, SIGNAL(onConnectedToClient(Client)), this, SLOT(onConnectedToClient(Client)));
     connect(&wlanadb, SIGNAL(onDisconnectedFromClient()), this, SLOT(onDisconnectedFromClient()));
 
-    wlanadb.searchClients(BROADCAST_PORT, MAX_CLIENT_SEARCH_TRIES, clientSerialNumber);
+    wlanadb.searchClients(MyConfig::BROADCAST_PORT, MyConfig::MAX_CLIENT_SEARCH_TRIES, clientSerialNumber);
 }
 
 WLanAdbTerminal::~WLanAdbTerminal()
@@ -206,42 +206,34 @@ void WLanAdbTerminal::printHelp()
     qout << tr("Usage: WLanAdbTerminal [--no-style] [--silent] [-s] <command> [command params]") << endl;
     qout << tr("-s <serial number>            - directs command to the with the given serial number") << endl;
     qout << tr("--no-style                    - prevent formating output for some commands") << endl;
-    qout << tr("--silent                      - prevent output of some texts (not implemented for the moment)") << endl;
+    qout << tr("--silent                      - prevent output of some texts (not implemented yet)") << endl;
     qout << endl;
     qout << tr("Commands:") << endl;
     qout << tr("  devices                     - list all devices online") << endl;
-    qout << endl;
     qout << tr("  logcat [ <filter-spec> ]    - view device log") << endl;
-    qout << endl;
-    qout << tr("------------------------------------------------------------------------------------------------") << endl;
-    qout << tr("  WARNING! Starting from Jelly Bean (SDK 16) relase every application can read its own logs only!") << endl;
-    qout << tr("           Don't worry. You can grand permission to read all logs for WLanAdb by next command:") << endl;
-    qout << endl;
-    qout << tr("           adb shell pm grant com.wlanadb android.permission.READ_LOGS") << endl;
-    qout << tr("------------------------------------------------------------------------------------------------") << endl;
-    qout << endl;
     qout << tr("                                    '--app=<package name>' show logs for specified package only") << endl;
     qout << tr("                                       Note: can be used multiple times.") << endl;
     qout << tr("                                    '--pid=<proces id>' show logs for selected PID.") << endl;
     qout << tr("                                       Note: can be used multiple times.") << endl;
     qout << tr("                                    '--type=[VDIWE]' show logs of selected types only") << endl;
     qout << endl;
-    qout << tr("  push <file>                 - copy file to device") << endl;
+    qout << tr("----------------------------------------------------------------------------------------------------") << endl;
+    qout << tr("  WARNING! Starting from Jelly Bean (SDK 16) release every application can read its own logs only!") << endl;
+    qout << tr("           Don't worry. You can grand permission to read all logs for WLanAdb by next command:") << endl;
     qout << endl;
+    qout << tr("           adb shell pm grant com.wlanadb android.permission.READ_LOGS") << endl;
+    qout << tr("----------------------------------------------------------------------------------------------------") << endl;
+    qout << endl;
+    qout << tr("  push <file>                 - copy file to device") << endl;
     qout << tr("  install <file> [-l]         - push this package file to the device and install it") << endl;
     qout << tr("                                    '-l' means auto-launch app after install") << endl;
-    qout << endl;
     qout << tr("  help                        - show this help message") << endl;
-    qout << endl;
     qout << tr("  version                     - show version number") << endl;
     qout << endl;
     qout << tr("Examples:") << endl;
     qout << tr("     WLanAdbTerminal devices") << endl;
-    qout << endl;
     qout << tr("     WLanAdbTerminal push ~/file_to_push.txt") << endl;
-    qout << endl;
     qout << tr("     WLanAdbTerminal logcat --app='com.wlanadb' --type='VD'") << endl;
-
 }
 
 void WLanAdbTerminal::printVersion()

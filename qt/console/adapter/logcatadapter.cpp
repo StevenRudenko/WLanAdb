@@ -1,7 +1,7 @@
 #include "logcatadapter.h"
 
-#include "./utils/io_compatibility.h"
-#include "./utils/myconfig.h"
+#include "utils/io_compatibility.h"
+#include "utils/myconfig.h"
 
 namespace {
 
@@ -54,7 +54,7 @@ void LogcatAdapter::onLogLine(const QString& str)
         return;
     }
 
-    if (CLEAR_STYLE) {
+    if (MyConfig::CLEAR_STYLE) {
         qout << str << endl;
         return;
     }

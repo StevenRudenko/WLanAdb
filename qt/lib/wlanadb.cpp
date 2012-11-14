@@ -1,8 +1,8 @@
 #include "wlanadb.h"
 
-#include "./processor/logcat.h"
-#include "./processor/push.h"
-#include "./processor/install.h"
+#include "processor/logcat.h"
+#include "processor/push.h"
+#include "processor/install.h"
 
 #include "commands.h"
 

@@ -3,8 +3,8 @@
 #include <QFileInfo>
 #include <QTime>
 
-#include "./utils/utils.h"
-#include "./utils/myconfig.h"
+#include "utils/utils.h"
+#include "utils/myconfig.h"
 
 namespace {
 

@@ -1,13 +1,13 @@
 #ifndef WLANADBLIB_H
 #define WLANADBLIB_H
 
-#include "./processor/adbprocessor.h"
-#include "./processor/devices.h"
+#include "processor/adbprocessor.h"
+#include "processor/devices.h"
 
-#include "./data/client.pb.h"
-#include "./data/command.pb.h"
+#include "data/client.pb.h"
+#include "data/command.pb.h"
 
-#include "./network/p2pclient.h"
+#include "network/p2pclient.h"
 
 using namespace com::wlanadb::data;
 

@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QTextStream>
 
-#include "./data/command.pb.h"
+#include "data/command.pb.h"
 
 using namespace com::wlanadb::data;
 

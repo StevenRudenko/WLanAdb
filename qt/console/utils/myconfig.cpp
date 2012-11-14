@@ -1,4 +1,4 @@
 #include "myconfig.h"
 
-bool SILENT_MODE = false;
-bool CLEAR_STYLE = false;
+bool MyConfig::SILENT_MODE = false;
+bool MyConfig::CLEAR_STYLE = false;

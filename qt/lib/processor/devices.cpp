@@ -2,7 +2,7 @@
 
 #include <QByteArray>
 
-#include "./data/message.pb.h"
+#include "data/message.pb.h"
 
 using namespace com::wlanadb::data;
 

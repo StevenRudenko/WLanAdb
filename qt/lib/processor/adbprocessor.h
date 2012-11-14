@@ -3,8 +3,8 @@
 
 #include <QObject>
 
-#include "./network/p2pclient.h"
-#include "./data/command.pb.h"
+#include "network/p2pclient.h"
+#include "data/command.pb.h"
 
 using namespace com::wlanadb::data;
 
