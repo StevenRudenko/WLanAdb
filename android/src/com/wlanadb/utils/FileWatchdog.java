@@ -30,15 +30,16 @@ public abstract class FileWatchdog {
   }
 
   public abstract boolean onFileChanged();
-  
+
   public File getFile() {
     return mWatchdogFile;
   }
 
-  public void startWatch() {
+  public void startWatch(boolean listenForLocalChanges) {
     if (DEBUG)
       Log.v(TAG, "starting...");
 
+    mObserverInstance.setListerningForLocalChange(listenForLocalChanges);
     mObserverInstance.startWatching();
   }
 
@@ -61,25 +62,33 @@ public abstract class FileWatchdog {
     private final AtomicBoolean mIsDirty = new AtomicBoolean(false);
     private final String mPath;
 
+    private boolean isListeningForLocalChanges = false;
+
     public WatchdogFileObserver(String path) {
       super(path, FileObserver.CLOSE_WRITE);
       mPath = path;
     }
 
+    public void setListerningForLocalChange(boolean listen) {
+      isListeningForLocalChanges = listen;
+    }
+
     public void onEvent(int event, String path) {
-      int modsInFlight = mKnownMutationsInFlight.get();
-      if (modsInFlight > 0) {
-        // our own modification.
-        return;
-      }
+      if (isListeningForLocalChanges) {
+        int modsInFlight = mKnownMutationsInFlight.get();
+        if (modsInFlight > 0) {
+          Log.d(TAG, "our own modification");
+          // our own modification.
+          return;
+        }
 
-      if (DEBUG)
-        Log.d(TAG, "external modification to " + mPath + "; event=" + event);
+        if (DEBUG)
+          Log.d(TAG, "external modification to " + mPath + "; event=" + event);
 
-      if (!mIsDirty.compareAndSet(false, true)) {
-        // already handled. (we get a few update events
-        // during an data write)
-        return;
+        if (!mIsDirty.compareAndSet(false, true)) {
+          // already handled. (we get a few update events during an data write)
+          return;
+        }
       }
 
       if (DEBUG)

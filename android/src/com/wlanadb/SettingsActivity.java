@@ -95,9 +95,8 @@ public class SettingsActivity extends ActionBarPreferenceActivity implements Sha
 
     // clearing preferences to avoid conflicts
     clearPreferences();
-    // starting listen for global settings changes
+    // refreshing global settings changes
     mSettings.refresh();
-    mSettings.startWatch();
     onSettingsChanged();
     // starting listen for preferences changes
     final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -108,8 +107,6 @@ public class SettingsActivity extends ActionBarPreferenceActivity implements Sha
   protected void onPause() {
     super.onPause();
 
-    // finishing listen for global settings changes
-    mSettings.stopWatch();
     // finishing listen for preferences changes
     final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
     prefs.unregisterOnSharedPreferenceChangeListener(this);

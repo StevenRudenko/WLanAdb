@@ -122,7 +122,7 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
 
     mPidsController = new PidsController(getBaseContext());
 
-    mSettings.startWatch();
+    mSettings.startWatch(true);
 
     mP2pServer = new P2PServer(this);
     mP2pServer.start(this);
@@ -179,6 +179,8 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
 
   @Override
   public void onSettingsChanged() {
+    if (MyConfig.DEBUG)
+      Log.d(TAG, "Settings were changed...");
     if (mUdpMessager != null)
       mUdpMessager.onClientChanged(mSettings.getClient());
 

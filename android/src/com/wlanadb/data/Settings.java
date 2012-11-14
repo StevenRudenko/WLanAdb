@@ -252,7 +252,8 @@ public class Settings extends FileWatchdog {
     if (DEBUG)
       Log.d(TAG, "Writing client data to file...");
 
-    lockFile();
+    // uncomment this is there will be separate process use needed
+    //lockFile();
     ObjectOutputStream out = null;
     try {
       out = new ObjectOutputStream(new FileOutputStream(file, false));
@@ -274,7 +275,8 @@ public class Settings extends FileWatchdog {
         Log.e(TAG, "Fail to read settings file", e);
     } finally {
       IOUtilities.closeStream(out);
-      unlockFile();
+      // uncomment this is there will be separate process use needed
+      //unlockFile();
     }
   }
 }
