@@ -35,7 +35,7 @@
     <!-- Starting steps -->
     <string name="help_introduce"><b>WLanAdb</b> allows to use standard ADB commands without connecting Android device to desktop by USB cable or without need to root it.</string>
     <string name="help_section_main">How to start using WLanAdb</string>
-    <string name="help_main_1">Install desktop client from Downloads section.: http://wlanadb.com/downloads/</string>
+    <string name="help_main_1">Install desktop client from Downloads section of http://wlanadb.com/</string>
     <string name="help_main_2">Check that desktop client and mobile device belong to one subnetwork.</string>
     <string name="help_main_3">Launch <i>WLanAdbTerminal devices</i> from command line and check output</string>
     <string name="help_main_3_fail">If you don\'t see device at the list check that it is connected to sub-network used by desktop</string>
