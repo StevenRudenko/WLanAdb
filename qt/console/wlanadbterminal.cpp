@@ -114,7 +114,7 @@ void WLanAdbTerminal::selectClient(const QList<Client> &clients)
 
     int size = clients.size();
     if (0 == size) {
-        qout << tr("\rThere is no devices found.") << endl;
+        qout << tr("\rThere is no any device found.") << endl;
         exit(0);
     }
 
