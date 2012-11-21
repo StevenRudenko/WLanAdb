@@ -32,6 +32,9 @@ HEADERS += \
     utils/io_compatibility.h \
     wlanadbterminal.h
 
+INCLUDEPATH += $$PWD../lib/protobuf-include
+DEPENDPATH += $$PWD../lib/protobuf-include
+
 INCLUDEPATH += $$PWD/../lib/
 DEPENDPATH += $$PWD/../lib/
 

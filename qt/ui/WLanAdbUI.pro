@@ -9,7 +9,6 @@ QT       += core gui network
 TARGET = WLanAdbUI
 TEMPLATE = app
 
-
 SOURCES += main.cpp\
         deviceswindow.cpp
 
@@ -20,6 +19,9 @@ FORMS    += deviceswindow.ui
 
 RESOURCES += \
     main.qrc
+
+INCLUDEPATH += $$PWD../lib/protobuf-include
+DEPENDPATH += $$PWD../lib/protobuf-include
 
 INCLUDEPATH += $$PWD/../lib/
 DEPENDPATH += $$PWD/../lib/
