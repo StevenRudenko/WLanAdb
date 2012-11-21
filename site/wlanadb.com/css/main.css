@@ -67,13 +67,13 @@ th.downloads {
 	background-color: rgb(103, 103, 103);
 	border: 1px solid rgb(153, 153, 153);
 	font-weight: normal;
-	padding: 4px 12px;
+	padding: 4px 8px;
 	vertical-align: top;
 	text-align: left;
 }
 
 td.downloads {
-	padding: 4px 12px;
+	padding: 4px 4px;
 	vertical-align: top;
 	text-align: left;
 	border: 1px solid rgb(153, 153, 153);
