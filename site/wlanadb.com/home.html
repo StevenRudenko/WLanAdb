@@ -11,7 +11,13 @@
 		<script type="text/javascript" src="js/ui.draggable-1.7.2.js"></script>
 		<script type="text/javascript" src="js/jquery.mousewheel.min.js"></script>
 		<script type="text/javascript" src="js/plugin.scrollbar.js"></script>
-		<script src="js/index.js" type="text/javascript"></script>
+
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$("#contenu").scrollbar();
+			});
+		</script>
+
 	</head>
 	<body id="contenu" style="padding: 8px;">
 
@@ -29,7 +35,8 @@
 						<b>How to start using WLanAdb</b>
 					</p>
 					<p class="help-note">
-						<span class="circle">1</span> Install Android client from <a href="https://play.google.com/store/apps/details?id=com.wlanadb&referrer=utm_source%3Dsite%26utm_medium%3Dlink%26utm_content%3Dbanner%26utm_campaign%3Dwlanadb" target="_blank">Google Play</a> to any number of Android devices you want use with WLanAdb.
+						<span class="circle">1</span> Install Android client from <a target="_blank" href="https://play.google.com/store/apps/details?id=com.wlanadb&referrer=utm_source%3Dsite%26utm_medium%3Dlink%26utm_content%3Dbanner%26utm_campaign%3Dwlanadb">Google Play</a>
+						to any number of Android devices you want use with WLanAdb.
 					</p>
 					<p class="help-note">
 						<span class="circle">2</span> Get desktop client from <a target="_self" href="downloads.html">Downloads</a> section.
@@ -60,10 +67,10 @@
 						<b>Security</b>
 					</p>
 					<p class="help-note">
-						<span class="circle">1</span> <i>PIN</i>: allows to set keyword to protect from unauthorized connection to your mobile device.
+						<span class="circle">1</span><i>PIN</i>: allows to set keyword to protect from unauthorized connection to your mobile device.
 					</p>
 					<p class="help-note">
-						<span class="circle">2</span> <i>Trusted Hostpots</i>: it is a list of trusted hotspots where WLanAdb service will work. All other hotspots will be ignored. This allows you to enable WLanAdb for home and work networks ignoring public hotspots.
+						<span class="circle">2</span><i>Trusted Hostpots</i>: it is a list of trusted hotspots where WLanAdb service will work. All other hotspots will be ignored. This allows you to enable WLanAdb for home and work networks ignoring public hotspots.
 					</p></td>
 				</tr>
 			</tbody>

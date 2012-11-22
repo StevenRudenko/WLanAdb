@@ -6,7 +6,11 @@
 
 		<link href="css/main.css" rel="stylesheet">
 
-		<script src="js/index.js" type="text/javascript"></script>
+		<script type="text/javascript">
+			function onDownload(link) {
+				_gaq.push(['_trackEvent', 'Downloads', 'Download desktop client', 'Link <' + text($(link).html()) + '>']);
+			}
+		</script>
 	</head>
 	<body style="padding: 8px;">
 		<b>Get desktop client</b>
