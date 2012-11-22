@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.wlanadb.config.MyConfig;
+import com.wlanadb.config.SettingsManager;
 
 public class ApkInstallerActivity extends Activity {
   private static final String TAG = ApkInstallerActivity.class.getSimpleName();
@@ -30,7 +31,10 @@ public class ApkInstallerActivity extends Activity {
     final Intent intent = getIntent();
     final Uri apkFileUri = intent.getData();
 
-    if (installSilently(apkFileUri)) {
+    final SettingsManager settings = new SettingsManager(getBaseContext());
+    final boolean askToInstall = settings.getAskToInstall();
+
+    if (!askToInstall && installSilently(apkFileUri)) {
       launchApp(apkFileUri);
       finish();
       return;

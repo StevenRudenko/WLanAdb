@@ -22,6 +22,11 @@
     <string name="pref_security_pin_show_password">Show PIN code</string>
     <string name="pref_security_trusted_hotspots_title">Trusted Hotspots</string>
     <string name="pref_security_untrusted_hotspots_title">Not Trusted Hotspots</string>
+    <string name="pref_security_ask_install_title">Always ask while <i>install</i></string>
+    <string name="pref_security_ask_install_summary">Ask before <i>install</i> command executed [rooted devices only]</string>
+    <string name="pref_settings_title">Advanced settings</string>
+    <string name="pref_settings_wifi_lock_title">Lock WiFi</string>
+    <string name="pref_settings_wifi_lock_summary">Prevent WiFi be turned off while device sleeps</string>
     <string name="pref_about_settings">About</string>
     <string name="pref_about_credits_title">Credits</string>
     <string name="pref_about_license_title">Open source licenses</string>
@@ -33,7 +38,7 @@
     <string name="dialog_enable_wifi_trusted_list_summary">It is needed to have WiFi enabled to see list of WiFi hotspots.</string>
     <string name="dialog_enable_goto_wifi_settings">WiFi settings</string>
     <!-- Starting steps -->
-    <string name="help_introduce"><b>WLanAdb</b> allows to use standard ADB commands without connecting Android device to desktop by USB cable and without need to root it.</string>
+    <string name="help_introduce"><b>WLanAdb</b> is Wireless Android Development Bridge that allows to use standard ADB commands without connecting Android device to desktop by USB cable, installing drivers and without need to root it.</string>
     <string name="help_section_main">How to start using WLanAdb</string>
     <string name="help_main_1">Install desktop client from Downloads section of http://wlanadb.com/</string>
     <string name="help_main_2">Check that desktop client and mobile device belong to one subnetwork.</string>
@@ -42,6 +47,7 @@
     <string name="help_main_4">If there is device on list you are ready to use these ADB commands: <i>logcat</i>, <i>push</i>, <i>install</i></string>
     <string name="help_main_4_note">Try <i>WLanAdbTerminal help</i> from command line to find out more details.</string>
     <string name="help_section_security">Security</string>
-    <string name="help_security_1"><i>PIN</i>: allows to set keyword to protect from launching WLanAdb and changing its settings.</string>
+    <string name="help_security_1"><i>PIN</i>: allows to set keyword to protect from unauthorized connection to your mobile device.</string>
     <string name="help_security_2"><i>Trusted Hostpots</i>: it is a list of trusted hotspots where WLanAdb service will work. All other hotspots will be ignored. This allows you to automatically enable WLanAdb for home and work networks ignoring public hotspots.</string>
+    <string name="help_security_3"><i>Always ask while install</i>: allows control installation process while <i>install</i> command execution. This option available for rooted devices only as far there is ability silently install applications with SU priveleges.</string>
 </resources>

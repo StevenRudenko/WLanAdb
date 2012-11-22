@@ -17,6 +17,17 @@
         <com.wlanadb.ui.prefs.CheckBoxPreference
             android:key="@string/pref_security_trusted_hotspots"
             android:title="@string/pref_security_trusted_hotspots_title" />
+
+        <CheckBoxPreference
+            android:key="@string/pref_security_ask_install"
+            android:summary="@string/pref_security_ask_install_summary"
+            android:title="@string/pref_security_ask_install_title" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_settings_title" >
+        <CheckBoxPreference
+            android:key="@string/pref_settings_wifi_lock"
+            android:summary="@string/pref_settings_wifi_lock_summary"
+            android:title="@string/pref_settings_wifi_lock_title" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_about_settings" >
         <Preference

@@ -4,39 +4,44 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 
 import com.wlanadb.actionbar.ActionBarPreferenceActivity;
+import com.wlanadb.config.SettingsManager;
 import com.wlanadb.data.ClientProto.Client;
-import com.wlanadb.data.Settings;
 import com.wlanadb.fragment.EnableWifiDialogFragment;
 import com.wlanadb.fragment.LicensesDialogFragment;
+import com.wlanadb.ui.prefs.CheckBoxPreference;
 import com.wlanadb.ui.prefs.PasswordPreference;
 import com.wlanadb.ui.prefs.SharedPreferencesHelper;
 import com.wlanadb.ui.prefs.SwitchPreference;
 import com.wlanadb.utils.WiFiUtils;
 
-public class SettingsActivity extends ActionBarPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener, Settings.OnSettingsChangeListener {
+public class SettingsActivity extends ActionBarPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener, SettingsManager.OnSettingsChangeListener {
 
   private String PREF_CLIENT_ID;
   private String PREF_CLIENT_NAME;
   private String PREF_SECURITY_PIN;
   private String PREF_SECURITY_TRUSTED_HOTSPOTS;
+  private String PREF_SECURITY_ASK_INSTALL;
+  private String PREF_SETTINGS_WIFI_LOCK;
   @SuppressWarnings("unused")
   private String PREF_ABOUT_CREDITS;
   private String PREF_ABOUT_LICENSE;
 
-  private Settings mSettings;
+  private SettingsManager mSettings;
 
   private EditTextPreference mClientIdPref;
   private EditTextPreference mClientNamePref;
 
   private PasswordPreference mSecuityPinPref;
   private Preference mSecurityTrustedHotspotsPref;
+  private android.preference.CheckBoxPreference mAskInstallPref;
+
+  private android.preference.CheckBoxPreference mWifiLock;
 
   @SuppressWarnings("deprecation")
   @Override
@@ -47,6 +52,8 @@ public class SettingsActivity extends ActionBarPreferenceActivity implements Sha
     PREF_CLIENT_NAME = getString(R.string.pref_client_name);
     PREF_SECURITY_PIN = getString(R.string.pref_security_pin);
     PREF_SECURITY_TRUSTED_HOTSPOTS = getString(R.string.pref_security_trusted_hotspots);
+    PREF_SECURITY_ASK_INSTALL = getString(R.string.pref_security_ask_install);
+    PREF_SETTINGS_WIFI_LOCK = getString(R.string.pref_settings_wifi_lock);
     PREF_ABOUT_CREDITS = getString(R.string.pref_about_credits);
     PREF_ABOUT_LICENSE = getString(R.string.pref_about_license);
 
@@ -58,6 +65,9 @@ public class SettingsActivity extends ActionBarPreferenceActivity implements Sha
 
     mSecuityPinPref = (PasswordPreference) screen.findPreference(PREF_SECURITY_PIN);
     mSecurityTrustedHotspotsPref = screen.findPreference(PREF_SECURITY_TRUSTED_HOTSPOTS);
+    mAskInstallPref = (android.preference.CheckBoxPreference) screen.findPreference(PREF_SECURITY_ASK_INSTALL);
+
+    mWifiLock = (android.preference.CheckBoxPreference) screen.findPreference(PREF_SETTINGS_WIFI_LOCK);
 
     final Preference prefLicense = screen.findPreference(PREF_ABOUT_LICENSE);
     prefLicense.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -68,7 +78,10 @@ public class SettingsActivity extends ActionBarPreferenceActivity implements Sha
       }
     });
 
-    mSettings = new Settings(getBaseContext());
+    final boolean hasRoot = ApkInstallerActivity.hasRootAccess();
+    mAskInstallPref.setEnabled(hasRoot);
+
+    mSettings = new SettingsManager(getBaseContext());
     mSettings.addOnClientChangeListener(this);
   }
 
@@ -123,6 +136,10 @@ public class SettingsActivity extends ActionBarPreferenceActivity implements Sha
       mSettings.setPin(pin).commit();
     } else if (PREF_SECURITY_TRUSTED_HOTSPOTS.equals(key)) {
       mSettings.setTrustedHotspotsEnabled(sharedPreferences.getBoolean(PREF_SECURITY_TRUSTED_HOTSPOTS, false)).commit();
+    } else if (PREF_SECURITY_ASK_INSTALL.equals(key)) {
+      mSettings.setAskToInstall(sharedPreferences.getBoolean(PREF_SECURITY_ASK_INSTALL, true)).commit();
+    } else if (PREF_SETTINGS_WIFI_LOCK.equals(key)) {
+      mSettings.setWifiLockEnabled(sharedPreferences.getBoolean(PREF_SETTINGS_WIFI_LOCK, false)).commit();
     }
 
     onSettingsChanged();
@@ -140,12 +157,14 @@ public class SettingsActivity extends ActionBarPreferenceActivity implements Sha
         mSecuityPinPref.setSummary(client.getUsePin() ? R.string.pref_security_pin_summary_set : R.string.pref_security_pin_summary_not_set);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-          final SwitchPreference pref = (SwitchPreference) mSecurityTrustedHotspotsPref;
-          pref.setChecked(mSettings.isTrustedHotspotsEnabled());
+          final SwitchPreference trustedHotspotsPref = (SwitchPreference) mSecurityTrustedHotspotsPref;
+          trustedHotspotsPref.setChecked(mSettings.isTrustedHotspotsEnabled());
         } else {
-          final CheckBoxPreference pref = (CheckBoxPreference) mSecurityTrustedHotspotsPref;
-          pref.setChecked(mSettings.isTrustedHotspotsEnabled());
+          final CheckBoxPreference trustedHotspotsPref = (CheckBoxPreference) mSecurityTrustedHotspotsPref;
+          trustedHotspotsPref.setChecked(mSettings.isTrustedHotspotsEnabled());
         }
+        mAskInstallPref.setChecked(mSettings.getAskToInstall());
+        mWifiLock.setChecked(mSettings.getWifiLockEnabled());
       }
     });
   }
@@ -154,7 +173,12 @@ public class SettingsActivity extends ActionBarPreferenceActivity implements Sha
     final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
     final SharedPreferences.Editor prefsEraser = prefs.edit();
     // removing client preferences only
-    prefsEraser.remove(PREF_CLIENT_ID).remove(PREF_CLIENT_NAME).remove(PREF_SECURITY_PIN).remove(PREF_SECURITY_TRUSTED_HOTSPOTS);
+    prefsEraser.remove(PREF_CLIENT_ID)
+    .remove(PREF_CLIENT_NAME)
+    .remove(PREF_SECURITY_PIN)
+    .remove(PREF_SECURITY_TRUSTED_HOTSPOTS)
+    .remove(PREF_SECURITY_ASK_INSTALL)
+    .remove(PREF_SETTINGS_WIFI_LOCK);
     SharedPreferencesHelper.apply(prefsEraser);
   }
 }

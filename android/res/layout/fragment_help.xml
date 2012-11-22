@@ -120,6 +120,17 @@
                 style="@style/StartingStepText"
                 android:text="@string/help_security_2" />
         </TableRow>
+
+        <TableRow style="@style/StartingStepRow" >
+
+            <TextView
+                style="@style/StartingStepPointer"
+                android:text="!" />
+
+            <TextView
+                style="@style/StartingStepText"
+                android:text="@string/help_security_3" />
+        </TableRow>
     </TableLayout>
 
 </ScrollView>

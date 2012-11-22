@@ -9,14 +9,15 @@ import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.analytics.tracking.android.GoogleAnalytics;
 import com.google.analytics.tracking.android.Tracker;
 import com.wlanadb.ApkInstallerActivity;
 import com.wlanadb.config.MyConfig;
+import com.wlanadb.config.SettingsManager;
 import com.wlanadb.data.CommandProto.Command;
-import com.wlanadb.data.Settings;
 import com.wlanadb.log.AnalyticsEvents;
 import com.wlanadb.logcat.PidsController;
 import com.wlanadb.network.BroadcastServer;
@@ -29,7 +30,7 @@ import com.wlanadb.worker.LogcatWorker;
 import com.wlanadb.worker.PushWorker;
 import com.wlancat.service.WLanServiceApi;
 
-public class WLanAdbService extends Service implements P2PServer.OnConnectionsCountChanged, CommandProcessor, Settings.OnSettingsChangeListener, AnalyticsEvents {
+public class WLanAdbService extends Service implements P2PServer.OnConnectionsCountChanged, CommandProcessor, SettingsManager.OnSettingsChangeListener, AnalyticsEvents {
   private static final String TAG = WLanAdbService.class.getSimpleName();
   private static final boolean DEBUG = MyConfig.DEBUG && true;
 
@@ -38,9 +39,10 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
   private BroadcastServer mBroadcastServer;
   private UdpMessager mUdpMessager;
   private P2PServer mP2pServer;
+  private WifiManager.WifiLock mWifiLock;
 
   private PidsController mPidsController;
-  private Settings mSettings;
+  private SettingsManager mSettings;
 
   @Override
   public void onCreate() {
@@ -70,7 +72,7 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
       return;
     }
 
-    mSettings = new Settings(getBaseContext());
+    mSettings = new SettingsManager(getBaseContext());
 
     if (!isTrustedHotspotConnected()) {
       mTracker.trackEvent(CAT_SERVICE, ACTION_STOP_SERVICE, LABEL_NOT_TRUSTED_HOTSPOT, 0L);
@@ -120,6 +122,8 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
 
     mTracker.trackEvent(CAT_SERVICE, ACTION_START_SERVICE, LABEL_OK, 0L);
 
+    final WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+    mWifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL, TAG);
     mPidsController = new PidsController(getBaseContext());
 
     mSettings.startWatch(true);
@@ -133,11 +137,18 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
     mUdpMessager = new UdpMessager(mSettings.getClient());
 
     mBroadcastServer = new BroadcastServer(mUdpMessager);
-    final WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
     mBroadcastServer.start(wifiManager, broadcastAddress, localAddress);
+
+    if (mSettings.getWifiLockEnabled()) {
+      mWifiLock.acquire();
+    }
   }
 
   private void stop() {
+    if (mWifiLock != null && mWifiLock.isHeld()) {
+      mWifiLock.release();
+    }
+
     if (mP2pServer != null) {
       mP2pServer.stop();
       mP2pServer = null;
@@ -181,18 +192,28 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
   public void onSettingsChanged() {
     if (MyConfig.DEBUG)
       Log.d(TAG, "Settings were changed...");
+
+    if (!isTrustedHotspotConnected()) {
+      stopSelf();
+      return;
+    }
+
     if (mUdpMessager != null)
       mUdpMessager.onClientChanged(mSettings.getClient());
 
-    if (!isTrustedHotspotConnected())
-      stopSelf();
+    if (mSettings.getWifiLockEnabled()) {
+      if (!mWifiLock.isHeld())
+        mWifiLock.acquire();
+    } else if (mWifiLock.isHeld()) {
+      mWifiLock.release();
+    }
   }
 
   @Override
   public void onConnectionsCountChanged(int connectionsCount) {
     final Intent i = new Intent(ConnectionsStatusReciever.ACTION_CONNECTIONS_COUNT);
     i.putExtra(ConnectionsStatusReciever.EXTRA_CONNECTIONS_COUNT, connectionsCount);
-    sendBroadcast(i);
+    LocalBroadcastManager.getInstance(this).sendBroadcast(i);
   }
 
   @Override

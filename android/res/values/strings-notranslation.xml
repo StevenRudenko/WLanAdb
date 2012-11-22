@@ -4,8 +4,10 @@
     <!-- Preferences keys -->
     <string name="pref_client_id">client:id</string>
     <string name="pref_client_name">client:name</string>
+    <string name="pref_settings_wifi_lock">settings:wifi_lock</string>
     <string name="pref_security_pin">security:pin</string>
     <string name="pref_security_trusted_hotspots">security:trusted_hotspots</string>
+    <string name="pref_security_ask_install">security:ask_install</string>
     <string name="pref_about_credits">about:credits</string>
     <string name="pref_about_license">about:licenses</string>
 

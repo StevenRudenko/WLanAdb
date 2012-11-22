@@ -12,12 +12,12 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 
 import com.wlanadb.actionbar.ActionBarActivity;
-import com.wlanadb.data.Settings;
+import com.wlanadb.config.SettingsManager;
 import com.wlanadb.fragment.TrustedHotspotsFragment;
 
 public class TrustedHotspotsActivity extends ActionBarActivity {
 
-  private Settings mSettings;
+  private SettingsManager mSettings;
 
   private TrustedHotspotsFragment mFragment;
 
@@ -30,7 +30,7 @@ public class TrustedHotspotsActivity extends ActionBarActivity {
 
     mFragment = (TrustedHotspotsFragment) getSupportFragmentManager().findFragmentById(R.id.content);
 
-    mSettings = new Settings(getBaseContext());
+    mSettings = new SettingsManager(getBaseContext());
   }
 
   @Override
