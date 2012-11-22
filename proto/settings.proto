@@ -1,0 +1,19 @@
+package com.wlanadb.data;
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "com.wlanadb.data";
+option java_outer_classname = "SettingsProto";
+
+import "client.proto";
+
+message Settings {
+
+  optional int32 version = 1;
+  optional Client client = 2;
+  optional string pin = 3;
+  optional bool trusted_hotspots_enabled = 4 [default = false];
+  repeated string trusted_hotspots = 5;
+  optional bool ask_to_install = 6 [default = true];
+  optional bool wifi_lock_enabled = 7 [default = false];
+
+}
