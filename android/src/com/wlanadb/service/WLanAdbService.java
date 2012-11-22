@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.v4.content.LocalBroadcastManager;
@@ -123,7 +124,13 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
     mTracker.trackEvent(CAT_SERVICE, ACTION_START_SERVICE, LABEL_OK, 0L);
 
     final WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-    mWifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL, TAG);
+    final int wifiMode;
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB_MR1) {
+      wifiMode = WifiManager.WIFI_MODE_FULL;
+    } else {
+      wifiMode = WifiManager.WIFI_MODE_FULL_HIGH_PERF;
+    }
+    mWifiLock = wifiManager.createWifiLock(wifiMode, TAG);
     mPidsController = new PidsController(getBaseContext());
 
     mSettings.startWatch(true);
