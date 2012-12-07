@@ -13,7 +13,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,6 +22,7 @@ public class MainActivity extends ActionBarActivity {
   private static final String TAG = MainActivity.class.getSimpleName();
   private static final boolean DEBUG = MyConfig.DEBUG && true;
 
+  @SuppressWarnings("unused")
   private WLanServiceApi mServiceApi;
 
   /** Called when the activity is first created. */
@@ -82,27 +82,6 @@ public class MainActivity extends ActionBarActivity {
     return super.onOptionsItemSelected(item);
   }
 
-  @Deprecated
-  private void updateInfo() {
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          final StringBuilder log = new StringBuilder();
-          log.append("Local IP address: ");
-          log.append(mServiceApi.getAddress());
-          log.append("\nCreated server on port: ");
-          log.append(mServiceApi.getPort());
-          log.append("\nConnections count: ");
-          log.append(mServiceApi.getConnectionsCount());
-        } catch (RemoteException e) {
-          if (DEBUG)
-            Log.e(TAG, "Fail to call service API", e);
-        }
-      }
-    });
-  }
-
   private ServiceConnection serviceConnection = new ServiceConnection() {
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
@@ -112,7 +91,6 @@ public class MainActivity extends ActionBarActivity {
       mServiceApi = WLanServiceApi.Stub.asInterface(service);
 
       connectionsCountReciever.register(getBaseContext());
-      updateInfo();
     }
 
     @Override
@@ -126,7 +104,6 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public void onConnectionCountChanged(int connectionsCount) {
-      updateInfo();
     }
   };
 }

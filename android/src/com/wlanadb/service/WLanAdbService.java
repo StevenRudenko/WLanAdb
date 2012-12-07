@@ -306,6 +306,8 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
     @Override
     public String getAddress() throws RemoteException {
       final InetAddress localAddress = WiFiUtils.getLocalAddress(WLanAdbService.this);
+      if ( localAddress == null )
+        return null;
       return localAddress.getHostAddress();
     }
 
