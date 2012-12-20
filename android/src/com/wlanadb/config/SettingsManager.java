@@ -283,7 +283,7 @@ public class SettingsManager extends FileWatchdog {
   }
 
   private static String generateSerial(Context context) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+    if (Build.VERSION.SDK_INT >= 9) {
       if (!Build.SERIAL.toLowerCase().equals("unknown"))
         return Build.SERIAL;
     }
