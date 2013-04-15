@@ -84,8 +84,7 @@ void BroadcastServer::stop()
 
 void BroadcastServer::broadcastDatagram()
 {
-    udpSocket->writeDatagram(datagram.data(), datagram.size(),
-                             QHostAddress::Broadcast, port);
+    udpSocket->writeDatagram(datagram, QHostAddress::Broadcast, port);
     onDatagramSent();
 }
 
