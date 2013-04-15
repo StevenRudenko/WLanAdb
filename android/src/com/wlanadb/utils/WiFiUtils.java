@@ -100,7 +100,14 @@ public class WiFiUtils {
     final WifiInfo wifiInfo = wifiManager.getConnectionInfo();
     if (wifiInfo == null)
       return null;
-    return wifiInfo.getSSID();
+
+    String ssid = wifiInfo.getSSID();
+    if (android.os.Build.VERSION.SDK_INT >= 16) {
+      if (ssid.startsWith("\"") && ssid.endsWith("\"")){
+        ssid = ssid.substring(1, ssid.length()-1);
+      }
+    }
+    return ssid;
   }
 
   /**

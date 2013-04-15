@@ -59,8 +59,10 @@ public class BroadcastServer implements Runnable {
       mSocket = new DatagramSocket(BROADCAST_PORT);
       mSocket.setBroadcast(true);
       mSocket.setSoTimeout(MESSAGE_LISTEN_TIMEOUT);
+      mSocket.setReceiveBufferSize(4 * MESSAGE_BUFFER);
     } catch (IOException e) {
       Log.e(TAG, "Could not open socket", e);
+      return;
     }
 
     isRunning = true;
@@ -130,16 +132,19 @@ public class BroadcastServer implements Runnable {
 
   public void run() {
     if (DEBUG)
-      Log.d(TAG, "Starting reciever loop...");
+      Log.d(TAG, "Starting reciever loop... ");
     isRunning = true;
 
     final String localHostAddress = mLocalAddress.getHostAddress();
     final byte[] buf = new byte[MESSAGE_BUFFER];
     // Loop and try to receive messages. We'll get back the packet we just
     // sent out, which isn't terribly helpful, but we'll discard it.
-    while (isRunning) {
-      if (mSocket.isClosed())
+    do {
+      if (mSocket.isClosed()) {
+        if (DEBUG)
+          Log.d(TAG, "Stoping reciever loop...");
         return;
+      }
 
       final DatagramPacket packet = new DatagramPacket(buf, buf.length);
       try {
@@ -169,7 +174,7 @@ public class BroadcastServer implements Runnable {
       final ByteString response = mHandler.onDataPackageRecieved(data);
       if (response != null)
         send(response, senderAddress);
-    }
+    } while (isRunning);
 
     stop();
   }
