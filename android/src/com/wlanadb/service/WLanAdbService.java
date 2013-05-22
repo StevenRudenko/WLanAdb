@@ -259,7 +259,18 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
     } else if (comm.equals("push")) {
       mTracker.trackEvent(CAT_COMMAND, ACTION_COMMAND, LABEL_PUSH, 0L);
 
-      return new PushWorker(command);
+      final PushWorker worker = new PushWorker(command);
+      worker.setWorkerListener(new BaseWorker.WorkerListener() {
+        @Override
+        public void onWorkerFinished() {
+          //TODO: add notification
+        }
+
+        @Override
+        public void onError() {
+        }
+      });
+      return worker;
     } else if (comm.equals("install")) {
       mTracker.trackEvent(CAT_COMMAND, ACTION_COMMAND, LABEL_INSTALL, 0L);
 
