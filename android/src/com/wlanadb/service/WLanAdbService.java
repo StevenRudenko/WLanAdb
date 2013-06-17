@@ -225,8 +225,11 @@ public class WLanAdbService extends Service implements P2PServer.OnConnectionsCo
 
   @Override
   public BaseWorker getWorker(Command command) {
-    if (command == null)
+    if (command == null) {
+      if (DEBUG)
+        Log.d(TAG, "Fail to create worker: command is null");
       return null;
+    }
 
     if (DEBUG) {
       Log.d(TAG, "  command: " + command.getCommand());

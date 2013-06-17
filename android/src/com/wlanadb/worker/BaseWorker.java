@@ -24,7 +24,7 @@ public abstract class BaseWorker {
 
   public void setOutputStream(OutputStream out) {
   }
-  
+
   public void setWorkerListener(WorkerListener listener) {
     this.listener = listener;
   }

@@ -44,7 +44,7 @@ public class LogReader {
    */
   private volatile boolean isRunning = false;
 
-  private OnLogMessageListener listener;
+  private final OnLogMessageListener listener;
 
   public LogReader(OnLogMessageListener listener) {
     this(listener, null);
@@ -116,8 +116,8 @@ public class LogReader {
             listener.onLogMessage(line);
           }
         }
-
       }
+
       if (DEBUG)
         Log.d(TAG, "LogCat reading finished!");
     } catch (IOException e) {
