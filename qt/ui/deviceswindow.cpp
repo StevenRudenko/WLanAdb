@@ -6,6 +6,9 @@
 #include <commands.h>
 
 #include <QInputDialog>
+#include <QFileDialog>
+#include <QListView>
+#include <QTreeView>
 
 #include "utils/utils.h"
 
@@ -32,7 +35,7 @@ DevicesWindow::DevicesWindow(int argc, char *argv[]) :
 
     ui->statusBar->showMessage(tr("Searching for clients..."));
 
-    hide();
+    show();
 }
 
 DevicesWindow::~DevicesWindow()
@@ -76,12 +79,10 @@ void DevicesWindow::selectClient(const QList<Client> &clients)
 
     if (0 == size) {
         ui->statusBar->showMessage(tr("No clients found"));
-        show();
-    } else if (1 == size) {
-        onClientSelected(ui->devicesTableWidget->item(0, 1));
+        //    } else if (1 == size) {
+        //        onClientSelected(ui->devicesTableWidget->item(0, 1));
     } else {
         ui->statusBar->showMessage(tr("Select client"));
-        show();
     }
 }
 
@@ -129,7 +130,24 @@ void DevicesWindow::onDisconnectedFromClient()
 void DevicesWindow::onClientSelected(QTableWidgetItem *item)
 {
     if (NULL == proc) {
-        exit(0);
+        QFileDialog w;
+        w.setFileMode(QFileDialog::AnyFile);
+        w.setOption(QFileDialog::DontUseNativeDialog,true);
+        QListView *l = w.findChild<QListView*>("listView");
+        if (l) {
+            l->setSelectionMode(QAbstractItemView::MultiSelection);
+        }
+        QTreeView *t = w.findChild<QTreeView*>();
+        if (t) {
+            t->setSelectionMode(QAbstractItemView::MultiSelection);
+        }
+        int nMode = w.exec();
+        QStringList result = w.selectedFiles();
+        foreach (const QString &str, result) {
+            qDebug(str.toStdString().c_str());
+        }
+
+        //exit(0);
         return;
     }
 

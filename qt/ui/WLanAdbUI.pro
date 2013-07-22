@@ -10,10 +10,12 @@ TARGET = WLanAdbUI
 TEMPLATE = app
 
 SOURCES += main.cpp\
-        deviceswindow.cpp
+        deviceswindow.cpp \
+    opendialog.cpp
 
 HEADERS  += deviceswindow.h \
-    utils/myconfig.h
+    utils/myconfig.h \
+    opendialog.h
 
 FORMS    += deviceswindow.ui
 

@@ -100,7 +100,6 @@ public final class LogPanel extends Panel {
 
   /**
    * Creates the {@link LogPanel} object.
-   * @param loader
    */
   public LogPanel() {
   }

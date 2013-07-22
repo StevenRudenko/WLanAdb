@@ -6,10 +6,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.*;
 
 import com.wlanadb.data.ClientProto.Client;
 import com.wlanadb.service.ClientManager;
@@ -18,11 +15,15 @@ import com.wlanadb.service.WLanAdbController;
 import com.wlanadb.service.WLanAdbController.OnWLanAdbControllerEventListener;
 import com.wlanadb.ui.DevicePanel.IUiSelectionListener;
 
+import java.io.File;
+
 public class Main implements OnWLanAdbControllerEventListener, IUiSelectionListener {
 
   private final WLanAdbController service;
 
   private Shell shell;
+
+  private SashForm sashForm;
   private DevicePanel devices;
   private LogPanel log;
 
@@ -88,25 +89,9 @@ public class Main implements OnWLanAdbControllerEventListener, IUiSelectionListe
     shell.setLayout(root);
     shell.setSize(840, 541);
 
-    final Menu menu = new Menu(shell, SWT.BAR);
-    shell.setMenuBar(menu);
+      prepareMenu(shell);
 
-    final MenuItem mntmDevices = new MenuItem(menu, SWT.CASCADE);
-    mntmDevices.setText("Devices");
-
-    final Menu mnctmDevices = new Menu(mntmDevices);
-    mntmDevices.setMenu(mnctmDevices);
-
-    final MenuItem mntmRefresh = new MenuItem(mnctmDevices, SWT.NONE);
-    mntmRefresh.addSelectionListener(new SelectionAdapter() {
-      @Override
-      public void widgetSelected(SelectionEvent arg0) {
-        service.scan();
-      }
-    });
-    mntmRefresh.setText("Refresh");
-
-    final SashForm sashForm = new SashForm(shell, SWT.NONE);
+    sashForm = new SashForm(shell, SWT.NONE);
 
     devices = new DevicePanel();
     devices.createControl(sashForm);
@@ -116,11 +101,13 @@ public class Main implements OnWLanAdbControllerEventListener, IUiSelectionListe
     log.createControl(sashForm);
     log.setInput(service.getLogManager());
 
-    sashForm.setWeights(new int[] {1, 3});
+    sashForm.setWeights(new int[] {1, 0});
+    sashForm.setTouchEnabled(false);
   }
 
   @Override
   public void onSelectionChanged(Client client) {
+    sashForm.setWeights(new int[] {0, 1});
     service.startLogging(client);
   }
 
@@ -133,4 +120,50 @@ public class Main implements OnWLanAdbControllerEventListener, IUiSelectionListe
   public void onLogUpdated(LogManager manager) {
     log.refresh();
   }
+
+    private void prepareMenu(final Shell shell) {
+        final Menu menu = new Menu(shell, SWT.BAR);
+        shell.setMenuBar(menu);
+
+        final MenuItem mntmDevices = new MenuItem(menu, SWT.CASCADE);
+        mntmDevices.setText("Devices");
+
+        final Menu mnctmDevices = new Menu(mntmDevices);
+        mntmDevices.setMenu(mnctmDevices);
+
+        final MenuItem mntmRefresh = new MenuItem(mnctmDevices, SWT.NONE);
+        mntmRefresh.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent arg0) {
+                service.scan();
+            }
+        });
+        mntmRefresh.setText("Refresh");
+
+        final MenuItem mntmOperations = new MenuItem(menu, SWT.CASCADE);
+        mntmOperations.setText("Operations");
+
+        final Menu mnctmOperations = new Menu(mntmOperations);
+        mntmOperations.setMenu(mnctmOperations);
+
+        final MenuItem mntmPush = new MenuItem(mnctmOperations, SWT.NONE);
+        mntmPush.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent arg0) {
+                final FileDialog fileDialog = new FileDialog(shell, SWT.MULTI);
+                fileDialog.setText("Select files or directory to push to device");
+
+                final String path = fileDialog.open();
+                if (path != null) {
+                    final File root = new File(path).getParentFile();
+                    final String[] result = fileDialog.getFileNames();
+                    for (String f : result)
+                        System.out.println(new File(root, f).getAbsolutePath());
+                        //TODO: start push action one by one
+                        //TODO: show progress
+                    }
+            }
+        });
+        mntmPush.setText("Push");
+    }
 }
