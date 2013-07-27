@@ -12,17 +12,8 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
--->
+  -->
 
-<resources>
-
-    <color name="divider">#ffcccccc</color>
-    <color name="actionbar_title_color">#ffffff</color>
-    <color name="list_item_trusted_hotspot_checked">#ff222222</color>
-    <color name="list_item_trusted_hotspot_unchecked">@android:color/transparent</color>
-
-    <!-- selector colors -->
-    <color name="selector_focused">#8833b5e5</color>
-    <color name="selector_pressed">#bb33b5e5</color>
-    <color name="selector_disabled">#ff4c4c4c</color>
-</resources>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/selector_disabled" />
+</shape>

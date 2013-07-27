@@ -15,5 +15,5 @@
   -->
 
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#bb33b5e5" />
+    <solid android:color="@color/selector_pressed" />
 </shape>

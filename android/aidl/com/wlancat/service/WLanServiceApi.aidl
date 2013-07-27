@@ -7,4 +7,6 @@ interface WLanServiceApi {
   String getAddress();
   /** Returns count of connections established right now. */
   int getConnectionsCount();
+  /** Performs test of connection. */
+  void testConnection();
 }

@@ -15,9 +15,12 @@
   -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/actionbar_compat_item_pressed"
-        android:state_pressed="true" />
-    <item android:drawable="@drawable/actionbar_compat_item_focused"
-        android:state_focused="true" />
-    <item android:drawable="@android:color/transparent" />
+    <item android:state_window_focused="false" android:drawable="@android:color/transparent" />
+
+    <!-- Even though these two point to the same resource, have two states so the drawable will invalidate itself when coming out of pressed state. -->
+    <item android:state_focused="true"  android:state_enabled="false" android:state_pressed="true" android:drawable="@drawable/actionbar_compat_item_disabled" />
+    <item android:state_focused="true"  android:state_enabled="false"                              android:drawable="@drawable/actionbar_compat_item_disabled" />
+    <item android:state_focused="true"                                android:state_pressed="true" android:drawable="@drawable/actionbar_compat_item_pressed" />
+    <item android:state_focused="false"                               android:state_pressed="true" android:drawable="@drawable/actionbar_compat_item_pressed" />
+    <item android:state_focused="true"                                                             android:drawable="@drawable/actionbar_compat_item_focused" />
 </selector>

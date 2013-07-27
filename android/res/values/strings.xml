@@ -9,6 +9,11 @@
     <string name="loading">Loading&#8230;</string>
     <!-- Menu items labels -->
     <string name="menu_settings">Settings</string>
+    <string name="menu_test_connection">Test connection</string>
+    <!-- Connection statuses -->
+    <string name="connection_status_undefined">Sorry, it is not possible to start connection test now.</string>
+    <string name="connection_status_ok">Connection test successfully passed.</string>
+    <string name="connection_status_block">It seems you have filter for broadcast messages.</string>
     <!-- Logcat filter labels -->
     <string name="logcat_filter_hide_system_pids">Hide system applications</string>
     <!-- Preferences labels -->
