@@ -191,11 +191,14 @@ public class BroadcastServer implements Runnable {
             if (DEBUG)
                 Log.d(TAG, "Recieved message from " + senderHostAddress + " : " + data.toStringUtf8());
 
+            // it is test package we need ignore it from other clients
+            if (mTestConnectionHandler.isTestPhrase(data)) {
+                mTestConnectionHandler.passed();
+                continue;
+            }
+
             // ignoring packages from ourself
             if (localHostAddress.equals(senderHostAddress)) {
-                if (mTestConnectionHandler != null) {
-                    mTestConnectionHandler.handle(data);
-                }
                 continue;
             }
 
@@ -226,16 +229,16 @@ public class BroadcastServer implements Runnable {
             reset();
 
             sendEmptyMessageDelayed(MSG_TEST_FAILED, WAIT_INTERVAL);
-            send(TEST_PACKET, mLocalAddress);
+            send(TEST_PACKET, mBroadcastAddress);
         }
 
-        public boolean handle(ByteString data) {
+        public boolean isTestPhrase(ByteString data) {
             final String phrase = data.toStringUtf8();
-            if (TEST_PHRASE.equals(phrase)) {
-                sendEmptyMessage(MSG_TEST_PASSED);
-                return true;
-            }
-            return false;
+            return TEST_PHRASE.equals(phrase);
+        }
+
+        public void passed() {
+            sendEmptyMessage(MSG_TEST_PASSED);
         }
 
         @Override

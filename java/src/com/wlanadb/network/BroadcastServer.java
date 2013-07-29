@@ -84,7 +84,9 @@ public class BroadcastServer implements Runnable {
         try {
           final byte[] message = data.toByteArray();
           final InetAddress host = reciever == null ? mBroadcastAddress : reciever;
-          final DatagramPacket packet = new DatagramPacket(message, message.length,
+            if (DEBUG)
+                Log.d(TAG, "Sending data to " + host.getHostAddress());
+            final DatagramPacket packet = new DatagramPacket(message, message.length,
               host, BROADCAST_PORT);
           if (isRunning)
             mSocket.send(packet);

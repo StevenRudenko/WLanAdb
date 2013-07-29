@@ -141,7 +141,6 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         public void onConnectionStatusChanged(int status) {
-            Log.d(TAG, ""+status);
             switch (status) {
                 case STATUS_UNDERFINED:
                     viewConnections.setSelected(false);

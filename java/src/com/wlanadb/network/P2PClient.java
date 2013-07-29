@@ -10,70 +10,71 @@ import com.wlanadb.utils.Log;
 import com.wlanadb.worker.BaseWorker;
 
 public class P2PClient implements Runnable {
-  private static final String TAG = P2PClient.class.getSimpleName();
-  private static final boolean DEBUG = MyConfig.DEBUG && true;
+    private static final String TAG = P2PClient.class.getSimpleName();
+    private static final boolean DEBUG = MyConfig.DEBUG && true;
 
-  private final Client client;
+    private final Client client;
 
-  private Socket socket;
-  private Thread workerThread;
+    private Socket socket;
+    private Thread workerThread;
 
-  private BaseWorker worker;
+    private BaseWorker worker;
 
-  private volatile boolean isRunning = false;
+    private volatile boolean isRunning = false;
 
-  public P2PClient(Client client) {
-    this.client = client;
-  }
-
-  public void start(BaseWorker worker) {
-    if (isRunning)
-      stop();
-
-    isRunning = true;
-
-    try {
-      socket = new Socket(client.getIp(), client.getPort());
-
-      this.worker = worker;
-      worker.setInputStream(socket.getInputStream());
-      worker.setOutputStream(socket.getOutputStream());
-
-    } catch (UnknownHostException e) {
-      Log.e(TAG, "Can't connect to client: " + client.getIp()+":"+client.getPort(), e);
-    } catch (IOException e) {
-      Log.e(TAG, "Can't open streams to read/write data", e);
+    public P2PClient(Client client) {
+        this.client = client;
     }
 
-    workerThread = new Thread(this);
-    workerThread.start();
-  }
+    public void start(BaseWorker worker) {
+        if (isRunning)
+            stop();
 
-  public void stop() {
-    isRunning = false;
+        isRunning = true;
 
-    if (worker != null) {
-      worker.terminate();
+        try {
+            socket = new Socket(client.getIp(), client.getPort());
+
+            this.worker = worker;
+            worker.setInputStream(socket.getInputStream());
+            worker.setOutputStream(socket.getOutputStream());
+
+        } catch (UnknownHostException e) {
+            Log.e(TAG, "Can't connect to client: " + client.getIp()+":"+client.getPort(), e);
+        } catch (IOException e) {
+            Log.e(TAG, "Can't open streams to read/write data", e);
+        }
+
+        workerThread = new Thread(this);
+        workerThread.start();
     }
 
-    if (workerThread != null) {
-      final Thread inherited = workerThread;
-      workerThread = null;
-      inherited.interrupt();
+    public void stop() {
+        isRunning = false;
+
+        if (worker != null) {
+            worker.terminate();
+        }
+
+        if (workerThread != null) {
+            final Thread inherited = workerThread;
+            workerThread = null;
+            inherited.interrupt();
+        }
+
+        try {
+            if (socket != null) {
+                socket.close();
+            }
+        } catch (IOException e) {
+            if (DEBUG)
+                Log.e(TAG, "Can't close server socket", e);
+        }
     }
 
-    try {
-      if (socket != null)
-        socket.close();
-    } catch (IOException e) {
-      if (DEBUG)
-        Log.e(TAG, "Can't close server socket", e);
+    @Override
+    public void run() {
+        worker.execute();
     }
-  }
-
-  @Override
-  public void run() {
-    worker.execute();
-  }
 
 }
