@@ -1,19 +1,18 @@
 package com.wlanadb.ui;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.*;
-
 import com.wlanadb.data.ClientProto.Client;
 import com.wlanadb.service.ClientManager;
 import com.wlanadb.service.LogManager;
 import com.wlanadb.service.WLanAdbController;
 import com.wlanadb.service.WLanAdbController.OnWLanAdbControllerEventListener;
 import com.wlanadb.ui.DevicePanel.IUiSelectionListener;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StackLayout;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.*;
 
 import java.io.File;
 
@@ -23,7 +22,7 @@ public class Main implements OnWLanAdbControllerEventListener, IUiSelectionListe
 
     private Shell shell;
 
-    private SashForm sashForm;
+    private StackLayout stackLayout;
     private DevicePanel devices;
     private LogPanel log;
 
@@ -33,24 +32,32 @@ public class Main implements OnWLanAdbControllerEventListener, IUiSelectionListe
     }
 
     public void show() {
-        shell.forceActive();
+//        frame.setState(Frame.NORMAL); // restores minimized windows
+//        frame.toFront(); // brings to front without needing to setAlwaysOnTop
+//        frame.requestFocus();
+        final Display display = shell.getDisplay();
+        display.asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                shell.forceActive();
+                shell.forceFocus();
+            }
+        });
+    }
+
+    public void close() {
+        service.stop();
+        shell.dispose();
+    }
+
+    public boolean prepare() {
+        return service.start();
     }
 
     /**
      * Open the window.
      */
     public void open() {
-        if (!service.start()) {
-            return;
-        }
-
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                service.stop();
-            }
-        });
-
         final Display display = Display.getDefault();
         createContents();
         shell.open();
@@ -64,12 +71,12 @@ public class Main implements OnWLanAdbControllerEventListener, IUiSelectionListe
             }
         }
 
-        service.stop();
-        shell.dispose();
+        close();
     }
 
     /**
      * Create contents of the window.
+     *
      * @wbp.parser.entryPoint
      */
     protected void createContents() {
@@ -82,7 +89,7 @@ public class Main implements OnWLanAdbControllerEventListener, IUiSelectionListe
         final Image icon64 = new Image(shell.getDisplay(), "res/images/ic_app_64.png");
         final Image icon96 = new Image(shell.getDisplay(), "res/images/ic_app_96.png");
         final Image icon128 = new Image(shell.getDisplay(), "res/images/ic_app_128.png");
-        final Image[] images = new Image[] { icon24, icon32, icon48, icon64, icon96, icon128 };
+        final Image[] images = new Image[]{icon24, icon32, icon48, icon64, icon96, icon128};
         shell.setImages(images);
 
         final FillLayout root = new FillLayout(SWT.HORIZONTAL);
@@ -91,23 +98,27 @@ public class Main implements OnWLanAdbControllerEventListener, IUiSelectionListe
 
         prepareMenu(shell);
 
-        sashForm = new SashForm(shell, SWT.NONE);
+        stackLayout = new StackLayout();
+        shell.setLayout(stackLayout);
 
         devices = new DevicePanel();
-        devices.createControl(sashForm);
+        devices.createControl(shell);
         devices.addSelectionListener(this);
 
         log = new LogPanel();
-        log.createControl(sashForm);
+        log.createControl(shell);
         log.setInput(service.getLogManager());
+        log.getView().setVisible(false);
 
-        sashForm.setWeights(new int[] {1, 0});
-        sashForm.setTouchEnabled(false);
+        stackLayout.topControl = devices.getView();
     }
 
     @Override
     public void onSelectionChanged(Client client) {
-        sashForm.setWeights(new int[] {0, 1});
+        stackLayout.topControl = log.getView();
+        devices.getView().setVisible(false);
+        log.getView().setVisible(true);
+
         service.startLogging(client);
     }
 

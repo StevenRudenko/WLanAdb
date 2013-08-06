@@ -39,10 +39,12 @@ public abstract class Panel {
      * called once, when the application is initializing, from the UI thread.
      */
     protected abstract Control createControl(Composite parent);
-    
+
     /**
      * Sets the focus to the proper control inside the panel.
      */
     public abstract void setFocus();
+
+    public abstract Control getView();
 }
 

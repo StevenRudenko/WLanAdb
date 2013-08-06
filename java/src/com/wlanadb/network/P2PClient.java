@@ -1,13 +1,13 @@
 package com.wlanadb.network;
 
-import java.io.IOException;
-import java.net.Socket;
-import java.net.UnknownHostException;
-
 import com.wlanadb.config.MyConfig;
 import com.wlanadb.data.ClientProto.Client;
 import com.wlanadb.utils.Log;
 import com.wlanadb.worker.BaseWorker;
+
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 public class P2PClient implements Runnable {
     private static final String TAG = P2PClient.class.getSimpleName();
@@ -40,9 +40,11 @@ public class P2PClient implements Runnable {
             worker.setOutputStream(socket.getOutputStream());
 
         } catch (UnknownHostException e) {
-            Log.e(TAG, "Can't connect to client: " + client.getIp()+":"+client.getPort(), e);
+            if (DEBUG)
+                Log.e(TAG, "Can't connect to client: " + client.getIp() + ":" + client.getPort(), e);
         } catch (IOException e) {
-            Log.e(TAG, "Can't open streams to read/write data", e);
+            if (DEBUG)
+                Log.e(TAG, "Can't open streams to read/write data", e);
         }
 
         workerThread = new Thread(this);
