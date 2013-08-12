@@ -1,0 +1,11 @@
+<component name="libraryTable">
+    <library name="android">
+        <CLASSES>
+            <root url="jar://$PROJECT_DIR$/../android/libs/protobuf-java-2.4.1-lite.jar!/"/>
+            <root url="jar://$PROJECT_DIR$/../android/libs/libGoogleAnalyticsV2.jar!/"/>
+            <root url="jar://$PROJECT_DIR$/../android/libs/android-support-v4.jar!/"/>
+        </CLASSES>
+        <JAVADOC/>
+        <SOURCES/>
+    </library>
+</component>
