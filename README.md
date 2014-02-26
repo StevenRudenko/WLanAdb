@@ -32,8 +32,8 @@ Security
 
 Download application
 -------------------
-Application for Android is published on the Play Store: [WLanAdb][1].
-Desktop clients can be downloaded from http://wlanadb.com/
+- Application for Android is published on the Play Store: [WLanAdb][1].
+- Desktop clients can be downloaded from http://wlanadb.com/
 
 
 -------------------------------------------------------------------------------
