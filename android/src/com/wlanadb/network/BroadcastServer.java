@@ -30,7 +30,7 @@ public class BroadcastServer implements Runnable {
 
     public static final int BROADCAST_PORT = 44533;
     public static final int MESSAGE_LISTEN_TIMEOUT = 500;
-    public static final int MESSAGE_BUFFER = 1000;
+    public static final int MESSAGE_BUFFER = 512;
 
     private InetAddress mBroadcastAddress;
     private InetAddress mLocalAddress;
@@ -170,11 +170,12 @@ public class BroadcastServer implements Runnable {
 
             final DatagramPacket packet = new DatagramPacket(buf, buf.length);
             try {
+                packet.setData(buf);
                 mSocket.receive(packet);
-            } catch (SocketTimeoutException e) {
+            } catch (SocketTimeoutException ignore) {
                 // it is normal behavior
                 continue;
-            } catch (IOException e) {
+            } catch (IOException ignore) {
                 // this error can be caused by closing socket only
                 // ignoring it
                 continue;

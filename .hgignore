@@ -4,8 +4,16 @@ android/obj
 android/.settings/*
 android/local.properties
 android/.apt_generated/*
+bin
+graphics
 java/bin
 java/out
+java/desktop/out
+java/.idea
+site/wlanadb.com/files
 WLanCat-build-desktop
 qt/WLanCat.pro.user
 .metadata
+
+syntax: glob
+*.pro.user

@@ -100,7 +100,11 @@ public class WLanAdbController {
     }
 
     public void startLogging(Client client) {
-        final LogcatWorker worker = new LogcatWorker(logManager);
+        startLogging(client, logManager);
+    }
+
+    public void startLogging(Client client, OnLogMessageListener listener) {
+        final LogcatWorker worker = new LogcatWorker(listener);
         startWorker(client, worker);
     }
 

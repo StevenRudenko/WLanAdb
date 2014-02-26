@@ -8,6 +8,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="WLanAdbShared" />
+    <orderEntry type="library" name="terminal" level="project" />
   </component>
 </module>
 
