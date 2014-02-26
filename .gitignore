@@ -1,0 +1,25 @@
+# built application files
+*.apk
+*.ap_
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+*.pro.user
+
+# generated files
+android/gen/
+android/bin/
+android/obj/
+android/.settings/
+android/.apt_generated/
+java/bin/
+java/out/
+java/desktop/out/
+java/.idea/
+site/wlanadb.com/files
+
+# Local configuration file (sdk path, etc)
+android/local.properties

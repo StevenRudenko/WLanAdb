@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="shared">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/shared/libs/protobuf-java-2.4.1-lite.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
