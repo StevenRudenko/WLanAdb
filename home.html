@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		<title>Home</title>
+
+		<link href="css/main.css" rel="stylesheet">
+
+		<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
+		<script type="text/javascript" src="js/ui.core-1.7.2.js"></script>
+		<script type="text/javascript" src="js/ui.draggable-1.7.2.js"></script>
+		<script type="text/javascript" src="js/jquery.mousewheel.min.js"></script>
+		<script type="text/javascript" src="js/plugin.scrollbar.js"></script>
+
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$("#contenu").scrollbar();
+			});
+		</script>
+
+	</head>
+	<body id="contenu" style="padding: 8px;">
+
+		<b>WLanAdb</b> is Wireless Android Development Bridge that allows to use standard ADB commands without connecting Android device to desktop by USB cable, installing drivers and without need to root it.
+		<br/>
+		<table width="100%" height="100%" cellspacing="0" cellpadding="0" style="padding-top: 8px;">
+			<tbody>
+				<tr>
+					<td width="40%" style="vertical-align:top; text-align: center; padding-top: 16px"><img src="imgs/ic_launcher-web.png">
+					<p>
+						Version 0.1b
+					</p></td>
+					<td width="60%">
+					<p>
+						<b>How to start using WLanAdb</b>
+					</p>
+					<p class="help-note">
+						<span class="circle">1</span> Install Android client from <a target="_blank" href="https://play.google.com/store/apps/details?id=com.wlanadb&referrer=utm_source%3Dsite%26utm_medium%3Dlink%26utm_content%3Dbanner%26utm_campaign%3Dwlanadb">Google Play</a>
+						to any number of Android devices you want use with WLanAdb.
+					</p>
+					<p class="help-note">
+						<span class="circle">2</span> Get desktop client from <a target="_self" href="downloads.html">Downloads</a> section.
+					</p>
+					<p class="help-note">
+						<span class="circle">3</span> Check that desktop client and mobile device belong to one subnetwork.
+					</p>
+					<p class="help-note">
+						<span class="circle">4</span> Launch <i>WLanAdbTerminal devices</i> from command line and check output.
+					</p>
+					<p style="background: #444444; padding: 8px">
+						$ WLanAdbTerminal devices
+						<br/>
+						1 device(s) found:
+						<br/>
+						1) 39334809547D00EC My device - Nexus S (4.1.1)
+					</p>
+					<p class="help-note">
+						<span class="circle">!</span> If you don't see your device on the list, check that it really belongs to same subnetwork as your desktop.
+					</p>
+					<p class="help-note">
+						<span class="circle">5</span> If there is device on list you are ready to use these ADB commands: <i>logcat</i>, <i>push</i>, <i>install</i>.
+					</p>
+					<p class="help-note">
+						<span class="circle">!</span> Try <i>WLanAdbTerminal help</i> from command line to find out more details.
+					</p>
+					<p>
+						<b>Security</b>
+					</p>
+					<p class="help-note">
+						<span class="circle">1</span><i>PIN</i>: allows to set keyword to protect from unauthorized connection to your mobile device.
+					</p>
+					<p class="help-note">
+						<span class="circle">2</span><i>Trusted Hostpots</i>: it is a list of trusted hotspots where WLanAdb service will work. All other hotspots will be ignored. This allows you to enable WLanAdb for home and work networks ignoring public hotspots.
+					</p></td>
+				</tr>
+			</tbody>
+		</table>
+	</body>
+</html>

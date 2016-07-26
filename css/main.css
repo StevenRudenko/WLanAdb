@@ -1,0 +1,85 @@
+@font-face {
+	font-family: Roboto-Regular;
+	src: url('../fonts/Roboto-Regular.ttf');
+}
+
+html * {
+	color: #FFF !important;
+	font-family: Roboto-Regular !important;
+}
+
+#content {
+	/* IE10 Consumer Preview */
+	background-image: -ms-radial-gradient(center bottom, ellipse farthest-corner, #272D33 0%, #000000 100%);
+	/* Mozilla Firefox */
+	background-image: -moz-radial-gradient(center bottom, ellipse farthest-corner, #272D33 0%, #000000 100%);
+	/* Opera */
+	background-image: -o-radial-gradient(center bottom, ellipse farthest-corner, #272D33 0%, #000000 100%);
+	/* Webkit (Safari/Chrome 10) */
+	background-image: -webkit-gradient(radial, center bottom, 0, center bottom, 560, color-stop(0, #272D33), color-stop(1, #000000));
+	/* Webkit (Chrome 11+) */
+	background-image: -webkit-radial-gradient(center bottom, ellipse farthest-corner, #272D33 0%, #000000 100%);
+	/* W3C Markup, IE10 Release Preview */
+	background-image: radial-gradient(ellipse farthest-corner at center bottom, #272D33 0%, #000000 100%);
+	background-repeat: no-repeat;
+}
+
+.circle {
+	display: inline-block;
+	width: 32px;
+	height: 32px;
+	line-height: 32px;
+	-webkit-border-radius: 16px;
+	-moz-border-radius: 16px;
+	border-radius: 16px;
+	background: #444444;
+	vertical-align: middle;
+	text-align: center;
+	color: #FFF !important;
+	text-indent: 0px;
+}
+
+.help-note {
+	text-indent: -36px;
+	margin-left: 36px;
+}
+
+.action-button {
+	display: block;
+	padding: 12px 12px;
+	vertical-align: middle;
+	background: rgba(0, 0, 0, 0);
+}
+.action-button:active {
+	background: rgba(51, 181, 229, 0.6);
+}
+
+.nav-button {
+	display: block;
+	vertical-align: middle;
+	background: rgba(0, 0, 0, 0);
+}
+.nav-button:active {
+	background: rgba(51, 181, 229, 0.6);
+}
+
+th.downloads {
+	background-color: rgb(103, 103, 103);
+	border: 1px solid rgb(153, 153, 153);
+	font-weight: normal;
+	padding: 4px 8px;
+	vertical-align: top;
+	text-align: left;
+}
+
+td.downloads {
+	padding: 4px 4px;
+	vertical-align: top;
+	text-align: left;
+	border: 1px solid rgb(153, 153, 153);
+}
+
+table.downloads {
+	border-collapse: collapse;
+	border-spacing: 0px;
+}
